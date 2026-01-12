@@ -1,0 +1,100 @@
+DSA Question 1: Two Sum (Java)
+Problem Statement
+
+You are given an array of integers nums and an integer target.
+Your task is to return the indices of the two numbers such that they add up to the target.
+
+Constraints:
+
+Each input has exactly one solution.
+
+You may not use the same element twice.
+
+Example Problem:
+
+Input: nums = [2, 7, 11, 15], target = 9
+Output: [0, 1]
+Explanation: nums[0] + nums[1] = 2 + 7 = 9
+
+Algorithm (HashMap Approach)
+
+Step-by-step Approach:
+
+Create a HashMap to store each number with its index.
+
+Iterate through the array:
+
+Calculate complement = target - nums[i].
+
+If complement exists in the HashMap → return [map.get(complement), i].
+
+Else, store nums[i] and i in the HashMap.
+
+Return empty array if no pair is found (problem guarantees a solution).
+
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+Java Code
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Arrays;
+
+public class TwoSum {
+
+    public static int[] twoSum(int[] nums, int target) {
+        // HashMap to store number -> index
+        Map<Integer, Integer> map = new HashMap<>();
+
+        // Iterate through the array
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+
+            // If complement exists in map, return the pair of indices
+            if (map.containsKey(complement)) {
+                return new int[] { map.get(complement), i };
+            }
+
+            // Store the current number and its index
+            map.put(nums[i], i);
+        }
+
+        return new int[] {}; // In case no solution exists
+    }
+
+    public static void main(String[] args) {
+        // Example Problem
+        int[] nums = {2, 7, 11, 15};
+        int target = 9;
+
+        int[] result = twoSum(nums, target);
+        System.out.println("Output: " + Arrays.toString(result)); // Output: [0, 1]
+    }
+}
+
+Code Explanation
+
+The map keeps track of numbers we have seen and their indices.
+
+For each number in the array, we calculate the complement needed to reach the target.
+
+If the complement is already in the map → the solution is found → return indices.
+
+Otherwise, store the current number in the map for future checks.
+
+Dry Run (Example Problem)
+nums = [2, 7, 11, 15], target = 9
+
+Step 1: i=0, num=2
+  complement = 9 - 2 = 7
+  7 not in map → store 2:0 → map={2:0}
+
+Step 2: i=1, num=7
+  complement = 9 - 7 = 2
+  2 exists in map → return [0,1]
+
+Output = [0, 1]
+
+
+Time Complexity: O(n)
+Space Complexity: O(n)
