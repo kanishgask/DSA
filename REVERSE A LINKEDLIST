@@ -1,0 +1,135 @@
+Problem Statement
+
+Given the head of a singly linked list, reverse the list and return the new head.
+
+Example Problem:
+
+Input: 1 -> 2 -> 3 -> 4 -> 5
+Output: 5 -> 4 -> 3 -> 2 -> 1
+Explanation: All the nodes are reversed.
+
+
+Constraints:
+
+The number of nodes in the list is in the range [0, 5000].
+
+-10^5 <= Node.val <= 10^5
+
+Algorithm (Iterative Approach)
+
+Initialize two pointers: prev = null, current = head.
+
+Loop while current is not null:
+
+Store next = current.next.
+
+Reverse the link: current.next = prev.
+
+Move pointers forward: prev = current, current = next.
+
+After the loop, prev will point to the new head of the reversed list.
+
+Return prev.
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+
+Java Code
+// Definition for singly-linked list.
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int val) { this.val = val; }
+}
+
+public class ReverseLinkedList {
+
+    public static ListNode reverseList(ListNode head) {
+        ListNode prev = null;
+        ListNode current = head;
+
+        while (current != null) {
+            ListNode nextNode = current.next; // store next
+            current.next = prev;              // reverse the link
+            prev = current;                   // move prev forward
+            current = nextNode;               // move current forward
+        }
+
+        return prev; // new head
+    }
+
+    // Helper method to print linked list
+    public static void printList(ListNode head) {
+        ListNode temp = head;
+        while (temp != null) {
+            System.out.print(temp.val + " -> ");
+            temp = temp.next;
+        }
+        System.out.println("null");
+    }
+
+    public static void main(String[] args) {
+        // Example Problem
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(4);
+        head.next.next.next.next = new ListNode(5);
+
+        System.out.println("Original List:");
+        printList(head);
+
+        ListNode reversedHead = reverseList(head);
+        System.out.println("Reversed List:");
+        printList(reversedHead);
+    }
+}
+
+Code Explanation
+
+prev keeps track of the previous node for reversing.
+
+current traverses the list.
+
+nextNode temporarily stores current.next to avoid losing the reference.
+
+current.next = prev reverses the link.
+
+Move prev and current forward until the end.
+
+prev becomes the new head of the reversed list.
+
+Dry Run (Example Problem)
+Original List: 1 -> 2 -> 3 -> 4 -> 5 -> null
+
+Step 1:
+  prev = null, current = 1
+  nextNode = 2
+  current.next = prev → 1 -> null
+  prev = 1, current = 2
+
+Step 2:
+  nextNode = 3
+  current.next = prev → 2 -> 1 -> null
+  prev = 2, current = 3
+
+Step 3:
+  nextNode = 4
+  current.next = prev → 3 -> 2 -> 1 -> null
+  prev = 3, current = 4
+
+Step 4:
+  nextNode = 5
+  current.next = prev → 4 -> 3 -> 2 -> 1 -> null
+  prev = 4, current = 5
+
+Step 5:
+  current = 5
+  current.next = prev → 5 -> 4 -> 3 -> 2 -> 1 -> null
+  current = null → End loop
+
+Reversed List: 5 -> 4 -> 3 -> 2 -> 1 -> null
+
+
+Time Complexity: O(n)
+Space Complexity: O(1)
