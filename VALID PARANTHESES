@@ -1,0 +1,111 @@
+DSA Question 4: Valid Parentheses (Java)
+Problem Statement
+
+Given a string s containing just the characters '(', ')', '{', '}', '[', and ']', determine if the input string is valid.
+
+A string is valid if:
+
+Open brackets are closed by the same type of brackets.
+
+Open brackets are closed in the correct order.
+
+Example Problem:
+
+Input: s = "({[]})"
+Output: true
+Explanation: All brackets are properly closed and nested.
+
+
+Constraints:
+
+1 <= s.length <= 10^4
+
+s consists only of '()[]{}'
+
+Algorithm (Using Stack)
+
+Initialize an empty stack.
+
+Iterate through each character ch in the string:
+
+If ch is an opening bracket (, {, [ → push onto the stack.
+
+If ch is a closing bracket ), }, ] → check:
+
+If stack is empty → invalid → return false.
+
+Pop top of stack → if it does not match the corresponding opening bracket → invalid → return false.
+
+After iteration, if the stack is empty → valid → return true.
+
+Otherwise → return false.
+
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+Java Code
+import java.util.Stack;
+
+public class ValidParentheses {
+
+    public static boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+
+        for (char ch : s.toCharArray()) {
+            // If opening bracket, push onto stack
+            if (ch == '(' || ch == '{' || ch == '[') {
+                stack.push(ch);
+            } else {
+                // If closing bracket, stack must not be empty
+                if (stack.isEmpty()) return false;
+
+                char top = stack.pop();
+
+                // Check if brackets match
+                if ((ch == ')' && top != '(') ||
+                    (ch == '}' && top != '{') ||
+                    (ch == ']' && top != '[')) {
+                    return false;
+                }
+            }
+        }
+
+        // If stack is empty, all brackets matched
+        return stack.isEmpty();
+    }
+
+    public static void main(String[] args) {
+        // Example Problem
+        String s = "({[]})";
+        System.out.println("Is Valid: " + isValid(s)); // Output: true
+
+        String s2 = "([)]";
+        System.out.println("Is Valid: " + isValid(s2)); // Output: false
+    }
+}
+
+Code Explanation
+
+Opening brackets are pushed onto the stack.
+
+Closing brackets must match the top of the stack.
+
+If mismatch or stack is empty → invalid string.
+
+At the end, if stack is empty → all brackets matched → valid string.
+
+Dry Run (Example Problem)
+Input: s = "({[]})"
+
+Step 1: '(' → push → stack: ['(']
+Step 2: '{' → push → stack: ['(', '{']
+Step 3: '[' → push → stack: ['(', '{', '[']
+Step 4: ']' → pop '[' → matches → stack: ['(', '{']
+Step 5: '}' → pop '{' → matches → stack: ['(']
+Step 6: ')' → pop '(' → matches → stack: []
+
+Stack empty → valid → Output: true
+
+
+Time Complexity: O(n)
+Space Complexity: O(n)
