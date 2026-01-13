@@ -1,0 +1,141 @@
+DSA Question 7: Lowest Common Ancestor (Binary Tree) – Java
+Problem Statement
+
+Given a binary tree and two nodes p and q, find their lowest common ancestor (LCA).
+
+The LCA is defined as the lowest node in the tree that has both p and q as descendants (a node can be a descendant of itself).
+
+Example Problem:
+
+Input: 
+        3
+       / \
+      5   1
+     / \  / \
+    6  2 0  8
+       / \
+      7   4
+
+p = 5, q = 1
+Output: 3
+Explanation: Node 3 is the lowest common ancestor of nodes 5 and 1.
+
+
+Constraints:
+
+All node values are unique
+
+p and q exist in the tree
+
+Algorithm (Recursive Approach)
+
+If root is null → return null.
+
+If root is equal to p or q → return root.
+
+Recursively search for LCA in left and right subtrees:
+
+left = LCA(root.left, p, q)
+
+right = LCA(root.right, p, q)
+
+Decision Logic:
+
+If both left and right are non-null → root is LCA
+
+If one is non-null → return the non-null child
+
+If both are null → return null
+
+Time Complexity: O(n)
+Space Complexity: O(h) (recursion stack, h = height of tree)
+
+Java Code
+class TreeNode {
+    int val;
+    TreeNode left, right;
+
+    TreeNode(int val) { 
+        this.val = val; 
+        this.left = null; 
+        this.right = null; 
+    }
+}
+
+public class LowestCommonAncestor {
+
+    public static TreeNode findLCA(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q) return root;
+
+        TreeNode left = findLCA(root.left, p, q);
+        TreeNode right = findLCA(root.right, p, q);
+
+        if (left != null && right != null) return root;
+        return left != null ? left : right;
+    }
+
+    public static void main(String[] args) {
+        // Build example tree
+        TreeNode root = new TreeNode(3);
+        root.left = new TreeNode(5);
+        root.right = new TreeNode(1);
+        root.left.left = new TreeNode(6);
+        root.left.right = new TreeNode(2);
+        root.left.right.left = new TreeNode(7);
+        root.left.right.right = new TreeNode(4);
+        root.right.left = new TreeNode(0);
+        root.right.right = new TreeNode(8);
+
+        TreeNode p = root.left;  // 5
+        TreeNode q = root.right; // 1
+
+        TreeNode lca = findLCA(root, p, q);
+        System.out.println("Lowest Common Ancestor: " + lca.val); // Output: 3
+    }
+}
+
+Code Explanation
+
+Base Cases:
+
+If root is null → return null
+
+If root is p or q → return root (one of the nodes found)
+
+Recursive Calls:
+
+Search left subtree → left = findLCA(root.left, p, q)
+
+Search right subtree → right = findLCA(root.right, p, q)
+
+Decision Logic:
+
+Both left and right are non-null → nodes found in both subtrees → current root is LCA
+
+Only one side is non-null → propagate that node upwards
+
+Both null → return null
+
+Dry Run (Example Problem)
+Tree:
+        3
+       / \
+      5   1
+
+Searching LCA of 5 and 1
+
+Step 1: root = 3
+    left = findLCA(5,5,1) → returns 5
+    right = findLCA(1,5,1) → returns 1
+
+Step 2: left != null && right != null → root = 3 → LCA found
+Output = 3
+
+
+✅ Summary
+
+Time Complexity: O(n)
+
+Space Complexity: O(h) for recursion
+
+Use Case: Binary tree problems, hierarchical data queries, and coding interviews
