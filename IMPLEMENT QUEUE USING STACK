@@ -1,0 +1,130 @@
+DSA Question 9: Implement Queue using Stacks (Java)
+Problem Statement
+
+Implement a queue using two stacks.
+The queue should support the following operations:
+
+enqueue(x) → add element to the end of the queue
+
+dequeue() → remove element from the front of the queue
+
+Example Problem:
+
+Operations: enqueue(1), enqueue(2), dequeue(), enqueue(3), dequeue()
+Output: 1, 2
+Explanation: Elements are dequeued in FIFO order.
+
+
+Constraints:
+
+You must use only standard stack operations: push, pop, peek, and isEmpty.
+
+All operations must have amortized O(1) time complexity.
+
+Algorithm (Two Stacks Approach)
+
+Idea: Use two stacks:
+
+s1 → stack for enqueue operations
+
+s2 → stack for dequeue operations
+
+Step-by-step Approach:
+
+Enqueue(x):
+
+Push x onto s1.
+
+Dequeue():
+
+If s2 is empty:
+
+Pop all elements from s1 and push them onto s2 (reverses order).
+
+Pop element from s2 → this is the front of the queue.
+
+Time Complexity:
+
+Enqueue → O(1)
+
+Dequeue → Amortized O(1)
+
+Space Complexity: O(n)
+
+Java Code
+import java.util.Stack;
+
+public class QueueUsingStacks {
+    Stack<Integer> s1 = new Stack<>();
+    Stack<Integer> s2 = new Stack<>();
+
+    // Enqueue operation
+    public void enqueue(int x) {
+        s1.push(x);
+    }
+
+    // Dequeue operation
+    public int dequeue() {
+        if (s2.isEmpty()) {
+            while (!s1.isEmpty()) {
+                s2.push(s1.pop());
+            }
+        }
+        if (s2.isEmpty()) {
+            throw new RuntimeException("Queue is empty");
+        }
+        return s2.pop();
+    }
+
+    public static void main(String[] args) {
+        QueueUsingStacks queue = new QueueUsingStacks();
+
+        // Example problem
+        queue.enqueue(1);
+        queue.enqueue(2);
+        System.out.println("Dequeued: " + queue.dequeue()); // Output: 1
+        queue.enqueue(3);
+        System.out.println("Dequeued: " + queue.dequeue()); // Output: 2
+        System.out.println("Dequeued: " + queue.dequeue()); // Output: 3
+    }
+}
+
+Code Explanation
+
+Enqueue:
+
+Simply push the element onto s1.
+
+Dequeue:
+
+If s2 has elements → pop from s2 (FIFO order maintained)
+
+If s2 is empty → move all elements from s1 to s2 to reverse their order and then pop
+
+This ensures the first element added is dequeued first
+
+Amortized Analysis:
+
+Each element is moved at most once from s1 → s2 → O(1) amortized
+
+Dry Run (Example Problem)
+Operations: enqueue(1), enqueue(2), dequeue(), enqueue(3), dequeue(), dequeue()
+
+Step 1: enqueue(1) → s1=[1], s2=[]
+Step 2: enqueue(2) → s1=[1,2], s2=[]
+Step 3: dequeue() → s2 empty → move s1→s2 → s1=[], s2=[2,1]
+         pop s2 → 1
+Step 4: enqueue(3) → s1=[3], s2=[2]
+Step 5: dequeue() → pop s2 → 2
+Step 6: dequeue() → s2 empty → move s1→s2 → s1=[], s2=[3]
+         pop s2 → 3
+Output: 1, 2, 3
+
+
+✅ Summary
+
+Time Complexity: Amortized O(1) per operation
+
+Space Complexity: O(n)
+
+Use Case: Implementing queue when only stacks are available; interview classic problem.
