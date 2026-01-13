@@ -1,0 +1,129 @@
+DSA Question 8: Top K Frequent Elements (Java)
+Problem Statement
+
+Given an integer array nums and an integer k, return the k most frequent elements.
+You may return the answer in any order.
+
+Example Problem:
+
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+Explanation: 1 appears 3 times, 2 appears 2 times, 3 appears 1 time. Top 2 frequent elements are [1,2].
+
+
+Constraints:
+
+1 <= nums.length <= 10^5
+
+k is in the range [1, number of unique elements]
+
+The answer is guaranteed to be unique
+
+Algorithm (HashMap + Heap / PriorityQueue)
+
+Step-by-step Approach:
+
+Count frequencies:
+
+Use a HashMap<Integer, Integer> to count how many times each element appears.
+
+Use a min-heap (PriorityQueue):
+
+The heap stores elements based on their frequency.
+
+Keep the heap size ≤ k to maintain only the top k frequent elements.
+
+Build the result array:
+
+Poll elements from the heap to get top k frequent elements.
+
+Time Complexity:
+
+Counting frequencies → O(n)
+
+Heap operations → O(n log k)
+
+Total → O(n log k)
+
+Space Complexity: O(n)
+
+Java Code
+import java.util.*;
+
+public class TopKFrequent {
+
+    public static int[] topKFrequent(int[] nums, int k) {
+        // Step 1: Count frequencies
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        for (int n : nums) {
+            freqMap.put(n, freqMap.getOrDefault(n, 0) + 1);
+        }
+
+        // Step 2: Use min-heap to keep top k elements
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>(
+            (a, b) -> freqMap.get(a) - freqMap.get(b) // compare frequency
+        );
+
+        for (int key : freqMap.keySet()) {
+            minHeap.add(key);
+            if (minHeap.size() > k) minHeap.poll(); // maintain size k
+        }
+
+        // Step 3: Build result array
+        int[] result = new int[k];
+        for (int i = k - 1; i >= 0; i--) {
+            result[i] = minHeap.poll();
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {1,1,1,2,2,3};
+        int k = 2;
+
+        int[] topK = topKFrequent(nums, k);
+        System.out.println("Top " + k + " Frequent Elements: " + Arrays.toString(topK));
+        // Output: [1, 2]
+    }
+}
+
+Code Explanation
+
+Frequency Counting:
+
+freqMap stores each element as a key and its frequency as a value.
+
+Min-Heap Logic:
+
+The heap keeps the k largest frequencies.
+
+If heap exceeds size k → remove the least frequent element.
+
+Build Result:
+
+Poll elements from heap → get top k frequent elements.
+
+Dry Run (Example Problem)
+nums = [1,1,1,2,2,3], k = 2
+
+Step 1: Count frequencies
+1 → 3 times
+2 → 2 times
+3 → 1 time
+
+Step 2: Build heap
+Add 1 → heap=[1]
+Add 2 → heap=[2,1] (min-heap based on frequency)
+Add 3 → heap exceeds size k → remove 3 → heap=[2,1]
+
+Step 3: Build result from heap → [1,2]
+
+
+✅ Summary
+
+Time Complexity: O(n log k)
+
+Space Complexity: O(n)
+
+Use Case: Frequency counting problems, leaderboard, and recommendation systems.
