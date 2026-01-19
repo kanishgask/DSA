@@ -1,0 +1,123 @@
+Find First and Last Position of Element in Sorted Array (Java)
+Problem Statement
+
+Given a sorted array of integers nums and a target value target, find the starting and ending position of the target value.
+
+If the target is not found, return [-1, -1].
+
+Example Problem
+Input: nums = [5,7,7,8,8,10], target = 8
+Output: [3,4]
+Explanation: 8 first appears at index 3 and last appears at index 4.
+
+
+If element is not present:
+
+Input: nums = [5,7,7,8,8,10], target = 6
+Output: [-1, -1]
+
+Algorithm (Binary Search – Twice)
+Core Idea
+
+Use Binary Search twice:
+
+To find first occurrence
+
+To find last occurrence
+
+Step-by-step
+1️⃣ Find First Position
+
+Move high towards left even if target is found
+
+2️⃣ Find Last Position
+
+Move low towards right even if target is found
+
+Java Code
+public class FirstLastPosition {
+
+    public static int[] searchRange(int[] nums, int target) {
+        int first = findFirst(nums, target);
+        int last = findLast(nums, target);
+        return new int[]{first, last};
+    }
+
+    private static int findFirst(int[] nums, int target) {
+        int low = 0, high = nums.length - 1;
+        int result = -1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if (nums[mid] == target) {
+                result = mid;
+                high = mid - 1; // move left
+            } else if (nums[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return result;
+    }
+
+    private static int findLast(int[] nums, int target) {
+        int low = 0, high = nums.length - 1;
+        int result = -1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if (nums[mid] == target) {
+                result = mid;
+                low = mid + 1; // move right
+            } else if (nums[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {5,7,7,8,8,10};
+        int target = 8;
+
+        int[] result = searchRange(nums, target);
+        System.out.println("First and Last Position: [" + result[0] + ", " + result[1] + "]");
+        // Output: [3, 4]
+    }
+}
+
+Code Explanation
+
+findFirst() → keeps searching left side
+
+findLast() → keeps searching right side
+
+Ensures exact boundary positions
+
+Dry Run (Example)
+nums = [5,7,7,8,8,10], target = 8
+
+First occurrence:
+mid=3 → nums[3]=8 → result=3 → move left
+mid=2 → nums[2]=7 → move right
+First = 3
+
+Last occurrence:
+mid=3 → nums[3]=8 → result=3 → move right
+mid=4 → nums[4]=8 → result=4 → move right
+Last = 4
+
+Test Case
+Input: nums = [2,2,2,2], target = 2
+Output: [0,3]
+
+Complexity Analysis
+
+Time Complexity: O(log n)
+
+Space Complexity: O(1)
