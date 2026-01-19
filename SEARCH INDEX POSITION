@@ -1,0 +1,101 @@
+Search Insert Position (Java)
+Problem Statement
+
+Given a sorted array of integers nums and a target value target, return the index if the target is found.
+If not, return the index where it would be inserted to keep the array sorted.
+
+Example Problem
+Input: nums = [1,3,5,6], target = 5
+Output: 2
+Explanation: 5 is already present at index 2.
+
+
+Another example:
+
+Input: nums = [1,3,5,6], target = 2
+Output: 1
+Explanation: 2 should be inserted at index 1.
+
+Algorithm (Binary Search Based)
+Step-by-step
+
+Set two pointers:
+
+low = 0
+
+high = nums.length - 1
+
+While low <= high:
+
+Calculate mid
+
+Compare:
+
+If nums[mid] == target → return mid
+
+If nums[mid] < target → low = mid + 1
+
+Else → high = mid - 1
+
+If not found → return low
+(low gives the correct insert position)
+
+Java Code
+public class SearchInsertPosition {
+
+    public static int searchInsert(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if (nums[mid] == target)
+                return mid;
+            else if (nums[mid] < target)
+                low = mid + 1;
+            else
+                high = mid - 1;
+        }
+
+        return low; // insert position
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {1, 3, 5, 6};
+        int target = 2;
+
+        System.out.println("Insert Position: " + searchInsert(nums, target));
+        // Output: 1
+    }
+}
+
+Code Explanation
+
+We use Binary Search to reduce comparisons.
+
+If element exists → return its index.
+
+If not → low indicates correct insert position to maintain sorted order.
+
+Dry Run (Example)
+nums = [1,3,5,6], target = 2
+
+low=0, high=3
+mid=1 → nums[1]=3 > 2 → high=0
+
+low=0, high=0
+mid=0 → nums[0]=1 < 2 → low=1
+
+Loop ends → return low = 1
+
+Test Case
+Input: nums = [1,3,5,6], target = 7
+Output: 4
+Explanation: Insert at the end of array.
+
+Complexity Analysis
+
+Time Complexity: O(log n)
+
+Space Complexity: O(1)
