@@ -1,0 +1,105 @@
+✅ DSA – NEXT SET | Question 5
+Find Minimum in Rotated Sorted Array (Java)
+Problem Statement
+
+A rotated sorted array is an array that was originally sorted in ascending order, but then rotated at some pivot.
+
+Given such an array nums, find the minimum element in O(log n) time.
+
+Example Problem
+
+Input: nums = [3,4,5,1,2]
+Output: 1
+Explanation: The smallest element is 1
+
+
+Another example:
+
+Input: nums = [4,5,6,7,0,1,2]
+Output: 0
+
+Algorithm (Binary Search Approach)
+Step-by-step
+
+Initialize two pointers: low = 0, high = n-1
+
+While low < high:
+
+Calculate mid = low + (high - low) / 2
+
+Compare nums[mid] with nums[high]
+
+If nums[mid] > nums[high] → minimum is right side → low = mid + 1
+
+Else → minimum is left side (including mid) → high = mid
+
+Return nums[low] → minimum element
+
+Java Code
+public class MinInRotatedSortedArray {
+
+    public static int findMin(int[] nums) {
+        int low = 0;
+        int high = nums.length - 1;
+
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+
+            if (nums[mid] > nums[high]) {
+                // Minimum is in right side
+                low = mid + 1;
+            } else {
+                // Minimum is in left side including mid
+                high = mid;
+            }
+        }
+
+        return nums[low];
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {3,4,5,1,2};
+        System.out.println("Minimum Element: " + findMin(nums)); // Output: 1
+    }
+}
+
+Code Explanation
+
+The key is comparing mid with high
+
+If mid > high → minimum is after mid
+
+Else → minimum is at mid or before
+
+Binary search reduces time complexity to O(log n)
+
+Dry Run (Example)
+nums = [3,4,5,1,2]
+
+low=0, high=4
+mid=2 → nums[2]=5, nums[4]=2 → 5>2 → minimum in right → low=3
+
+low=3, high=4
+mid=3 → nums[3]=1, nums[4]=2 → 1<2 → minimum in left → high=3
+
+low=3, high=3 → done
+
+Return nums[3]=1
+
+Test Case
+Input: nums = [4,5,6,7,0,1,2]
+Output: 0
+
+Complexity Analysis
+
+Time Complexity: O(log n)
+
+Space Complexity: O(1)
+
+✅ Why This Problem Is Important
+
+Classic rotated array problem
+
+Tests binary search adaptation
+
+Frequently asked in LeetCode and interviews
