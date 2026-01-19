@@ -1,0 +1,123 @@
+✅ DSA – NEXT SET | Question 6
+Search in Rotated Sorted Array (Java)
+Problem Statement
+
+Given a rotated sorted array nums and a target value, return the index of the target.
+If the target is not found, return -1.
+
+You must solve it in O(log n) time.
+
+Example Problem
+Input: nums = [4,5,6,7,0,1,2], target = 0
+Output: 4
+Explanation: nums[4] = 0
+
+
+Another example:
+
+Input: nums = [4,5,6,7,0,1,2], target = 3
+Output: -1
+Explanation: 3 is not present in array
+
+Algorithm (Modified Binary Search)
+Step-by-step
+
+Initialize low = 0 and high = n - 1
+
+While low <= high:
+
+mid = low + (high - low) / 2
+
+If nums[mid] == target → return mid
+
+Determine which side is sorted:
+
+If nums[low] <= nums[mid] → left side sorted
+
+If target >= nums[low] && target < nums[mid] → search left → high = mid - 1
+
+Else → search right → low = mid + 1
+
+Else → right side sorted
+
+If target > nums[mid] && target <= nums[high] → search right → low = mid + 1
+
+Else → search left → high = mid - 1
+
+Return -1 if not found
+
+Java Code
+public class SearchInRotatedArray {
+
+    public static int search(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if (nums[mid] == target)
+                return mid;
+
+            // Left side is sorted
+            if (nums[low] <= nums[mid]) {
+                if (target >= nums[low] && target < nums[mid])
+                    high = mid - 1;
+                else
+                    low = mid + 1;
+            }
+            // Right side is sorted
+            else {
+                if (target > nums[mid] && target <= nums[high])
+                    low = mid + 1;
+                else
+                    high = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {4,5,6,7,0,1,2};
+        int target = 0;
+
+        System.out.println("Index of target: " + search(nums, target)); // Output: 4
+    }
+}
+
+Code Explanation
+
+Check mid element
+
+Determine which half is sorted
+
+Narrow search only to relevant side
+
+Binary search ensures O(log n) time
+
+Dry Run (Example)
+nums = [4,5,6,7,0,1,2], target = 0
+
+low=0, high=6
+mid=3 → nums[3]=7
+Left side sorted? nums[0]=4 <= nums[3]=7 → yes
+Target 0 in [4,7]? no → search right → low=4
+
+low=4, high=6
+mid=5 → nums[5]=1
+Left side sorted? nums[4]=0 <= nums[5]=1 → yes
+Target 0 in [0,1]? yes → high=mid-1=4
+
+low=4, high=4
+mid=4 → nums[4]=0 → found → return 4
+
+Test Case
+Input: nums = [4,5,6,7,0,1,2], target = 3
+Output: -1
+
+Complexity Analysis
+
+Time Complexity: O(log n)
+
+Space Complexity: O(1)
