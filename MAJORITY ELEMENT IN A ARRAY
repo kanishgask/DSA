@@ -1,0 +1,111 @@
+✅ DSA – NEXT SET | Question 7
+Majority Element in Array (Java)
+Problem Statement
+
+Given an array nums of size n, find the element that appears more than ⌊n/2⌋ times.
+You may assume that a majority element always exists in the array.
+
+Example Problem
+Input: nums = [3,2,3]
+Output: 3
+Explanation: 3 appears 2 times, which is more than 3/2 = 1.5
+
+
+Another example:
+
+Input: nums = [2,2,1,1,1,2,2]
+Output: 2
+
+Algorithm (Boyer-Moore Voting Algorithm)
+Step-by-step
+
+Initialize:
+
+candidate = 0
+
+count = 0
+
+Traverse the array:
+
+If count == 0 → set candidate = current element
+
+If current element == candidate → count++
+
+Else → count--
+
+Return candidate → it will be the majority element
+
+Idea:
+
+Cancel out non-majority elements
+
+Remaining element is the majority element
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+
+Java Code
+public class MajorityElement {
+
+    public static int majorityElement(int[] nums) {
+        int candidate = 0;
+        int count = 0;
+
+        for (int num : nums) {
+            if (count == 0) {
+                candidate = num;
+            }
+            count += (num == candidate) ? 1 : -1;
+        }
+
+        return candidate;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {2,2,1,1,1,2,2};
+        System.out.println("Majority Element: " + majorityElement(nums)); // Output: 2
+    }
+}
+
+Code Explanation
+
+Initialize candidate and count
+
+If count drops to 0 → choose new candidate
+
+Increment count if current element matches candidate
+
+Decrement count otherwise
+
+At the end, candidate is majority element
+
+Dry Run (Example)
+nums = [2,2,1,1,1,2,2]
+
+Step 1: count=0 → candidate=2, count=1
+Step 2: 2==candidate → count=2
+Step 3: 1!=candidate → count=1
+Step 4: 1!=candidate → count=0 → candidate=1
+Step 5: 1==candidate → count=1
+Step 6: 2!=candidate → count=0 → candidate=2
+Step 7: 2==candidate → count=1
+
+Final candidate=2 → Majority Element
+
+Test Case
+Input: nums = [3,3,4]
+Output: 3
+
+Complexity Analysis
+
+Time Complexity: O(n)
+
+Space Complexity: O(1)
+
+✅ Why This Problem Is Important
+
+Tests array traversal + smart counting
+
+Boyer-Moore is a classic O(1) space solution
+
+Frequently asked in interviews and coding contests
