@@ -1,0 +1,122 @@
+Product of Array Except Self (Java)
+Problem Statement
+
+Given an array nums of size n, return an array output such that output[i] is the product of all elements in nums except nums[i].
+
+Important:
+
+Solve without using division
+
+O(n) time and O(1) extra space (excluding output array)
+
+Example Problem
+Input: nums = [1,2,3,4]
+Output: [24,12,8,6]
+Explanation:
+- output[0] = 2*3*4 = 24
+- output[1] = 1*3*4 = 12
+- output[2] = 1*2*4 = 8
+- output[3] = 1*2*3 = 6
+
+
+Another example:
+
+Input: nums = [-1,1,0,-3,3]
+Output: [0,0,9,0,0]
+
+Algorithm (Left and Right Products)
+Step-by-step
+
+Initialize output array of size n
+
+First pass: compute prefix product (product of elements to the left)
+
+output[i] = product of all elements to the left of i
+
+Second pass: compute suffix product (product of elements to the right) and multiply with prefix product
+
+Use a variable R = 1 to store suffix product while traversing from right
+
+Return output array
+
+Time Complexity: O(n)
+Space Complexity: O(1) extra space (output array not counted)
+
+Java Code
+import java.util.Arrays;
+
+public class ProductArrayExceptSelf {
+
+    public static int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] output = new int[n];
+
+        // Step 1: Prefix product
+        output[0] = 1;
+        for (int i = 1; i < n; i++) {
+            output[i] = nums[i - 1] * output[i - 1];
+        }
+
+        // Step 2: Suffix product
+        int R = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            output[i] = output[i] * R;
+            R = R * nums[i];
+        }
+
+        return output;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {1,2,3,4};
+        System.out.println("Output: " + Arrays.toString(productExceptSelf(nums)));
+        // Output: [24, 12, 8, 6]
+    }
+}
+
+Code Explanation
+
+output[i] initially stores product of all elements to the left
+
+R accumulates product of elements to the right
+
+Multiply output[i] by R → final product excluding self
+
+Two passes → O(n) time, no division, O(1) extra space
+
+Dry Run (Example)
+nums = [1,2,3,4]
+
+Prefix pass:
+output[0]=1
+output[1]=1*1=1
+output[2]=1*2=2
+output[3]=2*3=6
+output=[1,1,2,6]
+
+Suffix pass:
+R=1
+i=3 → output[3]=6*1=6, R=4
+i=2 → output[2]=2*4=8, R=12
+i=1 → output[1]=1*12=12, R=24
+i=0 → output[0]=1*24=24, R=24
+
+Final output=[24,12,8,6]
+
+Test Case
+Input: nums = [-1,1,0,-3,3]
+Output: [0,0,9,0,0]
+
+Complexity Analysis
+
+Time Complexity: O(n)
+
+Space Complexity: O(1) extra space
+
+✅ Why This Problem Is Important
+
+Classic prefix-suffix problem
+
+Tests array manipulation without division
+
+Frequently asked in LeetCode Medium / Interview rounds
