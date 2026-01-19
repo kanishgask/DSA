@@ -1,0 +1,160 @@
+Problem Statement
+
+You are given an array of integers heights representing the histogram's bar heights where the width of each bar is 1.
+
+Task: Find the area of the largest rectangle in the histogram.
+
+Input: An array of integers heights[]
+Output: Maximum rectangular area
+
+Example Input:
+
+heights = [2, 1, 5, 6, 2, 3]
+
+
+Example Output:
+
+10
+
+
+Explanation: The largest rectangle has area 5 * 2 = 10 (bars at index 2 and 3).
+
+Algorithm (Stack-Based Approach)
+
+Initialize an empty stack stack.
+
+Initialize maxArea = 0.
+
+Iterate through each bar i in heights:
+
+While the stack is not empty and heights[i] < heights[stack.peek()]:
+
+Pop from the stack, calculate the area of the rectangle with the popped bar as the smallest bar:
+
+height = heights[stack.pop()]
+width = (stack.isEmpty() ? i : i - stack.peek() - 1)
+area = height * width
+maxArea = max(maxArea, area)
+
+
+Push the current index i to the stack.
+
+After the loop, handle remaining bars in the stack using the same area calculation.
+
+Return maxArea.
+
+Time Complexity: O(n)
+Space Complexity: O(n) (stack)
+
+Java Code (Stack-Based Solution)
+import java.util.Stack;
+
+public class LargestRectangleHistogram {
+
+    public static int largestRectangleArea(int[] heights) {
+        Stack<Integer> stack = new Stack<>();
+        int maxArea = 0;
+        int n = heights.length;
+
+        for (int i = 0; i < n; i++) {
+            // If current bar is smaller than the bar at stack top, calculate area
+            while (!stack.isEmpty() && heights[i] < heights[stack.peek()]) {
+                int height = heights[stack.pop()];
+                int width = stack.isEmpty() ? i : i - stack.peek() - 1;
+                maxArea = Math.max(maxArea, height * width);
+            }
+            stack.push(i); // Push current index to stack
+        }
+
+        // Calculate area for remaining bars in stack
+        while (!stack.isEmpty()) {
+            int height = heights[stack.pop()];
+            int width = stack.isEmpty() ? n : n - stack.peek() - 1;
+            maxArea = Math.max(maxArea, height * width);
+        }
+
+        return maxArea;
+    }
+
+    public static void main(String[] args) {
+        int[] heights = {2, 1, 5, 6, 2, 3};
+        System.out.println("Largest Rectangle Area: " + largestRectangleArea(heights));
+    }
+}
+
+Line-by-Line Explanation
+
+Stack<Integer> stack = new Stack<>();
+
+Create a stack to store indices of bars.
+
+int maxArea = 0;
+
+To store the maximum rectangle area.
+
+for (int i = 0; i < n; i++) { ... }
+
+Traverse each bar in the histogram.
+
+while (!stack.isEmpty() && heights[i] < heights[stack.peek()]) { ... }
+
+If the current bar is smaller than the bar at the top of the stack, it means the rectangle with the top bar as the smallest ends here.
+
+int height = heights[stack.pop()];
+
+Pop the top and treat it as the smallest bar for rectangle calculation.
+
+int width = stack.isEmpty() ? i : i - stack.peek() - 1;
+
+Width of rectangle:
+
+If stack is empty, width = i (entire range till current bar)
+
+Else width = distance between current index and new stack top - 1
+
+maxArea = Math.max(maxArea, height * width);
+
+Update max area if current rectangle area is larger.
+
+stack.push(i);
+
+Push current bar index to stack.
+
+while (!stack.isEmpty()) { ... }
+
+After traversal, calculate area for remaining bars in stack.
+
+return maxArea;
+
+Return the maximum rectangle area.
+
+Example Walkthrough
+
+Input: heights = [2, 1, 5, 6, 2, 3]
+
+Step 1: Traverse bars
+
+i = 0 → stack = [0]
+
+i = 1 → 1 < 2 → pop 0 → height=2, width=1 → area=2 → maxArea=2 → stack=[1]
+
+i = 2 → 5 > 1 → push 2 → stack=[1,2]
+
+i = 3 → 6 > 5 → push 3 → stack=[1,2,3]
+
+i = 4 → 2 < 6 → pop 3 → height=6, width=1 → area=6 → maxArea=6
+→ 2 < 5 → pop 2 → height=5, width=2 → area=10 → maxArea=10 → push 4 → stack=[1,4]
+
+i = 5 → 3 > 2 → push 5 → stack=[1,4,5]
+
+Step 2: Remaining stack calculation
+
+Pop 5 → height=3, width=1 → area=3 → maxArea=10
+
+Pop 4 → height=2, width=4 → area=8 → maxArea=10
+
+Pop 1 → height=1, width=6 → area=6 → maxArea=10
+
+Output: 10
+
+✅ This approach is efficient, uses a stack to track heights, and calculates maximum rectangle in O(n) time.
