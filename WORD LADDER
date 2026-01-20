@@ -1,0 +1,181 @@
+Question 1: Word Ladder / Word Transformation Problem
+Problem Statement
+
+You are given:
+
+A beginWord (start word),
+
+An endWord (target word),
+
+A list of words called wordList (dictionary).
+
+You can transform a word into another by changing exactly one letter at a time. Each transformed word must exist in the dictionary.
+
+Task: Find the minimum number of steps to transform beginWord into endWord. If it's impossible, return 0.
+
+Example:
+
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log","cog"]
+
+Output: 5
+
+Explanation:
+hit -> hot -> dot -> dog -> cog
+Number of steps = 5
+
+Algorithm (BFS Approach)
+
+Idea: Treat each word as a node in a graph. There’s an edge between words if they differ by one character.
+
+Use Breadth-First Search (BFS) to find the shortest path from beginWord to endWord.
+
+Steps:
+
+Create a set of words from wordList for O(1) lookup.
+
+Use a queue for BFS, initially containing (beginWord, steps=1).
+
+While the queue is not empty:
+
+Pop the front word and its step count.
+
+For each character position, replace it with 'a' to 'z' and form a new word.
+
+If the new word is in the set:
+
+If it equals endWord, return steps + 1.
+
+Otherwise, add it to the queue and remove it from the set (to avoid revisiting).
+
+If BFS ends without finding endWord, return 0.
+
+Time Complexity: O(M * N) where:
+
+N = number of words in wordList
+
+M = length of each word
+
+Java Code
+import java.util.*;
+
+public class WordLadder {
+
+    public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> wordSet = new HashSet<>(wordList); // Step 1: Convert list to set for O(1) lookup
+        if (!wordSet.contains(endWord)) return 0; // If endWord not in list, return 0
+
+        Queue<Pair<String, Integer>> queue = new LinkedList<>();
+        queue.add(new Pair<>(beginWord, 1)); // Step 2: Start BFS with beginWord and step=1
+
+        while (!queue.isEmpty()) {
+            Pair<String, Integer> current = queue.poll(); // Step 3a: Pop current word
+            String word = current.getKey();
+            int steps = current.getValue();
+
+            if (word.equals(endWord)) return steps; // Step 3b: Found endWord
+
+            char[] wordChars = word.toCharArray();
+            for (int i = 0; i < wordChars.length; i++) { // Step 3c: Iterate over each character
+                char originalChar = wordChars[i];
+                for (char c = 'a'; c <= 'z'; c++) { // Step 3d: Try all possible letters
+                    if (c == originalChar) continue;
+                    wordChars[i] = c;
+                    String newWord = new String(wordChars);
+                    if (wordSet.contains(newWord)) { // Step 3e: If new word in dictionary
+                        queue.add(new Pair<>(newWord, steps + 1)); // Add to BFS queue
+                        wordSet.remove(newWord); // Remove to avoid revisiting
+                    }
+                }
+                wordChars[i] = originalChar; // Restore original character
+            }
+        }
+
+        return 0; // If no transformation found
+    }
+
+    public static void main(String[] args) {
+        String beginWord = "hit";
+        String endWord = "cog";
+        List<String> wordList = Arrays.asList("hot","dot","dog","lot","log","cog");
+        int result = ladderLength(beginWord, endWord, wordList);
+        System.out.println("Minimum steps: " + result); // Output: 5
+    }
+}
+
+Code Explanation Line by Line
+
+Set<String> wordSet = new HashSet<>(wordList);
+
+Converts the word list into a set for fast lookup.
+
+if (!wordSet.contains(endWord)) return 0;
+
+If the target word isn’t in the dictionary, it’s impossible to reach it.
+
+Queue<Pair<String, Integer>> queue = new LinkedList<>();
+
+BFS queue storing pairs: (currentWord, stepsSoFar)
+
+queue.add(new Pair<>(beginWord, 1));
+
+Start BFS with the beginWord and step count 1.
+
+while (!queue.isEmpty()) { ... }
+
+Standard BFS loop until the queue is empty.
+
+Pair<String, Integer> current = queue.poll();
+
+Remove and process the front element of the queue.
+
+if (word.equals(endWord)) return steps;
+
+If current word matches target, we found the shortest path.
+
+char[] wordChars = word.toCharArray();
+
+Convert word to char array to modify letters efficiently.
+
+Nested loops:
+
+Outer: iterate over each character position.
+
+Inner: try replacing it with 'a' to 'z' (all possibilities).
+
+if (wordSet.contains(newWord)) { ... }
+
+If the generated word exists in the dictionary:
+
+Add it to BFS queue with incremented steps.
+
+Remove it from set to prevent revisiting.
+
+wordChars[i] = originalChar;
+
+Restore original letter before moving to next position.
+
+return 0;
+
+If BFS ends and target not reached, transformation is impossible.
+
+✅ Example Walkthrough
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log","cog"]
+
+
+BFS Queue Process:
+
+Start: hit, steps=1
+
+Transform hit → hot (in wordList), queue: hot, steps=2
+
+Transform hot → dot, lot, queue: dot,2, lot,2
+
+Transform dot → dog, queue: dog,3
+
+Transform dog → cog, queue: cog,4 → found target!
+
+Number of steps: 5 (hit->hot->dot->dog->cog)
