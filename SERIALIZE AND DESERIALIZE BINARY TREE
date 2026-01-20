@@ -1,0 +1,171 @@
+Question 3: Serialize and Deserialize Binary Tree
+Problem Statement
+
+Design an algorithm to serialize a binary tree into a string and deserialize the string back into the original binary tree.
+
+Serialization: Convert the tree into a string so that it can be stored or transmitted.
+
+Deserialization: Convert the string back to the original tree structure.
+
+Example:
+
+Input: 
+       1
+      / \
+     2   3
+        / \
+       4   5
+
+Serialized Output: "1,2,null,null,3,4,null,null,5,null,null"
+Deserialized Output: Original tree structure restored
+
+Algorithm (Preorder Traversal Approach)
+
+Idea:
+Use preorder traversal and store "null" for empty nodes.
+
+During deserialization, read the serialized values and rebuild the tree recursively.
+
+Steps:
+
+Serialize:
+
+Traverse the tree in preorder.
+
+Append node values to a string separated by commas.
+
+For null nodes, append "null".
+
+Deserialize:
+
+Split the string by commas into a list.
+
+Recursively build the tree:
+
+If the current value is "null", return null.
+
+Otherwise, create a node and recursively build left and right children.
+
+Time Complexity: O(N) for both serialize and deserialize (visit each node once)
+Space Complexity: O(N) for storing the serialized string and recursion stack
+
+Java Code
+import java.util.*;
+
+class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int val) { this.val = val; }
+}
+
+public class SerializeDeserializeBT {
+
+    // Serialize a tree to a string
+    public static String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        serializeHelper(root, sb);
+        return sb.toString();
+    }
+
+    private static void serializeHelper(TreeNode root, StringBuilder sb) {
+        if (root == null) {
+            sb.append("null,");
+            return;
+        }
+        sb.append(root.val).append(",");
+        serializeHelper(root.left, sb);
+        serializeHelper(root.right, sb);
+    }
+
+    // Deserialize a string to tree
+    public static TreeNode deserialize(String data) {
+        Queue<String> nodes = new LinkedList<>(Arrays.asList(data.split(",")));
+        return deserializeHelper(nodes);
+    }
+
+    private static TreeNode deserializeHelper(Queue<String> nodes) {
+        String val = nodes.poll();
+        if (val.equals("null")) return null;
+
+        TreeNode node = new TreeNode(Integer.parseInt(val));
+        node.left = deserializeHelper(nodes);
+        node.right = deserializeHelper(nodes);
+        return node;
+    }
+
+    // Test the functions
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(3);
+        root.right.left = new TreeNode(4);
+        root.right.right = new TreeNode(5);
+
+        String serialized = serialize(root);
+        System.out.println("Serialized Tree: " + serialized);
+
+        TreeNode deserializedRoot = deserialize(serialized);
+        System.out.println("Deserialization Complete. Root Value: " + deserializedRoot.val);
+    }
+}
+
+Code Explanation Line by Line
+
+Serialization
+
+StringBuilder sb = new StringBuilder(); – To efficiently build the serialized string.
+
+serializeHelper(root, sb); – Recursively traverse the tree in preorder.
+
+if (root == null) { sb.append("null,"); return; } – Append "null" for empty nodes.
+
+sb.append(root.val).append(","); – Append node value and a comma.
+
+Recursively call serializeHelper on left and right children.
+
+Deserialization
+
+Queue<String> nodes = new LinkedList<>(Arrays.asList(data.split(","))); – Convert the serialized string to a queue for easy processing.
+
+String val = nodes.poll(); – Get the next value.
+
+if (val.equals("null")) return null; – If "null", return null node.
+
+TreeNode node = new TreeNode(Integer.parseInt(val)); – Create a new node.
+
+Recursively build left and right children using deserializeHelper.
+
+Main Function
+
+Builds a sample tree, serializes it, and then deserializes it back.
+
+Confirms correctness by checking root value.
+
+Example Walkthrough
+Tree:
+       1
+      / \
+     2   3
+        / \
+       4   5
+
+Serialization (preorder):
+1,2,null,null,3,4,null,null,5,null,null
+
+Deserialization:
+Read values in order:
+1 → node
+2 → left child
+null → left of 2
+null → right of 2
+3 → right child of 1
+4 → left child of 3
+null → left of 4
+null → right of 4
+5 → right child of 3
+null → left of 5
+null → right of 5
+Tree reconstructed!
+
+
+✅ Preorder ensures the exact structure is maintained.
