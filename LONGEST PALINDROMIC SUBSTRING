@@ -1,0 +1,171 @@
+Problem Statement
+
+Given a string s, find the longest palindromic substring in s.
+
+A palindrome is a string that reads the same forward and backward.
+
+Example 1
+Input: s = "babad"
+Output: "bab"
+Explanation:
+"aba" is also a valid answer.
+
+Example 2
+Input: s = "cbbd"
+Output: "bb"
+
+Approach: Expand Around Center
+Key Idea
+
+A palindrome expands from its center.
+
+There are two types of centers:
+
+Odd-length palindrome → center at one character
+Example: "aba"
+
+Even-length palindrome → center between two characters
+Example: "bb"
+
+So, for each index i, we:
+
+Expand around (i, i)
+
+Expand around (i, i + 1)
+
+Track the maximum length found
+
+Algorithm
+
+Initialize start = 0 and end = 0.
+
+For each index i in the string:
+
+Find palindrome length with odd center (i, i)
+
+Find palindrome length with even center (i, i+1)
+
+Take the maximum of both.
+
+If the found length is greater than current max:
+
+Update start and end
+
+Return substring from start to end.
+
+Time & Space Complexity
+
+Time Complexity: O(N²)
+
+Space Complexity: O(1)
+
+This solution is commonly expected in interviews.
+
+Java Code
+public class LongestPalindromicSubstring {
+
+    public static String longestPalindrome(String s) {
+        if (s == null || s.length() < 1) return "";
+
+        int start = 0, end = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+
+            // Odd length palindrome
+            int len1 = expandFromCenter(s, i, i);
+
+            // Even length palindrome
+            int len2 = expandFromCenter(s, i, i + 1);
+
+            int len = Math.max(len1, len2);
+
+            // Update result if longer palindrome found
+            if (len > end - start) {
+                start = i - (len - 1) / 2;
+                end = i + len / 2;
+            }
+        }
+
+        return s.substring(start, end + 1);
+    }
+
+    // Helper method
+    private static int expandFromCenter(String s, int left, int right) {
+
+        while (left >= 0 && right < s.length()
+                && s.charAt(left) == s.charAt(right)) {
+            left--;
+            right++;
+        }
+
+        return right - left - 1; // Length of palindrome
+    }
+
+    public static void main(String[] args) {
+        String s = "babad";
+        System.out.println("Longest Palindromic Substring: "
+                + longestPalindrome(s));
+    }
+}
+
+Line-by-Line Code Explanation
+Main Method
+int start = 0, end = 0;
+
+
+Tracks the best palindrome boundaries
+
+for (int i = 0; i < s.length(); i++)
+
+
+Try each index as a center
+
+int len1 = expandFromCenter(s, i, i);
+
+
+Checks odd-length palindrome
+
+int len2 = expandFromCenter(s, i, i + 1);
+
+
+Checks even-length palindrome
+
+if (len > end - start)
+
+
+Update answer if longer palindrome found
+
+start = i - (len - 1) / 2;
+end = i + len / 2;
+
+
+Correctly computes new substring boundaries
+
+Helper Function
+while (left >= 0 && right < s.length()
+        && s.charAt(left) == s.charAt(right))
+
+
+Expands outward while characters match
+
+return right - left - 1;
+
+
+Returns palindrome length
+
+Example Walkthrough
+Input: "babad"
+
+Centers checked:
+b → "b"
+a → "aba" (length 3)
+b → "bab" (length 3)
+
+Longest = "bab"
+
+Why Interviewers Love This Problem
+
+✔ Tests string manipulation
+✔ Tests logical expansion
+✔ Very common in Amazon, Google, Microsoft
+✔ Clean explanation possible in interview
