@@ -1,0 +1,179 @@
+✅ Question 10: Course Schedule (Detect Cycle in Directed Graph)
+Problem Statement
+
+You are given:
+
+numCourses courses labeled from 0 to numCourses - 1
+
+prerequisites[i] = [a, b] means to take course a, you must complete course b first
+
+Return true if you can finish all courses, otherwise return false.
+
+Example 1
+Input:
+numCourses = 2
+prerequisites = [[1,0]]
+Output: true
+Explanation:
+0 → 1 (No cycle)
+
+Example 2
+Input:
+numCourses = 2
+prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation:
+Cycle exists: 0 → 1 → 0
+
+Key Insight
+
+This is a cycle detection problem in a directed graph.
+
+If a cycle exists → ❌ cannot finish courses
+
+If no cycle → ✅ possible
+
+Best Interview Approach: BFS (Kahn’s Algorithm – Topological Sort)
+Why BFS?
+
+Very clean explanation
+
+Avoids recursion stack
+
+Industry-preferred
+
+Algorithm
+
+Build adjacency list
+
+Compute indegree of each node
+
+Push all nodes with indegree 0 into queue
+
+Process queue:
+
+Remove node
+
+Reduce indegree of neighbors
+
+If neighbor indegree becomes 0, add to queue
+
+If total processed nodes == numCourses, return true
+
+Else return false (cycle exists)
+
+Time & Space Complexity
+
+Time: O(V + E)
+
+Space: O(V + E)
+
+Java Code
+import java.util.*;
+
+public class CourseSchedule {
+
+    public static boolean canFinish(int numCourses, int[][] prerequisites) {
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        int[] indegree = new int[numCourses];
+
+        // Build graph and indegree
+        for (int[] pre : prerequisites) {
+            int course = pre[0];
+            int prereq = pre[1];
+            graph.get(prereq).add(course);
+            indegree[course]++;
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+
+        // Add courses with indegree 0
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+
+        int completed = 0;
+
+        // BFS
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            completed++;
+
+            for (int next : graph.get(current)) {
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+
+        return completed == numCourses;
+    }
+
+    public static void main(String[] args) {
+        int numCourses = 2;
+        int[][] prerequisites = {{1,0}};
+        System.out.println("Can finish courses: " +
+                canFinish(numCourses, prerequisites));
+    }
+}
+
+Line-by-Line Code Explanation
+List<List<Integer>> graph = new ArrayList<>();
+
+
+Adjacency list for graph.
+
+indegree[course]++;
+
+
+Counts prerequisites for each course.
+
+if (indegree[i] == 0)
+
+
+Courses that can be taken immediately.
+
+queue.offer(i);
+
+
+Start BFS with zero-dependency courses.
+
+completed++;
+
+
+Track how many courses can be completed.
+
+return completed == numCourses;
+
+
+If all courses completed → no cycle.
+
+Example Walkthrough
+numCourses = 2
+prerequisites = [[1,0]]
+
+Graph:
+0 → 1
+Indegree = [0,1]
+
+Queue = [0]
+Process:
+0 → decrease indegree of 1 → 0 → add to queue
+1 → processed
+
+Completed = 2 → TRUE
+
+Why This Is a TOP Interview Question
+
+✔ Graph fundamentals
+✔ Cycle detection
+✔ BFS / Topological sort
+✔ Appears in Amazon, Google, Microsoft, Meta
