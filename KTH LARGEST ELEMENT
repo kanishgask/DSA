@@ -1,0 +1,112 @@
+Problem Statement
+
+Given an integer array nums and an integer k, return the kth largest element in the array.
+
+⚠️ Note: This is the kth largest, not distinct.
+
+Example 1
+Input: nums = [3,2,1,5,6,4], k = 2
+Output: 5
+
+Example 2
+Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
+Output: 4
+
+Best Interview Approach: Min Heap (Priority Queue)
+Idea
+
+Maintain a min heap of size k
+
+The heap keeps the k largest elements seen so far
+
+The root of the heap is the kth largest element
+
+Algorithm
+
+Create a min heap.
+
+Traverse the array:
+
+Add current element to the heap
+
+If heap size exceeds k, remove smallest element
+
+Return the root of the heap.
+
+Time & Space Complexity
+
+Time Complexity: O(N log k)
+
+Space Complexity: O(k)
+
+Java Code
+import java.util.*;
+
+public class KthLargestElement {
+
+    public static int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+
+        for (int num : nums) {
+            minHeap.offer(num);
+
+            if (minHeap.size() > k) {
+                minHeap.poll();
+            }
+        }
+
+        return minHeap.peek();
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {3,2,1,5,6,4};
+        int k = 2;
+        System.out.println("Kth Largest Element: " + findKthLargest(nums, k));
+    }
+}
+
+Line-by-Line Code Explanation
+PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+
+
+Creates a min heap.
+
+minHeap.offer(num);
+
+
+Adds element to heap.
+
+if (minHeap.size() > k)
+
+
+Ensures heap stores only k elements.
+
+minHeap.poll();
+
+
+Removes the smallest element so only largest remain.
+
+return minHeap.peek();
+
+
+Root contains the kth largest element.
+
+Example Walkthrough
+nums = [3,2,1,5,6,4], k = 2
+
+Heap process:
+Add 3 → [3]
+Add 2 → [2,3]
+Add 1 → [1,3,2] → remove 1
+Add 5 → [3,5] → remove 3
+Add 6 → [5,6]
+Add 4 → [4,6,5] → remove 4
+
+Answer = 5
+
+Why Interviewers Love This Problem
+
+✔ Heap knowledge
+✔ Optimized thinking
+✔ Avoids sorting (O(N log N))
+✔ Clean explanation
