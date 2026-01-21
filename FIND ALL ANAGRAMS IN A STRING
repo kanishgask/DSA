@@ -1,0 +1,136 @@
+Problem Statement
+
+Given two strings s and p, return a list of all starting indices of p’s anagrams in s.
+
+An anagram means rearranging characters without adding or removing characters.
+
+Example
+Input: s = "cbaebabacd", p = "abc"
+Output: [0, 6]
+
+Explanation:
+Substring starting at index 0 → "cba" (anagram of "abc")
+Substring starting at index 6 → "bac" (anagram of "abc")
+
+Optimal Approach: Sliding Window + Frequency Array
+Key Insight
+
+Length of anagram window = p.length()
+
+Compare frequency of characters in window with p
+
+Because input is lowercase letters, we can use an int[26] array instead of HashMap → faster.
+
+Algorithm
+
+Create frequency array pCount[26] for p
+
+Create frequency array window[26]
+
+Use sliding window of size p.length()
+
+For each character:
+
+Add current char to window
+
+Remove left character if window exceeds size
+
+If window == pCount, record start index
+
+Time & Space Complexity
+
+Time Complexity: O(N)
+
+Space Complexity: O(1) (26-size arrays)
+
+Java Code
+import java.util.*;
+
+public class FindAllAnagrams {
+
+    public static List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        if (s.length() < p.length()) return result;
+
+        int[] pCount = new int[26];
+        int[] window = new int[26];
+
+        // Frequency of characters in p
+        for (char c : p.toCharArray()) {
+            pCount[c - 'a']++;
+        }
+
+        int windowSize = p.length();
+
+        for (int i = 0; i < s.length(); i++) {
+            window[s.charAt(i) - 'a']++; // Add character to window
+
+            // Remove character out of window
+            if (i >= windowSize) {
+                window[s.charAt(i - windowSize) - 'a']--;
+            }
+
+            // Compare window with pCount
+            if (Arrays.equals(pCount, window)) {
+                result.add(i - windowSize + 1);
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        String s = "cbaebabacd";
+        String p = "abc";
+        System.out.println("Anagram indices: " + findAnagrams(s, p));
+    }
+}
+
+Line-by-Line Code Explanation
+int[] pCount = new int[26];
+int[] window = new int[26];
+
+
+Stores character frequencies.
+
+pCount[c - 'a']++;
+
+
+Counts characters in pattern string.
+
+window[s.charAt(i) - 'a']++;
+
+
+Adds current character to sliding window.
+
+if (i >= windowSize)
+
+
+Removes character that goes out of window.
+
+Arrays.equals(pCount, window)
+
+
+Checks if current window is an anagram.
+
+result.add(i - windowSize + 1);
+
+
+Adds starting index of anagram.
+
+Example Walkthrough
+s = "cbaebabacd"
+p = "abc"
+
+Window process:
+i=2 → window="cba" → match → add index 0
+i=8 → window="bac" → match → add index 6
+
+Output = [0, 6]
+
+Why Interviewers Ask This
+
+✔ Sliding window mastery
+✔ Frequency counting
+✔ String optimization
+✔ Very common in FAANG interviews
