@@ -1,0 +1,139 @@
+✅ QUESTION 3: CLONE GRAPH
+
+📌 Asked in: Google, Amazon, Microsoft
+📌 Concepts: Graph, DFS / BFS, HashMap
+📌 Difficulty: Medium–Hard
+📌 Very common follow-up after graph basics
+
+🔍 Problem Statement
+
+You are given a reference to a node in a connected undirected graph.
+
+Each node has:
+
+an integer value val
+
+a list of neighbors neighbors
+
+👉 Your task is to return a deep copy (clone) of the entire graph.
+
+❗ Deep copy means:
+
+New nodes
+
+Same structure
+
+No reference to original nodes
+
+🧪 Example
+Graph
+1 --- 2
+|     |
+4 --- 3
+
+Output
+
+A cloned graph with new nodes but same connections.
+
+🧠 Core Idea (VERY IMPORTANT)
+
+Graphs can have:
+
+Cycles
+
+Multiple connections
+
+👉 If we clone a node more than once, structure breaks.
+
+💡 Solution:
+
+Use a HashMap:
+
+Original node → Cloned node
+
+
+So each node is cloned only once.
+
+🛠️ Algorithm (DFS Approach)
+
+1️⃣ Create a HashMap<Node, Node>
+2️⃣ Start DFS from given node
+3️⃣ If node already cloned → return it
+4️⃣ Otherwise:
+
+Clone the node
+
+Store it in map
+
+Recursively clone neighbors
+
+⏱️ Complexity
+Type	Value
+Time	O(V + E)
+Space	O(V)
+💻 Java Code (Interview-Ready)
+class Solution {
+
+    Map<Node, Node> map = new HashMap<>();
+
+    public Node cloneGraph(Node node) {
+
+        if (node == null) return null;
+
+        if (map.containsKey(node)) {
+            return map.get(node);
+        }
+
+        Node clone = new Node(node.val);
+        map.put(node, clone);
+
+        for (Node neighbor : node.neighbors) {
+            clone.neighbors.add(cloneGraph(neighbor));
+        }
+
+        return clone;
+    }
+}
+
+🧾 Line-by-Line Explanation
+Map<Node, Node> map = new HashMap<>();
+
+
+➡️ Stores original node → cloned node mapping
+
+if (map.containsKey(node))
+
+
+➡️ Prevents infinite loop due to cycles
+
+Node clone = new Node(node.val);
+
+
+➡️ Create a new node with same value
+
+clone.neighbors.add(cloneGraph(neighbor));
+
+
+➡️ Recursively clone neighbors
+
+🧪 Dry Run Example
+
+Start at node 1:
+
+Clone 1
+
+Go to 2, clone it
+
+Go to 3, clone it
+
+Back edge to 1 → already cloned → reused
+
+✔ No duplicates
+✔ Proper cycle handling
+
+🎯 Why Interviewers Love This Question
+
+✔ Tests deep graph understanding
+✔ Tests recursion + hashmap
+✔ Very common FAANG question
+✔ Many candidates fail at cycle handling
