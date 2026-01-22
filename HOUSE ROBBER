@@ -1,0 +1,127 @@
+✅ QUESTION 2: HOUSE ROBBER
+
+📌 Asked in: Amazon, Microsoft, Google, Adobe
+📌 Concepts: Dynamic Programming, Optimization
+📌 Difficulty: Medium
+📌 Very common in OA + interviews
+
+🔍 Problem Statement
+
+You are given an integer array nums where:
+
+nums[i] = amount of money in the i-th house
+
+Houses are in a straight line
+
+⚠️ Constraint:
+You cannot rob two adjacent houses (police alert system).
+
+👉 Find the maximum amount of money you can rob.
+
+🧪 Examples
+Example 1
+Input: nums = [1,2,3,1]
+Output: 4
+
+
+Explanation:
+Rob house 1 (1) + house 3 (3) → total = 4
+
+Example 2
+Input: nums = [2,7,9,3,1]
+Output: 12
+
+
+Explanation:
+Rob houses 2 (2) + 4 (9) + 6 (1) → total = 12
+
+🧠 Core Idea (IMPORTANT FOR INTERVIEWS)
+
+At each house, you have two choices:
+
+1️⃣ Rob this house
+
+Then you must skip previous house
+2️⃣ Skip this house
+
+Take best till previous house
+
+So:
+
+dp[i] = max(
+    dp[i-1],           // skip current
+    nums[i] + dp[i-2]  // rob current
+)
+
+🛠️ Algorithm (Optimized DP)
+
+We don’t need full DP array, only last two values.
+
+⏱️ Complexity
+Type	Value
+Time	O(n)
+Space	O(1)
+💻 Java Code (Interview-Perfect)
+class Solution {
+    public int rob(int[] nums) {
+
+        int prev2 = 0; // dp[i-2]
+        int prev1 = 0; // dp[i-1]
+
+        for (int num : nums) {
+
+            int curr = Math.max(prev1, prev2 + num);
+
+            prev2 = prev1;
+            prev1 = curr;
+        }
+
+        return prev1;
+    }
+}
+
+🧾 Line-by-Line Explanation
+int prev2 = 0;
+int prev1 = 0;
+
+
+➡️ Stores results for:
+
+prev2 → house i-2
+
+prev1 → house i-1
+
+int curr = Math.max(prev1, prev2 + num);
+
+
+➡️ Decide:
+
+Skip current house
+
+OR rob it and add value from i-2
+
+prev2 = prev1;
+prev1 = curr;
+
+
+➡️ Shift values for next iteration
+
+🧪 Dry Run Example
+Input:
+nums = [2,7,9,3,1]
+
+House	Money	Max Till Now
+0	2	2
+1	7	7
+2	9	11
+3	3	11
+4	1	12
+
+➡️ Output = 12
+
+🎯 Why Interviewers Ask This
+
+✔ Tests DP thinking
+✔ Checks optimization skills
+✔ Simple problem → deep concept
+✔ Frequently appears as follow-up questions
