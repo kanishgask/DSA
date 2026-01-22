@@ -1,0 +1,152 @@
+✅ NUMBER OF ISLANDS
+
+📌 Asked in: Amazon, Google, Microsoft, Flipkart
+📌 Concepts: DFS / BFS, Graph, Matrix Traversal
+📌 Difficulty: Medium
+
+🔍 Problem Statement
+
+You are given a 2D grid of characters:
+
+'1' → Land
+
+'0' → Water
+
+An island is formed by connecting adjacent lands horizontally or vertically.
+
+👉 Count the total number of islands.
+
+🧪 Example
+Input
+grid = [
+  ['1','1','0','0','0'],
+  ['1','1','0','0','0'],
+  ['0','0','1','0','0'],
+  ['0','0','0','1','1']
+]
+
+Output
+3
+
+Explanation
+
+Island 1 → Top-left block
+
+Island 2 → Single 1 in middle
+
+Island 3 → Two connected 1s on bottom-right
+
+🧠 Core Idea (Very Important)
+
+👉 Treat the grid as a graph
+👉 Every '1' is a node
+👉 Use DFS or BFS to mark the entire island as visited
+
+🛠️ Algorithm (DFS Approach)
+
+1️⃣ Initialize count = 0
+2️⃣ Traverse every cell in the grid
+3️⃣ If cell is '1':
+
+Increase island count
+
+Run DFS to mark all connected land as '0'
+4️⃣ Continue until grid is fully processed
+
+⏱️ Complexity Analysis
+Type	Value
+Time	O(m × n)
+Space	O(m × n) (DFS recursion stack)
+💻 Java Code (Interview-Ready)
+class Solution {
+
+    public int numIslands(char[][] grid) {
+
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+
+        int rows = grid.length;
+        int cols = grid[0].length;
+        int count = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+
+                if (grid[i][j] == '1') {
+                    count++;
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        return count;
+    }
+
+    private void dfs(char[][] grid, int i, int j) {
+
+        if (i < 0 || j < 0 ||
+            i >= grid.length || j >= grid[0].length ||
+            grid[i][j] == '0') {
+            return;
+        }
+
+        grid[i][j] = '0'; // mark as visited
+
+        dfs(grid, i + 1, j); // down
+        dfs(grid, i - 1, j); // up
+        dfs(grid, i, j + 1); // right
+        dfs(grid, i, j - 1); // left
+    }
+}
+
+🧾 Line-by-Line Explanation
+🔹 Main Loop
+if (grid[i][j] == '1')
+
+
+➡️ Found unvisited land → start a new island
+
+count++;
+dfs(grid, i, j);
+
+
+➡️ Count the island
+➡️ DFS marks the entire island as visited
+
+🔹 DFS Function
+if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length)
+
+
+➡️ Boundary condition
+
+grid[i][j] = '0';
+
+
+➡️ Mark land as visited to avoid recounting
+
+dfs(grid, i + 1, j);
+dfs(grid, i - 1, j);
+dfs(grid, i, j + 1);
+dfs(grid, i, j - 1);
+
+
+➡️ Explore all 4 directions
+
+🧪 Dry Run (Small Example)
+1 1 0
+1 0 0
+0 0 1
+
+
+First island found at (0,0) → DFS covers (0,1) & (1,0)
+
+Second island at (2,2)
+
+➡️ Output = 2
+
+🎯 Why Interviewers Love This Question
+
+✔ Tests DFS/BFS
+✔ Tests grid traversal
+✔ Tests boundary handling
+✔ Real-world mapping problem
