@@ -1,0 +1,152 @@
+✅ QUESTION 1: ROTATE IMAGE (90° CLOCKWISE)
+
+📌 Asked in: Google, Amazon, Microsoft, Meta
+📌 Concepts: Matrix, In-place algorithm
+📌 Difficulty: Medium
+📌 VERY common interview filter question
+
+🔍 PROBLEM STATEMENT
+
+You are given an n × n matrix representing an image.
+
+👉 Rotate the image by 90 degrees clockwise
+👉 You must do it IN-PLACE
+❌ You are NOT allowed to use extra matrix
+
+🧪 Example
+
+Input:
+
+matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+]
+
+
+Output (90° clockwise):
+
+[
+  [7, 4, 1],
+  [8, 5, 2],
+  [9, 6, 3]
+]
+
+🧠 CORE INTERVIEW INSIGHT (VERY IMPORTANT)
+
+💡 Rotation can be done in TWO SIMPLE STEPS
+
+STEP 1️⃣: Transpose the matrix
+
+👉 Convert rows → columns
+
+STEP 2️⃣: Reverse each row
+
+That’s it 🔥
+This avoids extra space and works in-place.
+
+🛠️ STEP-BY-STEP ALGORITHM
+🔹 Step 1: Transpose
+
+Swap:
+
+matrix[i][j] ↔ matrix[j][i]
+
+
+Only swap upper triangle to avoid double swapping.
+
+🔹 Step 2: Reverse each row
+
+For every row:
+
+reverse(row)
+
+⏱️ COMPLEXITY
+Metric	Value
+Time	O(n²)
+Space	O(1) (in-place)
+💻 JAVA CODE (INTERVIEW-PERFECT)
+class Solution {
+    public void rotate(int[][] matrix) {
+
+        int n = matrix.length;
+
+        // STEP 1: Transpose the matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+
+        // STEP 2: Reverse each row
+        for (int i = 0; i < n; i++) {
+
+            int left = 0;
+            int right = n - 1;
+
+            while (left < right) {
+                int temp = matrix[i][left];
+                matrix[i][left] = matrix[i][right];
+                matrix[i][right] = temp;
+
+                left++;
+                right--;
+            }
+        }
+    }
+}
+
+🧾 LINE-BY-LINE EXPLANATION (VERY CLEAR)
+🔹 Transpose logic
+for (int i = 0; i < n; i++) {
+    for (int j = i; j < n; j++) {
+
+
+➡️ j = i avoids double swapping
+
+int temp = matrix[i][j];
+matrix[i][j] = matrix[j][i];
+matrix[j][i] = temp;
+
+
+➡️ Swaps row ↔ column elements
+
+🔹 Reverse row logic
+int left = 0;
+int right = n - 1;
+
+
+➡️ Two-pointer technique
+
+while (left < right)
+
+
+➡️ Reverse row like an array
+
+left++;
+right--;
+
+
+➡️ Move pointers inward
+
+🧪 DRY RUN (LOGIC IN ACTION)
+Original:
+1 2 3
+4 5 6
+7 8 9
+
+After Transpose:
+1 4 7
+2 5 8
+3 6 9
+
+After Reverse Rows:
+7 4 1
+8 5 2
+9 6 3
+
+
+✔ Correct 90° clockwise rotation
