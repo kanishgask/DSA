@@ -1,0 +1,194 @@
+✅ QUESTION 3: LRU CACHE
+
+📌 Asked in: Amazon, Google, Microsoft, Meta
+📌 Concepts: HashMap + Doubly Linked List, Design
+📌 Difficulty: Hard (but very standard)
+
+🔍 PROBLEM STATEMENT
+
+Design a data structure that supports the following operations in O(1) time:
+
+get(key) → Returns the value of the key if present, else -1
+
+put(key, value) → Inserts or updates the value.
+
+If the cache reaches capacity, remove the Least Recently Used (LRU) item before inserting the new one.
+
+LRU (Least Recently Used):
+The key that was used least recently should be evicted first.
+
+🧪 Example
+LRUCache cache = new LRUCache(2);
+
+cache.put(1, 1);  // cache = {1=1}
+cache.put(2, 2);  // cache = {1=1, 2=2}
+cache.get(1);     // returns 1 → cache = {2=2, 1=1}
+cache.put(3, 3);  // evicts key 2 → cache = {1=1, 3=3}
+cache.get(2);     // returns -1 (not found)
+cache.put(4,4);   // evicts key 1 → cache = {3=3, 4=4}
+cache.get(1);     // returns -1
+cache.get(3);     // returns 3
+cache.get(4);     // returns 4
+
+🧠 CORE IDEA (INTERVIEW INSIGHT)
+
+We need O(1) get & put → two data structures combined:
+
+HashMap<Key, Node> → For O(1) access to nodes
+
+Doubly Linked List → For O(1) removal/insertion of nodes
+
+Front of DLL → Most recently used
+
+End of DLL → Least recently used
+
+🛠️ ALGORITHM (STEP BY STEP)
+▶ get(key)
+
+If key exists → move node to front of DLL → return value
+
+Else → return -1
+
+▶ put(key, value)
+
+If key exists → update value + move to front
+
+Else
+
+If capacity reached → remove tail node (LRU)
+
+Insert new node at front
+
+⏱️ COMPLEXITY
+Operation	Time	Space
+get	O(1)	O(n)
+put	O(1)	O(n)
+💻 JAVA CODE (INTERVIEW-READY)
+import java.util.*;
+
+class LRUCache {
+
+    class Node {
+        int key, val;
+        Node prev, next;
+        Node(int key, int val) { this.key = key; this.val = val; }
+    }
+
+    private int capacity;
+    private Map<Integer, Node> map;
+    private Node head, tail;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        map = new HashMap<>();
+        
+        // dummy nodes to simplify insert/remove
+        head = new Node(0,0);
+        tail = new Node(0,0);
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    private void remove(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void addToFront(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;
+    }
+
+    public int get(int key) {
+        if (!map.containsKey(key)) return -1;
+        Node node = map.get(key);
+        remove(node);
+        addToFront(node);
+        return node.val;
+    }
+
+    public void put(int key, int value) {
+        if (map.containsKey(key)) {
+            Node node = map.get(key);
+            node.val = value;
+            remove(node);
+            addToFront(node);
+        } else {
+            if (map.size() == capacity) {
+                Node lru = tail.prev;
+                remove(lru);
+                map.remove(lru.key);
+            }
+            Node newNode = new Node(key, value);
+            addToFront(newNode);
+            map.put(key, newNode);
+        }
+    }
+}
+
+🧾 LINE-BY-LINE EXPLANATION
+🔹 Node class
+class Node { int key, val; Node prev, next; }
+
+
+➡️ Stores key & value, with links for DLL
+
+🔹 Dummy head & tail
+head = new Node(0,0); tail = new Node(0,0);
+head.next = tail; tail.prev = head;
+
+
+➡️ Simplifies edge cases for insert/remove
+
+🔹 remove(node)
+node.prev.next = node.next;
+node.next.prev = node.prev;
+
+
+➡️ Remove a node from DLL in O(1)
+
+🔹 addToFront(node)
+node.next = head.next;
+node.prev = head;
+head.next.prev = node;
+head.next = node;
+
+
+➡️ Inserts node at front (MRU)
+
+🔹 get(key)
+Node node = map.get(key);
+remove(node);
+addToFront(node);
+return node.val;
+
+
+➡️ Access node → move to front → return value
+
+🔹 put(key, value)
+
+If exists → update + move to front
+
+Else if full → remove LRU (tail.prev)
+
+Add new node to front + map
+
+🧪 DRY RUN EXAMPLE
+cache = LRUCache(2)
+put(1,1) → cache = {1=1}
+put(2,2) → cache = {1=1, 2=2}
+get(1)   → returns 1, cache order = {2=2, 1=1}
+put(3,3) → evict 2, cache = {1=1, 3=3}
+get(2)   → -1
+
+
+✔ Works perfectly in O(1) time
+
+🎯 WHY INTERVIEWERS LOVE THIS
+
+✅ Tests HashMap + DLL combination
+✅ Tests O(1) design thinking
+✅ Standard Amazon/Google/Microsoft system design + coding question
+✅ Great follow-up for cache system questions
