@@ -1,0 +1,201 @@
+✅ QUESTION 2: MIN STACK
+
+📌 Asked in: Amazon, Google, Microsoft, Meta
+📌 Concepts: Stack, Design, O(1) optimization
+📌 Difficulty: Medium
+📌 EXTREMELY COMMON in coding interviews
+
+🔍 PROBLEM STATEMENT
+
+Design a stack that supports all operations in O(1) time:
+
+push(x) → push element x
+
+pop() → remove top element
+
+top() → return top element
+
+getMin() → return the minimum element in the stack
+
+⚠️ Important constraint:
+getMin() must work in O(1) time.
+
+🧪 Example
+Input:
+push(5)
+push(2)
+push(8)
+getMin()  → 2
+pop()
+getMin()  → 2
+pop()
+getMin()  → 5
+
+❌ NAIVE APPROACH (REJECTED IN INTERVIEW)
+
+Use one stack
+
+Every time getMin() is called → traverse stack
+
+⛔ Time: O(n)
+❌ Interviewer will reject immediately
+
+🧠 OPTIMIZED IDEA (INTERVIEW SOLUTION)
+💡 Use TWO STACKS
+
+1️⃣ Main Stack → stores all values
+2️⃣ Min Stack → stores minimum at each level
+
+👉 At any point:
+
+top of minStack = minimum element so far
+
+🛠️ ALGORITHM (STEP BY STEP)
+▶ push(x)
+
+Push x to main stack
+
+If minStack is empty OR x <= minStack.peek()
+
+Push x into minStack
+
+▶ pop()
+
+Pop from main stack
+
+If popped value == minStack.peek()
+
+Pop from minStack also
+
+▶ top()
+
+Return mainStack.peek()
+
+▶ getMin()
+
+Return minStack.peek()
+
+⏱️ COMPLEXITY
+Operation	Time
+push	O(1)
+pop	O(1)
+top	O(1)
+getMin	O(1)
+
+| Space | O(n) |
+
+💻 JAVA CODE (INTERVIEW-PERFECT)
+import java.util.Stack;
+
+class MinStack {
+
+    Stack<Integer> stack;
+    Stack<Integer> minStack;
+
+    public MinStack() {
+        stack = new Stack<>();
+        minStack = new Stack<>();
+    }
+
+    public void push(int val) {
+
+        stack.push(val);
+
+        if (minStack.isEmpty() || val <= minStack.peek()) {
+            minStack.push(val);
+        }
+    }
+
+    public void pop() {
+
+        int removed = stack.pop();
+
+        if (removed == minStack.peek()) {
+            minStack.pop();
+        }
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+
+🧾 LINE-BY-LINE EXPLANATION (VERY CLEAR)
+Stack<Integer> stack;
+Stack<Integer> minStack;
+
+
+➡️ Two stacks:
+
+stack → normal stack
+
+minStack → tracks minimums
+
+stack.push(val);
+
+
+➡️ Always push value to main stack
+
+if (minStack.isEmpty() || val <= minStack.peek())
+
+
+➡️ If new value is new minimum, store it
+
+if (removed == minStack.peek())
+
+
+➡️ Remove min only if it was popped
+
+return minStack.peek();
+
+
+➡️ Top of minStack = current minimum
+
+🧪 DRY RUN (LOGIC IN ACTION)
+Operations:
+push(5)
+
+
+stack = [5]
+minStack = [5]
+
+push(2)
+
+
+stack = [5,2]
+minStack = [5,2]
+
+push(8)
+
+
+stack = [5,2,8]
+minStack = [5,2]
+
+getMin() → 2
+
+pop() → removes 8
+
+
+minStack unchanged
+
+pop() → removes 2
+
+
+minStack pops 2
+
+getMin() → 5
+
+
+✔ Always correct
+✔ O(1) guaranteed
+
+🎯 WHY INTERVIEWERS LOVE THIS QUESTION
+
+✅ Tests data-structure design
+✅ Tests O(1) optimization thinking
+✅ Looks simple but filters many candidates
+✅ Often followed by LRU Cache
