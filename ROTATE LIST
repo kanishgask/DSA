@@ -1,0 +1,168 @@
+✅ QUESTION 6: ROTATE LIST (Linked List) / REORDER LIST
+
+📌 Asked in: Amazon, Google, Microsoft
+📌 Concepts: Linked List, Two Pointers, In-place
+📌 Difficulty: Medium
+
+🔍 PROBLEM STATEMENT
+
+Given a singly linked list:
+
+L0 → L1 → L2 → … → Ln-1 → Ln
+
+
+Reorder it to:
+
+L0 → Ln → L1 → Ln-1 → L2 → Ln-2 → …
+
+
+Constraints:
+
+Must do in-place (O(1) extra space)
+
+Should traverse the list only a few times (O(n) time)
+
+🧪 Example 1
+
+Input:
+
+1 → 2 → 3 → 4
+
+
+Output:
+
+1 → 4 → 2 → 3
+
+🧪 Example 2
+
+Input:
+
+1 → 2 → 3 → 4 → 5
+
+
+Output:
+
+1 → 5 → 2 → 4 → 3
+
+🧠 CORE IDEA (INTERVIEW INSIGHT)
+
+We can solve in 3 steps:
+
+Find the middle node using slow & fast pointers
+
+Reverse the second half of the list
+
+Merge the two halves alternately
+
+🛠️ ALGORITHM (STEP-BY-STEP)
+Step 1: Find middle
+
+Use slow & fast pointer
+
+Slow moves 1 step, fast moves 2 steps
+
+When fast reaches end → slow at middle
+
+Step 2: Reverse second half
+
+Standard linked list reverse
+
+Step 3: Merge two halves
+
+Take nodes alternately from first and second half
+
+⏱️ COMPLEXITY
+Metric	Value
+Time	O(n)
+Space	O(1)
+💻 JAVA CODE (INTERVIEW-READY)
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) return;
+
+        // Step 1: Find middle
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Step 2: Reverse second half
+        ListNode second = reverse(slow.next);
+        slow.next = null; // cut first half
+
+        // Step 3: Merge two halves
+        ListNode first = head;
+        while (second != null) {
+            ListNode temp1 = first.next;
+            ListNode temp2 = second.next;
+
+            first.next = second;
+            second.next = temp1;
+
+            first = temp1;
+            second = temp2;
+        }
+    }
+
+    private ListNode reverse(ListNode head) {
+        ListNode prev = null, curr = head;
+        while (curr != null) {
+            ListNode nextTemp = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = nextTemp;
+        }
+        return prev;
+    }
+}
+
+🧾 LINE-BY-LINE EXPLANATION
+🔹 Find middle
+ListNode slow = head, fast = head;
+while (fast.next != null && fast.next.next != null) {
+    slow = slow.next;
+    fast = fast.next.next;
+}
+
+
+Slow points to middle
+
+Fast moves 2x → stops at end
+
+🔹 Reverse second half
+ListNode second = reverse(slow.next);
+slow.next = null;
+
+
+Reverse all nodes after middle
+
+Cut first half
+
+🔹 Merge two halves
+first.next = second;
+second.next = temp1;
+
+
+Take nodes alternately from first and reversed second half
+
+🔹 Reverse helper
+ListNode prev = null, curr = head;
+while (curr != null) { ... }
+
+
+Standard in-place linked list reverse
+
+🧪 DRY RUN (LOGIC IN ACTION)
+
+Input: 1 → 2 → 3 → 4 → 5
+
+1️⃣ Middle → 3
+2️⃣ Reverse second half → 5 → 4
+3️⃣ Merge → 1 → 5 → 2 → 4 → 3 ✅
+
+🎯 WHY INTERVIEWERS LOVE THIS
+
+✅ Tests linked list manipulation
+✅ Checks two-pointer + reverse + merge ability
+✅ Looks simple but tricky for pointer management
