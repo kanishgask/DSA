@@ -1,0 +1,146 @@
+✅ QUESTION 4: VALID BST (Binary Search Tree)
+
+📌 Asked in: Amazon, Microsoft, Google
+📌 Concepts: Binary Tree, Recursion, DFS
+📌 Difficulty: Medium
+📌 Very commonly asked in coding rounds and interviews
+
+🔍 PROBLEM STATEMENT
+
+Given the root of a binary tree, determine if it is a valid Binary Search Tree (BST).
+
+BST rules:
+
+Left subtree of a node contains only nodes with keys less than the node’s key.
+
+Right subtree of a node contains only nodes with keys greater than the node’s key.
+
+Both left and right subtrees must also be BSTs.
+
+🧪 Example 1
+    2
+   / \
+  1   3
+
+
+Output: true
+
+Explanation:
+
+Left child 1 < 2
+
+Right child 3 > 2
+
+Both left & right subtrees are valid → ✅
+
+🧪 Example 2
+    5
+   / \
+  1   4
+     / \
+    3   6
+
+
+Output: false
+
+Explanation:
+
+Node 4 is in the right subtree of 5 but has a left child 3 < 5 → ❌ violates BST
+
+🧠 CORE IDEA (INTERVIEW INSIGHT)
+✅ Use recursion + range check
+
+Each node must satisfy:
+
+min < node.val < max
+
+
+For left child → max = parent value
+
+For right child → min = parent value
+
+🛠️ ALGORITHM (STEP-BY-STEP)
+
+Start at root with min = -∞, max = +∞
+
+Check if node value is in (min, max)
+
+If no → return false
+
+Recursively check left and right subtrees
+
+Left → max = node.val
+
+Right → min = node.val
+
+If all nodes satisfy → return true
+
+⏱️ COMPLEXITY
+Metric	Value
+Time	O(n) → visit every node
+Space	O(h) → recursion stack (h = height)
+💻 JAVA CODE (INTERVIEW-READY)
+class Solution {
+
+    public boolean isValidBST(TreeNode root) {
+        return helper(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    private boolean helper(TreeNode node, long min, long max) {
+        if (node == null) return true;
+
+        // current node must be in (min, max)
+        if (node.val <= min || node.val >= max) return false;
+
+        // left subtree: max = node.val
+        // right subtree: min = node.val
+        return helper(node.left, min, node.val) &&
+               helper(node.right, node.val, max);
+    }
+}
+
+🧾 LINE-BY-LINE EXPLANATION
+return helper(root, Long.MIN_VALUE, Long.MAX_VALUE);
+
+
+➡️ Start recursion with full valid range
+
+if (node == null) return true;
+
+
+➡️ Empty node → valid by definition
+
+if (node.val <= min || node.val >= max) return false;
+
+
+➡️ Node violates BST property → stop recursion
+
+return helper(node.left, min, node.val) &&
+       helper(node.right, node.val, max);
+
+
+➡️ Recursively validate left & right subtrees with updated ranges
+
+🧪 DRY RUN (LOGIC IN ACTION)
+Tree:
+    5
+   / \
+  1   4
+     / \
+    3   6
+
+
+Root 5 → valid (-∞, +∞) ✅
+
+Left 1 → valid (-∞,5) ✅
+
+Right 4 → valid (5, +∞) ❌ 4 < 5 → invalid BST
+
+Output → false
+
+🎯 WHY INTERVIEWERS LOVE THIS
+
+✅ Tests tree recursion
+✅ Checks logical thinking about ranges
+✅ Many candidates fail by only comparing parent-child, not entire range
+✅ Good prelude to validate BST + operations questions
