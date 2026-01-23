@@ -1,0 +1,167 @@
+✅ QUESTION 5: DIAMETER OF BINARY TREE
+
+📌 Asked in: Amazon, Microsoft, Google
+📌 Concepts: Binary Tree, DFS, Recursion
+📌 Difficulty: Medium
+
+🔍 PROBLEM STATEMENT
+
+Given the root of a binary tree, return the diameter of the tree.
+
+Diameter = length of the longest path between any two nodes in the tree.
+
+The path may or may not pass through the root
+
+Length = number of edges in the path
+
+🧪 Example 1
+Input:
+      1
+     / \
+    2   3
+   / \
+  4   5
+
+
+Output: 3
+
+Explanation:
+
+Longest path = 4 → 2 → 1 → 3
+
+Number of edges = 3
+
+🧪 Example 2
+Input:
+      1
+       \
+        2
+       / \
+      3   4
+
+
+Output: 3
+
+Explanation:
+
+Longest path = 3 → 2 → 4 → 1
+
+Number of edges = 3
+
+🧠 CORE IDEA (INTERVIEW INSIGHT)
+
+Use DFS / recursion
+
+At each node:
+
+Find height of left subtree
+
+Find height of right subtree
+
+Diameter through node = leftHeight + rightHeight
+
+Update max diameter globally
+
+Return height to parent = 1 + max(leftHeight, rightHeight)
+
+🛠️ ALGORITHM (STEP-BY-STEP)
+
+Initialize maxDiameter = 0
+
+Call DFS from root
+
+For each node:
+
+Recursively get leftHeight & rightHeight
+
+Update maxDiameter = max(maxDiameter, leftHeight + rightHeight)
+
+Return 1 + max(leftHeight, rightHeight)
+
+Return maxDiameter
+
+⏱️ COMPLEXITY
+Metric	Value
+Time	O(n) → visit every node once
+Space	O(h) → recursion stack, h = height of tree
+💻 JAVA CODE (INTERVIEW-READY)
+class Solution {
+
+    private int maxDiameter = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        dfs(root);
+        return maxDiameter;
+    }
+
+    private int dfs(TreeNode node) {
+        if (node == null) return 0;
+
+        int leftHeight = dfs(node.left);
+        int rightHeight = dfs(node.right);
+
+        // update diameter at this node
+        maxDiameter = Math.max(maxDiameter, leftHeight + rightHeight);
+
+        // return height for parent
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+}
+
+🧾 LINE-BY-LINE EXPLANATION
+private int maxDiameter = 0;
+
+
+➡️ Stores the maximum diameter found so far
+
+if (node == null) return 0;
+
+
+➡️ Null node → height = 0
+
+int leftHeight = dfs(node.left);
+int rightHeight = dfs(node.right);
+
+
+➡️ Recursively find heights of left and right subtrees
+
+maxDiameter = Math.max(maxDiameter, leftHeight + rightHeight);
+
+
+➡️ Update diameter at current node:
+
+diameter = edges in path = leftHeight + rightHeight
+
+return 1 + Math.max(leftHeight, rightHeight);
+
+
+➡️ Return height for parent computation
+
+🧪 DRY RUN (LOGIC IN ACTION)
+
+Tree:
+
+      1
+     / \
+    2   3
+   / \
+  4   5
+
+
+DFS steps:
+
+Node 4 → left=0, right=0 → diameter at 4=0 → return height=1
+
+Node 5 → height=1 → diameter at 5=0
+
+Node 2 → left=1, right=1 → diameter=2 → return height=2
+
+Node 3 → height=1 → diameter at root = left+right=2+1=3
+
+✅ Max diameter = 3
+
+🎯 WHY INTERVIEWERS LOVE THIS
+
+✅ Tests DFS & recursion
+✅ Tests ability to track global info while returning local info
+✅ Standard tree problem for FAANG-level coding rounds
