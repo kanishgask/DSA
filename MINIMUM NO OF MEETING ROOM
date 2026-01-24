@@ -1,0 +1,159 @@
+Question 4: MINIMUM NUMBER OF MEETING ROOMS
+
+💥 Amazon · Google · Microsoft · Atlassian
+Tests Greedy + Heap (Priority Queue)
+
+🧠 Problem Statement
+
+You are given an array of meeting time intervals where
+intervals[i] = [start_i, end_i].
+
+Return the minimum number of conference rooms required to hold all meetings.
+
+Example
+Input: intervals = [[0,30],[5,10],[15,20]]
+Output: 2
+
+Explanation
+
+Meeting 1: 0–30
+
+Meeting 2: 5–10 (overlaps)
+
+Meeting 3: 15–20 (overlaps with 0–30)
+
+At most 2 meetings happen at the same time.
+
+❌ Common Mistakes
+
+Counting overlaps incorrectly
+
+Forgetting to sort meetings
+
+Using nested loops → TLE
+
+💡 Optimal Approach (Greedy + Min-Heap)
+Key Idea:
+
+Sort meetings by start time
+
+Use a min-heap to track meeting end times
+
+If earliest meeting ends before next starts → reuse room
+
+Else → allocate new room
+
+🧠 Algorithm (Step-by-Step)
+
+Sort intervals by start time
+
+Create a min-heap to store end times
+
+Add the first meeting end time
+
+For each next meeting:
+
+If start >= heap.peek() → remove heap top (reuse room)
+
+Add current meeting end time
+
+Heap size = number of rooms needed
+
+⏱ Complexity
+
+Time: O(n log n)
+
+Space: O(n)
+
+✅ Java Code
+import java.util.*;
+
+class Solution {
+    public int minMeetingRooms(int[][] intervals) {
+        if (intervals.length == 0) return 0;
+
+        // Step 1: Sort by start time
+        Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+
+        // Step 2: Min-heap to store end times
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+
+        // Step 3: Add first meeting
+        heap.add(intervals[0][1]);
+
+        // Step 4: Process remaining meetings
+        for (int i = 1; i < intervals.length; i++) {
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+
+            // If room is free, reuse it
+            if (start >= heap.peek()) {
+                heap.poll();
+            }
+
+            // Allocate room
+            heap.add(end);
+        }
+
+        // Step 5: Number of rooms used
+        return heap.size();
+    }
+}
+
+🔍 Line-by-Line Explanation
+Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+
+
+👉 Sort meetings by start time
+
+PriorityQueue<Integer> heap = new PriorityQueue<>();
+
+
+👉 Min-heap stores earliest finishing meeting
+
+heap.add(intervals[0][1]);
+
+
+👉 First meeting needs a room
+
+if (start >= heap.peek())
+
+
+👉 If earliest meeting ends before current starts → reuse room
+
+heap.poll();
+
+
+👉 Remove finished meeting
+
+heap.add(end);
+
+
+👉 Add current meeting’s end time
+
+return heap.size();
+
+
+👉 Heap size = max rooms used at any time
+
+🧪 FULL WALKTHROUGH (Detailed)
+Input
+intervals = [[0,30],[5,10],[15,20]]
+
+Step 1: Sort
+[[0,30],[5,10],[15,20]]
+
+Step 2: Process
+Meeting	Heap (end times)	Rooms
+0–30	[30]	1
+5–10	[10,30]	2
+15–20	[20,30]	2
+✅ Final Output
+2
+
+🎯 What to Say in Interview
+
+“I sort by start time and use a min-heap to track the earliest finishing meeting.
+If a meeting starts after a room is free, I reuse it; otherwise, I allocate a new room.”
+
+Clean. Confident. Correct. ✅
