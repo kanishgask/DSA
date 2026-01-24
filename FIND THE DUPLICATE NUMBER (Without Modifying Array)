@@ -1,0 +1,169 @@
+FIND THE DUPLICATE NUMBER (Without Modifying Array)
+
+💥 Asked in Amazon, Google, Microsoft
+Tests Linked List Cycle Detection concept applied to arrays
+
+🧠 Problem Statement
+
+You are given an integer array nums containing n + 1 integers where:
+
+Each integer is in the range [1, n]
+
+There is only one repeated number
+
+The array may contain that number more than once
+
+You must not modify the array
+
+You must use O(1) extra space
+
+Return the duplicate number.
+
+Example
+Input: nums = [1, 3, 4, 2, 2]
+Output: 2
+
+🚫 Why This Problem Is Tricky (Interviewers Love It)
+
+You CANNOT:
+
+Sort the array
+
+Use HashSet / extra array
+
+Modify elements
+
+So brute force and hashing are ❌
+
+💡 Key Insight (Interview GOLD)
+
+👉 Treat the array as a linked list
+
+Index → node
+
+nums[i] → next pointer
+
+Duplicate creates a cycle
+
+📌 Then use Floyd’s Tortoise & Hare Algorithm
+
+🧠 Algorithm (Floyd’s Cycle Detection)
+Phase 1: Detect the cycle
+
+Slow pointer moves 1 step
+
+Fast pointer moves 2 steps
+
+They will meet inside the cycle
+
+Phase 2: Find cycle entrance
+
+Move one pointer to start
+
+Move both 1 step at a time
+
+Meeting point = duplicate number
+
+⏱ Complexity
+
+Time: O(n)
+
+Space: O(1)
+
+✅ Java Code
+class Solution {
+    public int findDuplicate(int[] nums) {
+        int slow = nums[0];
+        int fast = nums[0];
+
+        // Phase 1: Find intersection
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+
+        // Phase 2: Find entrance to cycle
+        slow = nums[0];
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow;
+    }
+}
+
+🔍 Line-by-Line Explanation
+int slow = nums[0];
+int fast = nums[0];
+
+
+👉 Initialize both pointers from the first element
+
+slow = nums[slow];
+
+
+👉 Move slow pointer 1 step
+
+fast = nums[nums[fast]];
+
+
+👉 Move fast pointer 2 steps
+
+do { ... } while (slow != fast);
+
+
+👉 Loop until they meet inside the cycle
+
+slow = nums[0];
+
+
+👉 Reset slow pointer to start for phase 2
+
+while (slow != fast)
+
+
+👉 Move both one step at a time
+
+return slow;
+
+
+👉 Entry point of cycle = duplicate number
+
+🧪 FULL WALKTHROUGH (Very Important)
+Input
+nums = [1, 3, 4, 2, 2]
+
+Visual Representation
+Index: 0  1  2  3  4
+Value: 1  3  4  2  2
+
+0 → 1 → 3 → 2 → 4
+          ↑       ↓
+          ← ← ← ←
+
+Phase 1: Detect cycle
+Step	slow	fast
+Init	1	1
+1	3	2
+2	2	2 ← meet
+Phase 2: Find entry
+
+Reset slow = 1
+
+Step	slow	fast
+1	3	4
+2	2	2 ← meet
+🎯 Final Answer
+2
+
+🧠 Interview Talking Points
+
+Say this confidently 👇
+
+“This array behaves like a linked list”
+
+“Duplicate creates a cycle”
+
+“Using Floyd’s Cycle Detection gives O(1) space”
+
+“Entry of cycle equals duplicate”
