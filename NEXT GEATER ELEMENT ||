@@ -1,0 +1,162 @@
+🔹 Question 1: NEXT GREATER ELEMENT II (Circular Array)
+
+⚠️ This is NOT in your list and is a very popular FAANG-style question
+
+🧠 Problem Statement
+
+You are given a circular array nums.
+For each element, find the next greater element.
+
+The next greater element of a number x is the first number greater than x when traversing forward in the circular array.
+
+If no such element exists, return -1 for that position.
+
+Example
+Input: nums = [1, 2, 1]
+Output: [2, -1, 2]
+
+Explanation:
+
+For 1 → next greater is 2
+
+For 2 → no greater element → -1
+
+For last 1 → circular → next greater is 2
+
+💡 Key Interview Insight
+
+Normal Next Greater Element uses Monotonic Stack
+
+Circular array means we iterate twice
+
+Time Complexity: O(n)
+
+Space Complexity: O(n)
+
+🛠 Algorithm (Step-by-Step)
+
+Create an array res of size n, initialize all values with -1
+
+Use a stack to store indices
+
+Loop from 0 to 2 * n - 1
+
+Use i % n to simulate circular traversal
+
+While stack is not empty and:
+
+nums[current] > nums[stackTop]
+
+
+→ update result
+
+Push index only in first iteration
+
+✅ Java Code
+import java.util.*;
+
+class Solution {
+    public int[] nextGreaterElements(int[] nums) {
+        int n = nums.length;
+        int[] result = new int[n];
+        Arrays.fill(result, -1);   // Step 1: default result
+
+        Stack<Integer> stack = new Stack<>();
+
+        // Step 2: traverse array twice (circular)
+        for (int i = 0; i < 2 * n; i++) {
+            int currentIndex = i % n;
+
+            // Step 3: resolve next greater element
+            while (!stack.isEmpty() && nums[currentIndex] > nums[stack.peek()]) {
+                int index = stack.pop();
+                result[index] = nums[currentIndex];
+            }
+
+            // Step 4: push only first pass indices
+            if (i < n) {
+                stack.push(currentIndex);
+            }
+        }
+        return result;
+    }
+}
+
+🔍 Line-by-Line Explanation
+int n = nums.length;
+
+
+👉 Store array size
+
+int[] result = new int[n];
+Arrays.fill(result, -1);
+
+
+👉 Default answer is -1 (if no greater element exists)
+
+Stack<Integer> stack = new Stack<>();
+
+
+👉 Stack stores indices, not values
+
+for (int i = 0; i < 2 * n; i++)
+
+
+👉 Loop twice to simulate circular behavior
+
+int currentIndex = i % n;
+
+
+👉 Brings index back to [0 ... n-1]
+
+while (!stack.isEmpty() && nums[currentIndex] > nums[stack.peek()])
+
+
+👉 If current element is greater than stack top
+
+int index = stack.pop();
+result[index] = nums[currentIndex];
+
+
+👉 Found the next greater element
+
+if (i < n) {
+    stack.push(currentIndex);
+}
+
+
+👉 Push index only in first pass
+(prevents infinite loop)
+
+🧪 Dry Run (Walkthrough)
+Input:
+nums = [1, 2, 1]
+
+Initial:
+result = [-1, -1, -1]
+stack = []
+
+First Pass (i = 0 → 2)
+i	current	Action
+0	1	push index 0
+1	2	2 > 1 → pop 0 → result[0]=2
+		push index 1
+2	1	1 < 2 → push index 2
+stack = [1, 2]
+result = [2, -1, -1]
+
+Second Pass (i = 3 → 5)
+i	current	Action
+3	1	1 < 1 → nothing
+4	2	2 > 1 → pop 2 → result[2]=2
+5	1	nothing
+Final Output
+[2, -1, 2]
+
+🎯 Interview Tips
+
+Say “Monotonic decreasing stack”
+
+Explain why 2*n traversal is needed
+
+Mention O(n) time confidently
