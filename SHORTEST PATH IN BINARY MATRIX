@@ -1,0 +1,188 @@
+Question 5: SHORTEST PATH IN BINARY MATRIX
+
+💥 Google · Amazon · Meta
+Tests BFS + Grid Traversal + State tracking
+
+🧠 Problem Statement
+
+You are given an n × n binary matrix grid where:
+
+0 = open cell
+
+1 = blocked cell
+
+You can move in 8 directions:
+up, down, left, right, and 4 diagonals.
+
+Return the length of the shortest clear path from
+top-left (0,0) to bottom-right (n-1,n-1).
+
+If no such path exists, return -1.
+
+⚠️ The path length counts cells, not moves.
+
+Example
+Input:
+grid = [
+  [0,1],
+  [1,0]
+]
+
+Output: 2
+
+❌ Immediate Rejection Cases
+
+If grid[0][0] == 1 or grid[n-1][n-1] == 1 → return -1
+
+💡 Optimal Approach
+
+👉 Breadth-First Search (BFS)
+
+Why BFS?
+
+Grid is unweighted
+
+BFS guarantees shortest path
+
+🧠 Algorithm (Step-by-Step)
+
+Check start & end cells
+
+Use a queue for BFS
+
+Track visited cells
+
+Move in 8 directions
+
+Increase path length level-by-level
+
+Stop once destination is reached
+
+⏱ Complexity
+
+Time: O(n²)
+
+Space: O(n²)
+
+✅ Java Code
+import java.util.*;
+
+class Solution {
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        int n = grid.length;
+
+        // Step 1: invalid start or end
+        if (grid[0][0] == 1 || grid[n - 1][n - 1] == 1)
+            return -1;
+
+        // 8 directions
+        int[][] directions = {
+            {1,0},{-1,0},{0,1},{0,-1},
+            {1,1},{1,-1},{-1,1},{-1,-1}
+        };
+
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{0, 0});
+        grid[0][0] = 1; // mark visited
+
+        int pathLength = 1;
+
+        // Step 2: BFS
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+
+            for (int i = 0; i < size; i++) {
+                int[] cell = queue.poll();
+                int row = cell[0];
+                int col = cell[1];
+
+                // reached destination
+                if (row == n - 1 && col == n - 1)
+                    return pathLength;
+
+                // explore neighbors
+                for (int[] dir : directions) {
+                    int newRow = row + dir[0];
+                    int newCol = col + dir[1];
+
+                    if (newRow >= 0 && newRow < n &&
+                        newCol >= 0 && newCol < n &&
+                        grid[newRow][newCol] == 0) {
+
+                        queue.add(new int[]{newRow, newCol});
+                        grid[newRow][newCol] = 1; // mark visited
+                    }
+                }
+            }
+            pathLength++;
+        }
+        return -1;
+    }
+}
+
+🔍 Line-by-Line Explanation
+if (grid[0][0] == 1 || grid[n - 1][n - 1] == 1)
+
+
+👉 No path possible
+
+int[][] directions = {...}
+
+
+👉 8 possible movements
+
+queue.add(new int[]{0, 0});
+
+
+👉 Start BFS from top-left
+
+grid[0][0] = 1;
+
+
+👉 Mark visited (avoids extra visited array)
+
+int size = queue.size();
+
+
+👉 Level-order BFS
+
+pathLength++;
+
+
+👉 Increase distance after each level
+
+🧪 FULL WALKTHROUGH
+Input
+grid = [
+  [0, 1],
+  [1, 0]
+]
+
+BFS Levels
+
+Level 1
+
+Queue: (0,0)
+pathLength = 1
+
+
+Moves → (1,1) diagonal allowed
+
+Level 2
+
+Queue: (1,1)
+pathLength = 2
+Reached destination ✔
+
+✅ Final Output
+2
+
+🎯 Interview Gold Statements
+
+Say these confidently 👇
+
+“This is an unweighted grid → BFS ensures shortest path”
+
+“I use level-order traversal to count path length”
+
+“Visited cells are marked in-place to save space”
