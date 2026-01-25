@@ -1,0 +1,216 @@
+🔗 MERGE TWO SORTED LINKED LISTS
+
+(Classic Linked List interview problem)
+
+🔹 Problem Definition (How Interviewer Says It)
+
+You are given two sorted linked lists l1 and l2.
+Merge them into one sorted linked list and return its head.
+
+👉 You must not create new nodes (just rearrange pointers).
+
+🔹 Example
+Input
+l1 = 1 → 3 → 4
+l2 = 1 → 2 → 5
+
+Output
+1 → 1 → 2 → 3 → 4 → 5
+
+❌ Brute Force Idea (Don’t say this first)
+
+Copy values into array
+
+Sort
+
+Create new list
+
+❌ Extra space, not pointer-based
+❌ Interviewers don’t like this
+
+✅ Optimal Approach: POINTER MANIPULATION
+🔑 Core Idea (VERY IMPORTANT)
+
+Both lists are already sorted
+
+Compare nodes one by one
+
+Attach the smaller node
+
+Move that list forward
+
+💡 This is exactly like the merge step in Merge Sort
+
+🔹 Why Do We Use a Dummy Node?
+
+Dummy node:
+
+Avoids handling head separately
+
+Makes code clean and bug-free
+
+Real head is dummy.next
+
+🔹 Step-by-Step Algorithm
+
+Create a dummy node
+
+Use current pointer starting at dummy
+
+While both lists are not null:
+
+Compare l1.val and l2.val
+
+Attach smaller node
+
+Move pointer
+
+Attach remaining list
+
+Return dummy.next
+
+🔹 Java Code (Interview Perfect)
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+
+        ListNode dummy = new ListNode(-1);
+        ListNode current = dummy;
+
+        while (l1 != null && l2 != null) {
+
+            if (l1.val <= l2.val) {
+                current.next = l1;
+                l1 = l1.next;
+            } else {
+                current.next = l2;
+                l2 = l2.next;
+            }
+
+            current = current.next;
+        }
+
+        if (l1 != null) {
+            current.next = l1;
+        }
+
+        if (l2 != null) {
+            current.next = l2;
+        }
+
+        return dummy.next;
+    }
+}
+
+🧠 LINE-BY-LINE CODE EXPLANATION (DETAILED)
+🔹 Dummy Node Creation
+ListNode dummy = new ListNode(-1);
+
+
+✔ Fake node before head
+✔ Avoids special case for first element
+
+ListNode current = dummy;
+
+
+✔ Pointer that builds the merged list
+✔ Always points to last node in result
+
+🔹 Main Loop
+while (l1 != null && l2 != null) {
+
+
+✔ Continue while both lists have nodes
+
+if (l1.val <= l2.val) {
+
+
+✔ Compare current values
+✔ Choose smaller value to keep sorted order
+
+current.next = l1;
+
+
+✔ Attach node from l1 to merged list
+✔ NO new node created
+
+l1 = l1.next;
+
+
+✔ Move l1 pointer forward
+
+else {
+    current.next = l2;
+    l2 = l2.next;
+}
+
+
+✔ Same logic for l2
+
+current = current.next;
+
+
+✔ Move merged list pointer forward
+
+🔹 Attach Remaining Nodes
+if (l1 != null) {
+    current.next = l1;
+}
+
+
+✔ If l2 ended first, attach rest of l1
+
+if (l2 != null) {
+    current.next = l2;
+}
+
+
+✔ If l1 ended first, attach rest of l2
+
+🔹 Return Answer
+return dummy.next;
+
+
+✔ Actual head starts after dummy
+
+🔍 Full Dry Run (Step by Step)
+Initial
+l1 → 1 → 3 → 4
+l2 → 1 → 2 → 5
+dummy → -1
+current → dummy
+
+Step 1
+Compare 1 & 1 → take l1
+merged: -1 → 1
+
+Step 2
+Compare 3 & 1 → take l2
+merged: -1 → 1 → 1
+
+Step 3
+Compare 3 & 2 → take l2
+merged: -1 → 1 → 1 → 2
+
+Step 4
+Compare 3 & 5 → take l1
+merged: -1 → 1 → 1 → 2 → 3
+
+Step 5
+Compare 4 & 5 → take l1
+merged: -1 → 1 → 1 → 2 → 3 → 4
+
+Attach remaining
+merged: -1 → 1 → 1 → 2 → 3 → 4 → 5
+
+
+Return:
+
+1 → 1 → 2 → 3 → 4 → 5
+
+⏱ Time & Space Complexity
+Metric	Value
+Time	O(n + m)
+Space	O(1)
+🎯 Interview One-Liner Explanation
+
+“I use a dummy node and compare both list values node by node, attaching the smaller one each time. Since lists are sorted, this guarantees a sorted merge in linear time.”
