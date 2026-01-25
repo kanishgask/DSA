@@ -1,0 +1,169 @@
+🌳 MAXIMUM PATH SUM IN A BINARY TREE
+
+(Asked in Amazon, Google, Microsoft)
+
+🔹 Problem Definition
+
+You are given the root of a binary tree.
+A path is any sequence of nodes where:
+
+Each node is connected by an edge
+
+The path can start and end at any node
+
+The path must go downward or turn once, but cannot revisit nodes
+
+👉 Find the maximum path sum.
+
+🔹 Example
+Tree
+        -10
+        /   \
+       9     20
+            /  \
+           15   7
+
+Output
+42
+
+Explanation
+
+Best path = 15 → 20 → 7
+Sum = 15 + 20 + 7 = 42
+
+❌ Common Mistake (VERY IMPORTANT)
+
+❌ Thinking the path must include the root
+❌ Thinking it must be root → leaf
+
+✔ Path can be ANYWHERE in the tree
+
+🔑 Key Insight (THIS IS THE CORE 💡)
+
+At each node:
+
+You can take left path OR right path OR none
+
+But when returning to parent, you can take ONLY ONE side
+
+However,
+
+For the global answer, you can take:
+
+left + node + right
+
+
+👉 This is why we need a global max variable
+
+🔹 Algorithm (Step-by-Step)
+
+Use DFS (postorder)
+
+For each node:
+
+Get max contribution from left
+
+Get max contribution from right
+
+Ignore negative paths (max(0, value))
+
+Update global max using:
+
+left + node + right
+
+
+Return:
+
+node + max(left, right)
+
+🔹 Java Code (Interview-Ready)
+class Solution {
+
+    int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        dfs(root);
+        return maxSum;
+    }
+
+    private int dfs(TreeNode node) {
+
+        if (node == null) return 0;
+
+        int left = Math.max(0, dfs(node.left));
+        int right = Math.max(0, dfs(node.right));
+
+        int currentPath = left + right + node.val;
+        maxSum = Math.max(maxSum, currentPath);
+
+        return node.val + Math.max(left, right);
+    }
+}
+
+🧠 LINE-BY-LINE EXPLANATION
+int maxSum = Integer.MIN_VALUE;
+
+
+✔ Stores global maximum path sum
+
+dfs(root);
+
+
+✔ Start DFS traversal
+
+if (node == null) return 0;
+
+
+✔ Base case for recursion
+
+int left = Math.max(0, dfs(node.left));
+
+
+✔ If left path is negative → ignore it
+
+int right = Math.max(0, dfs(node.right));
+
+
+✔ Same logic for right path
+
+int currentPath = left + right + node.val;
+
+
+✔ Path passing through this node (can take both sides)
+
+maxSum = Math.max(maxSum, currentPath);
+
+
+✔ Update global maximum
+
+return node.val + Math.max(left, right);
+
+
+✔ Return single branch only (important!)
+
+🔍 Dry Run (Key Nodes Only)
+
+At node 15:
+
+left = 0, right = 0
+currentPath = 15
+maxSum = 15
+
+
+At node 20:
+
+left = 15, right = 7
+currentPath = 42
+maxSum = 42
+return 20 + max(15,7) = 35
+
+
+Final answer = 42
+
+⏱ Time & Space Complexity
+Type	Complexity
+Time	O(n)
+Space	O(h) (recursion stack)
+🎯 Interview One-Liner
+
+“I use postorder DFS. At each node, I calculate the max contribution from left and right, update the global maximum using both sides, and return only one side to the parent.”
