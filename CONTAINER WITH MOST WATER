@@ -1,0 +1,194 @@
+🌊 CONTAINER WITH MOST WATER (Two Pointer Technique)
+🔹 Problem Definition (Interview Version)
+
+You are given an integer array height[] of size n.
+Each element represents the height of a vertical line drawn at that index.
+
+You must choose two different lines such that:
+
+The lines form a container
+
+The container holds the maximum amount of water
+
+🔸 Formula for Water Stored
+Water = min(height[i], height[j]) × (j − i)
+
+🔹 Example
+Input:  height = [1,8,6,2,5,4,8,3,7]
+Output: 49
+
+
+Best choice:
+
+Line at index 1 (height = 8)
+
+Line at index 8 (height = 7)
+
+min(8, 7) × (8 − 1) = 7 × 7 = 49
+
+❌ Brute Force Approach (Why We DON’T Use It)
+Idea
+
+Check every pair (i, j) and calculate area.
+
+Time Complexity
+O(n²) → too slow for large inputs
+
+
+Interviewers will reject this for optimization.
+
+✅ Optimized Approach: TWO POINTER TECHNIQUE
+🔹 Key Insight (MOST IMPORTANT PART 🚀)
+
+Area depends on:
+
+Width → distance between two lines
+
+Height → shorter line
+
+🔥 Golden Rule:
+
+Always move the pointer with the smaller height
+
+Why?
+
+Width decreases anyway when moving pointers
+
+Only moving smaller height can increase height
+
+🔹 Step-by-Step Algorithm
+
+Initialize two pointers:
+
+left = 0
+
+right = n - 1
+
+Calculate width:
+
+width = right - left
+
+
+Calculate height:
+
+min(height[left], height[right])
+
+
+Calculate area and update maximum
+
+Move pointer:
+
+If left height < right height → left++
+
+Else → right--
+
+Repeat until left < right
+
+🔹 Java Code (Clean & Interview Ready)
+class Solution {
+    public int maxArea(int[] height) {
+
+        int left = 0;                     // starting pointer
+        int right = height.length - 1;    // ending pointer
+        int maxWater = 0;                 // stores maximum area
+
+        while (left < right) {
+
+            int width = right - left;     
+            int minHeight = Math.min(height[left], height[right]);
+            int currentArea = width * minHeight;
+
+            maxWater = Math.max(maxWater, currentArea);
+
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return maxWater;
+    }
+}
+
+🧠 LINE-BY-LINE CODE EXPLANATION (VERY DETAILED)
+int left = 0;
+int right = height.length - 1;
+
+
+👉 We start from the widest possible container
+Maximum width gives best chance for max water.
+
+int maxWater = 0;
+
+
+👉 Variable to track maximum water found so far
+
+while (left < right) {
+
+
+👉 Loop until pointers meet
+👉 Once they meet, width becomes zero
+
+int width = right - left;
+
+
+👉 Distance between two vertical lines
+
+int minHeight = Math.min(height[left], height[right]);
+
+
+👉 Water level depends on the shorter line
+👉 Taller line doesn't matter beyond shorter one
+
+int currentArea = width * minHeight;
+
+
+👉 Apply container area formula
+
+maxWater = Math.max(maxWater, currentArea);
+
+
+👉 Store maximum area found till now
+
+if (height[left] < height[right]) {
+    left++;
+}
+
+
+👉 Left wall is smaller
+👉 Moving right won't help
+👉 Try a taller left wall
+
+else {
+    right--;
+}
+
+
+👉 Right wall is smaller (or equal)
+👉 Move right inward
+
+return maxWater;
+
+
+👉 Final maximum water possible
+
+🔍 Full Example Walkthrough (Step-by-Step)
+Input
+height = [1,8,6,2,5,4,8,3,7]
+
+Left	Right	minHeight	Width	Area	Max
+0	8	1	8	8	8
+1	8	7	7	49	49
+1	7	3	6	18	49
+1	6	8	5	40	49
+1	5	4	4	16	49
+
+✔ Final Answer = 49
+
+⏱ Time & Space Complexity
+Metric	Value
+Time	O(n)
+Space	O(1)
+🎯 How to Explain This in an Interview (One-Liner)
+
+“I use a two-pointer approach where I start from both ends and always move the pointer with smaller height because width only decreases and only a taller line can improve area.”
