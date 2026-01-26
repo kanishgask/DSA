@@ -1,0 +1,164 @@
+✅ Split Array Largest Sum
+
+(Binary Search on Answer Space)
+
+📍 Pattern: Binary Search + Greedy
+📍 Asked in: Google, Amazon, Microsoft
+📍 Difficulty: Medium–Hard
+📍 Key Concept: Binary search without a sorted array
+
+🧩 Problem Statement
+
+You are given an integer array nums and an integer k.
+
+Split the array into k or fewer non-empty contiguous subarrays such that the largest sum among these subarrays is minimized.
+
+Return that minimized largest sum.
+
+📌 Example
+Input
+nums = [7, 2, 5, 10, 8]
+k = 2
+
+Output
+18
+
+Explanation
+
+Best split:
+
+[7, 2, 5] → sum = 14
+[10, 8]   → sum = 18
+
+
+Largest sum = 18 (minimum possible)
+
+🚫 Why not brute force?
+
+All possible splits → exponential ❌
+DP solution → O(n²k) (too slow in interviews)
+
+✅ Optimal Approach: Binary Search on Answer
+🧠 Core Insight
+
+The answer lies between:
+
+Minimum = maximum element in array
+
+Maximum = sum of entire array
+
+We binary search this range.
+
+🪜 Algorithm Steps
+
+Set:
+
+low = max(nums)
+
+high = sum(nums)
+
+While low <= high:
+
+mid = (low + high) / 2
+
+Check if we can split array into ≤ k subarrays with max sum mid
+
+If yes → try smaller value (move left)
+
+If no → increase sum limit (move right)
+
+🔍 Validity Check Function
+
+Greedily create subarrays and count how many are needed.
+
+⏱ Time & Space Complexity
+
+Time: O(n log(sum))
+
+Space: O(1)
+
+💻 JAVA CODE (INTERVIEW READY)
+public class SplitArrayLargestSum {
+
+    public static int splitArray(int[] nums, int k) {
+
+        int low = 0, high = 0;
+
+        // Determine search space
+        for (int num : nums) {
+            low = Math.max(low, num);
+            high += num;
+        }
+
+        // Binary search on answer
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+
+            if (canSplit(nums, k, mid)) {
+                high = mid; // try smaller max sum
+            } else {
+                low = mid + 1; // increase max sum
+            }
+        }
+
+        return low;
+    }
+
+    // Helper function to check feasibility
+    private static boolean canSplit(int[] nums, int k, int maxSum) {
+
+        int subarrays = 1;
+        int currSum = 0;
+
+        for (int num : nums) {
+            if (currSum + num > maxSum) {
+                subarrays++;
+                currSum = num;
+
+                if (subarrays > k) return false;
+            } else {
+                currSum += num;
+            }
+        }
+
+        return true;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {7, 2, 5, 10, 8};
+        int k = 2;
+        System.out.println(splitArray(nums, k)); // Output: 18
+    }
+}
+
+🔍 LINE-BY-LINE EXPLANATION
+low = Math.max(low, num);
+high += num;
+
+
+➡ Minimum possible max sum & maximum possible max sum
+
+if (canSplit(nums, k, mid))
+
+
+➡ Check if current limit works
+
+subarrays++;
+currSum = num;
+
+
+➡ Start new subarray when sum exceeds limit
+
+🔎 DRY RUN
+nums = [7,2,5,10,8], k = 2
+mid	Can Split?	Action
+21	Yes	Try smaller
+18	Yes	Try smaller
+16	No	Increase
+
+📌 Final Answer = 18
+
+🎯 Interview Explanation (2 Lines)
+
+“I applied binary search on the answer space.
+For each possible maximum sum, I greedily verified feasibility in O(n).
