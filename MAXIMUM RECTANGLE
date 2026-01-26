@@ -1,0 +1,166 @@
+✅ Maximal Rectangle (Largest Rectangle of 1s in a Binary Matrix)
+
+📍 Pattern: Stack + DP
+📍 Asked in: Amazon, Google, Microsoft, Meta
+📍 Difficulty: Hard
+📍 Why interviewers love it: Combines 2 problems into 1
+
+🧩 Problem Statement
+
+Given a binary matrix filled with 0s and 1s, find the largest rectangle containing only 1s and return its area.
+
+📌 Example
+Input
+matrix =
+[
+  ['1','0','1','0','0'],
+  ['1','0','1','1','1'],
+  ['1','1','1','1','1'],
+  ['1','0','0','1','0']
+]
+
+Output
+6
+
+Explanation
+
+Largest rectangle of 1s:
+
+1 1 1
+1 1 1
+
+
+Area = 6
+
+🚫 Brute Force?
+
+Try every rectangle → O(n⁴) ❌ absolutely not
+
+✅ Optimal Approach
+🧠 Key Insight
+
+Treat each row as the base of a histogram
+
+Build histogram heights row by row
+
+On each row, apply Largest Rectangle in Histogram
+
+Track maximum area
+
+🪜 Algorithm Steps
+
+Initialize an array heights[] with size = number of columns
+
+For each row:
+
+If matrix cell is 1 → increase height
+
+If 0 → reset height
+
+Apply stack-based histogram algorithm
+
+Update global maximum area
+
+⏱ Time & Space Complexity
+
+Time: O(rows × cols)
+
+Space: O(cols)
+
+💻 JAVA CODE (INTERVIEW READY & CLEAN)
+import java.util.Stack;
+
+public class MaximalRectangle {
+
+    public static int maximalRectangle(char[][] matrix) {
+
+        if (matrix.length == 0) return 0;
+
+        int cols = matrix[0].length;
+        int[] heights = new int[cols];
+        int maxArea = 0;
+
+        // Process each row as histogram
+        for (char[] row : matrix) {
+
+            // Build heights
+            for (int i = 0; i < cols; i++) {
+                if (row[i] == '1')
+                    heights[i]++;
+                else
+                    heights[i] = 0;
+            }
+
+            // Calculate max rectangle in this histogram
+            maxArea = Math.max(maxArea, largestRectangleArea(heights));
+        }
+
+        return maxArea;
+    }
+
+    // Histogram logic
+    private static int largestRectangleArea(int[] heights) {
+
+        Stack<Integer> stack = new Stack<>();
+        int maxArea = 0;
+        int i = 0;
+
+        while (i <= heights.length) {
+
+            int currHeight = (i == heights.length) ? 0 : heights[i];
+
+            if (stack.isEmpty() || currHeight >= heights[stack.peek()]) {
+                stack.push(i++);
+            } else {
+                int height = heights[stack.pop()];
+                int width = stack.isEmpty() ? i : i - stack.peek() - 1;
+                maxArea = Math.max(maxArea, height * width);
+            }
+        }
+
+        return maxArea;
+    }
+
+    public static void main(String[] args) {
+        char[][] matrix = {
+            {'1','0','1','0','0'},
+            {'1','0','1','1','1'},
+            {'1','1','1','1','1'},
+            {'1','0','0','1','0'}
+        };
+
+        System.out.println(maximalRectangle(matrix)); // Output: 6
+    }
+}
+
+🔍 LINE-BY-LINE EXPLANATION
+🔹 Height Build
+if (row[i] == '1')
+    heights[i]++;
+else
+    heights[i] = 0;
+
+
+➡ Stack 1s vertically like histogram bars
+
+🔹 Stack Logic (Histogram)
+currHeight < heights[stack.peek()]
+
+
+➡ Time to calculate rectangle area
+
+width = stack.isEmpty() ? i : i - stack.peek() - 1;
+
+
+➡ Compute width correctly
+
+🔎 DRY RUN (KEY MOMENT)
+After 3rd row:
+heights = [3,1,3,2,2]
+
+
+Largest rectangle area = 3 × 2 = 6 ✅
+
+🎯 Interview Explanation (CRISP)
+
+“I converted each matrix row into a histogram of heights and reused the largest-rectangle-in-histogram stack algorithm.”
