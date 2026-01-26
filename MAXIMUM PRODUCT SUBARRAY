@@ -1,0 +1,146 @@
+✅ Maximum Product Subarray
+
+📍 Pattern: Dynamic Programming
+📍 Asked in: Amazon, Microsoft, Google, Apple
+📍 Difficulty: Medium
+📍 Why tricky: Negative numbers flip answers
+
+🧩 Problem Statement
+
+Given an integer array nums, find the contiguous subarray that has the maximum product, and return the product.
+
+📌 Examples
+Example 1
+Input:  nums = [2,3,-2,4]
+Output: 6
+Explanation: [2,3]
+
+Example 2
+Input:  nums = [-2,0,-1]
+Output: 0
+
+🚫 Why Kadane’s (Sum) DOES NOT work here
+
+Multiplication by negative flips sign
+
+A small negative product may become maximum later
+
+👉 So we must track two values
+
+✅ Optimal Approach: DP (Track max & min)
+🧠 Core Idea
+
+At each index, maintain:
+
+maxProduct → max product ending here
+
+minProduct → min product ending here
+
+Why?
+
+A negative × negative = positive
+
+🪜 Algorithm Steps
+
+Initialize:
+
+maxProduct = nums[0]
+
+minProduct = nums[0]
+
+result = nums[0]
+
+Traverse array from index 1
+
+If current number is negative → swap max & min
+
+Update:
+
+maxProduct = max(curr, curr * maxProduct)
+
+minProduct = min(curr, curr * minProduct)
+
+Update result
+
+⏱ Complexity
+
+Time: O(n)
+
+Space: O(1)
+
+💻 JAVA CODE (INTERVIEW READY)
+public class MaximumProductSubarray {
+
+    public static int maxProduct(int[] nums) {
+
+        int maxProduct = nums[0];
+        int minProduct = nums[0];
+        int result = nums[0];
+
+        for (int i = 1; i < nums.length; i++) {
+
+            int curr = nums[i];
+
+            // If current number is negative, swap max & min
+            if (curr < 0) {
+                int temp = maxProduct;
+                maxProduct = minProduct;
+                minProduct = temp;
+            }
+
+            // Update max and min product
+            maxProduct = Math.max(curr, curr * maxProduct);
+            minProduct = Math.min(curr, curr * minProduct);
+
+            // Update result
+            result = Math.max(result, maxProduct);
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {2, 3, -2, 4};
+        System.out.println(maxProduct(nums)); // Output: 6
+    }
+}
+
+🔍 LINE-BY-LINE EXPLANATION
+int maxProduct = nums[0];
+int minProduct = nums[0];
+
+
+➡ Store best and worst product ending at index 0
+
+if (curr < 0) {
+    int temp = maxProduct;
+    maxProduct = minProduct;
+    minProduct = temp;
+}
+
+
+➡ Negative number flips max ↔ min
+
+maxProduct = Math.max(curr, curr * maxProduct);
+
+
+➡ Either start fresh or extend previous subarray
+
+result = Math.max(result, maxProduct);
+
+
+➡ Track global maximum
+
+🔎 DRY RUN (IMPORTANT FOR INTERVIEW)
+Input: [2,3,-2,4]
+i	curr	max	min	result
+0	2	2	2	2
+1	3	6	3	6
+2	-2	-2	-12	6
+3	4	4	-48	6
+
+📌 Final Answer = 6
+
+🎯 Interview Explanation (1–2 Lines)
+
+“Since multiplication with negatives can flip the result, I tracked both max and min products ending at each index using dynamic programming.”
