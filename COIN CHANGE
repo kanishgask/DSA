@@ -1,0 +1,168 @@
+✅ QUESTION 3: COIN CHANGE (Minimum Coins)
+🔹 Problem Statement
+
+You are given:
+
+An integer array coins[] representing different coin denominations
+
+An integer amount
+
+👉 Return the minimum number of coins needed to make up the amount.
+
+If it is not possible, return -1.
+
+✨ Example 1
+coins = [1, 2, 5]
+amount = 11
+
+Output: 3
+Explanation: 5 + 5 + 1
+
+✨ Example 2
+coins = [2]
+amount = 3
+
+Output: -1
+
+🧠 Interview Thinking
+
+Keywords:
+
+Minimum
+
+Unlimited usage of coins
+
+Target amount
+
+👉 This is a Dynamic Programming (Unbounded Knapsack) problem.
+
+🧩 DP Definition
+
+Let:
+
+dp[i] = minimum number of coins required to make amount i
+
+🔑 Base Case
+dp[0] = 0
+
+
+(0 coins are needed to make amount 0)
+
+All other values:
+
+dp[i] = ∞ (initially)
+
+🔄 Transition Formula
+
+For each amount i from 1 to amount:
+
+For each coin c:
+
+if (i - c >= 0)
+    dp[i] = min(dp[i], dp[i - c] + 1)
+
+🧮 Step-by-Step Example Walkthrough
+Input
+coins = [1, 2, 5]
+amount = 11
+
+DP table evolution:
+Amount	dp value	Explanation
+0	0	Base
+1	1	1
+2	1	2
+3	2	2+1
+4	2	2+2
+5	1	5
+6	2	5+1
+7	2	5+2
+8	3	5+2+1
+9	3	5+2+2
+10	2	5+5
+11	3	5+5+1
+⏱️ Time & Space Complexity
+
+Time: O(amount × number_of_coins)
+
+Space: O(amount)
+
+☕ Java Code – COIN CHANGE
+import java.util.Arrays;
+
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+
+        // dp[i] = minimum coins needed to make amount i
+        int[] dp = new int[amount + 1];
+
+        // Fill dp with a large value (infinity)
+        Arrays.fill(dp, amount + 1);
+
+        // Base case
+        dp[0] = 0;
+
+        // Build dp array
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+
+                // Check if we can use this coin
+                if (i - coin >= 0) {
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+
+        // If amount cannot be formed
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+}
+
+🔍 LINE-BY-LINE EXPLANATION
+int[] dp = new int[amount + 1];
+
+
+👉 dp array index represents amount
+
+Arrays.fill(dp, amount + 1);
+
+
+👉 Represents infinity (impossible initially)
+
+dp[0] = 0;
+
+
+👉 No coins needed for amount 0
+
+for (int i = 1; i <= amount; i++)
+
+
+👉 Build solution from smaller subproblems
+
+for (int coin : coins)
+
+
+👉 Try each coin
+
+dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+
+
+👉 Choose minimum coins among all possibilities
+
+return dp[amount] > amount ? -1 : dp[amount];
+
+
+👉 Check if solution exists
+
+🎯 Interview GOLD Tip
+
+If interviewer asks:
+
+“Why greedy doesn’t work?”
+
+👉 Answer:
+
+Greedy fails for cases like coins = [1, 3, 4], amount = 6
+
+Greedy gives 4 + 1 + 1 = 3
+
+Optimal is 3 + 3 = 2
