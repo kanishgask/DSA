@@ -1,0 +1,161 @@
+🚀 QUESTION 1: WORD BREAK (FULL DETAILED EXPLANATION)
+🔹 Problem Statement
+
+You are given:
+
+A string s
+
+A list of words wordDict
+
+👉 Return true if s can be segmented into space-separated sequence of dictionary words.
+
+✨ You can reuse words any number of times.
+📌 Example
+Input:
+s = "leetcode"
+wordDict = ["leet", "code"]
+
+Output:
+true
+
+Explanation:
+"leetcode" = "leet" + "code"
+
+🧠 Intuition (How to Think)
+
+We want to check:
+
+Can we break the string step by step
+
+And every step must be a valid dictionary word
+
+This screams Dynamic Programming.
+
+🧩 Dynamic Programming Idea
+
+Let:
+
+dp[i] = true
+
+
+👉 If substring s[0 ... i-1] can be segmented using dictionary words.
+
+Base Case
+dp[0] = true
+
+
+(Empty string is always valid)
+
+🔄 Transition Logic
+
+For every index i:
+
+Try all possible previous cuts j
+
+If:
+
+dp[j] == true
+
+substring s[j...i-1] is in dictionary
+➡️ then dp[i] = true
+
+🧮 Step-by-Step Example Walkthrough
+s = "leetcode"
+wordDict = ["leet", "code"]
+
+
+Length = 8
+
+i	substring checked	dp[i]
+0	""	true
+4	"leet"	true
+8	"code"	true
+
+Final:
+
+dp[8] = true ✅
+
+⏱️ Time & Space Complexity
+
+Time: O(n²)
+
+Space: O(n)
+
+☕ Java Code – WORD BREAK
+import java.util.*;
+
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+
+        // Convert word list to HashSet for O(1) lookup
+        Set<String> set = new HashSet<>(wordDict);
+
+        // dp[i] means: can s[0..i-1] be segmented
+        boolean[] dp = new boolean[s.length() + 1];
+
+        // Base case: empty string
+        dp[0] = true;
+
+        // Build dp array
+        for (int i = 1; i <= s.length(); i++) {
+
+            // Try every possible split
+            for (int j = 0; j < i; j++) {
+
+                // If left part is valid and right part is in dictionary
+                if (dp[j] && set.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break; // no need to check further
+                }
+            }
+        }
+
+        return dp[s.length()];
+    }
+}
+
+🔍 LINE-BY-LINE CODE EXPLANATION
+Set<String> set = new HashSet<>(wordDict);
+
+
+👉 Converts list to set for fast lookup (O(1))
+
+boolean[] dp = new boolean[s.length() + 1];
+
+
+👉 dp[i] stores whether first i characters can be segmented
+
+dp[0] = true;
+
+
+👉 Empty string is always valid
+
+for (int i = 1; i <= s.length(); i++)
+
+
+👉 We check substrings of increasing length
+
+for (int j = 0; j < i; j++)
+
+
+👉 Try all possible partitions before index i
+
+if (dp[j] && set.contains(s.substring(j, i)))
+
+
+👉 Two conditions:
+
+Left part is already valid
+
+Right part exists in dictionary
+
+dp[i] = true;
+break;
+
+
+👉 Once valid segmentation found → stop checking further
+
+return dp[s.length()];
+
+
+👉 Answer depends on whether full string can be segmented
