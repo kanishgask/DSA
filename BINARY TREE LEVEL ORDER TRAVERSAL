@@ -1,0 +1,176 @@
+QUESTION 4: BINARY TREE LEVEL ORDER TRAVERSAL
+🔹 Problem Statement
+
+Given the root of a binary tree,
+👉 return the level order traversal of its nodes’ values
+(i.e., left to right, level by level).
+
+✨ Example
+Input Tree:
+        3
+       / \
+      9   20
+          / \
+         15  7
+
+Output:
+[
+  [3],
+  [9, 20],
+  [15, 7]
+]
+
+🧠 Interview Thinking
+
+Keyword:
+
+Level order
+
+Level by level
+
+👉 That is Breadth-First Search (BFS)
+👉 BFS = QUEUE
+
+🧩 Algorithm (Step-by-Step)
+
+If root is null → return empty list
+
+Create a Queue
+
+Push root into queue
+
+While queue is not empty:
+
+Get the size of queue (nodes at current level)
+
+Create a list for current level
+
+Loop size times:
+
+Pop node
+
+Add its value
+
+Push left child (if exists)
+
+Push right child (if exists)
+
+Add level list to answer
+
+🧮 Step-by-Step Example Walkthrough
+Initial
+Queue: [3]
+
+Level 1
+Pop 3 → add [3]
+Push 9, 20
+
+Queue: [9, 20]
+
+Level 2
+Pop 9 → add
+Pop 20 → add
+Push 15, 7
+
+Queue: [15, 7]
+
+Level 3
+Pop 15 → add
+Pop 7 → add
+Queue empty → stop
+
+⏱️ Time & Space Complexity
+
+Time: O(n)
+
+Space: O(n) (queue + result)
+
+☕ Java Code – LEVEL ORDER TRAVERSAL
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+
+        List<List<Integer>> result = new ArrayList<>();
+
+        // Edge case
+        if (root == null)
+            return result;
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        // BFS traversal
+        while (!queue.isEmpty()) {
+
+            int levelSize = queue.size();
+            List<Integer> level = new ArrayList<>();
+
+            // Process current level
+            for (int i = 0; i < levelSize; i++) {
+
+                TreeNode node = queue.poll();
+                level.add(node.val);
+
+                if (node.left != null)
+                    queue.offer(node.left);
+
+                if (node.right != null)
+                    queue.offer(node.right);
+            }
+
+            result.add(level);
+        }
+
+        return result;
+    }
+}
+
+🌳 TreeNode Definition (Interview Standard)
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+}
+
+🔍 LINE-BY-LINE EXPLANATION
+Queue<TreeNode> queue = new LinkedList<>();
+queue.offer(root);
+
+
+👉 Queue stores nodes level-wise
+
+int levelSize = queue.size();
+
+
+👉 Number of nodes in the current level
+
+for (int i = 0; i < levelSize; i++)
+
+
+👉 Ensures only current level nodes are processed
+
+queue.offer(node.left);
+queue.offer(node.right);
+
+
+👉 Push next level nodes
+
+result.add(level);
+
+
+👉 Store each level separately
+
+🎯 Interview Variations (VERY IMPORTANT)
+
+You may be asked to modify this:
+
+Question	Modification
+Zig-Zag Traversal	reverse level list on alternate levels
+Level Order Sum	sum values instead of storing
+Average of Levels	compute average per level
+Right Side View	take last element of each level
