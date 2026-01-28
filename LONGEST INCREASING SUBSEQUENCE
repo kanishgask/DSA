@@ -1,0 +1,136 @@
+✅ LONGEST INCREASING SUBSEQUENCE (LIS)
+🔹 Problem Statement (Interview Version)
+
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+📌 A subsequence does not need to be contiguous.
+
+📌 Example
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: LIS = [2,3,7,101]
+
+🧠 Key Understanding
+
+Subsequence ≠ subarray
+
+Order must be preserved
+
+Increasing must be strict
+
+✅ Approach 1: Dynamic Programming (Most Clear)
+🔹 Idea
+
+Let:
+
+dp[i] = length of LIS ending at index i
+
+
+Each element alone is a subsequence of length 1.
+
+🔹 Transition
+for j < i:
+    if nums[j] < nums[i]:
+        dp[i] = max(dp[i], dp[j] + 1)
+
+🪜 Step-by-Step Dry Run
+
+Input:
+
+[10, 9, 2, 5, 3, 7, 101, 18]
+
+
+DP Array evolution:
+
+[1,1,1,2,2,3,4,4]
+
+
+Maximum value = 4
+
+💻 Java Code (DP – Interview Friendly)
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        int maxLIS = 1;
+
+        // Every element is LIS of length 1
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+        }
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            maxLIS = Math.max(maxLIS, dp[i]);
+        }
+
+        return maxLIS;
+    }
+}
+
+🧩 Line-by-Line Explanation
+dp[i] = 1;
+
+
+✔ Each number itself is a subsequence
+
+if (nums[j] < nums[i])
+
+
+✔ Maintain strictly increasing property
+
+dp[i] = Math.max(dp[i], dp[j] + 1);
+
+
+✔ Extend an existing subsequence
+
+maxLIS = Math.max(maxLIS, dp[i]);
+
+
+✔ Track global maximum
+
+⏱ Complexity (DP)
+Metric	Value
+Time	O(n²)
+Space	O(n)
+⚡ Follow-Up: Optimized O(n log n) Approach (IMPORTANT 🔥)
+🔹 Idea (Patience Sorting)
+
+Maintain a temp array tails
+
+tails[i] = smallest ending value of LIS of length i+1
+
+🔹 Binary search replaces DP inner loop
+💻 Optimized Java Code
+import java.util.*;
+
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length];
+        int size = 0;
+
+        for (int num : nums) {
+            int left = 0, right = size;
+            while (left < right) {
+                int mid = (left + right) / 2;
+                if (tails[mid] < num)
+                    left = mid + 1;
+                else
+                    right = mid;
+            }
+            tails[left] = num;
+            if (left == size) size++;
+        }
+
+        return size;
+    }
+}
+
+🎯 What to SAY in Interview
+
+“First I explained the DP solution in O(n²).
+Since constraints were large, I optimized it using binary search to O(n log n).”
