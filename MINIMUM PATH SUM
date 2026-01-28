@@ -1,0 +1,145 @@
+✅ MINIMUM PATH SUM (Dynamic Programming – Grid)
+🔹 Problem Statement (Interview Version)
+
+You are given an m x n grid filled with non-negative integers.
+Find a path from top-left (0,0) to bottom-right (m-1,n-1), such that the sum of all numbers along its path is minimum.
+
+📌 You can move only right or down at any point.
+
+📌 Example
+Input Grid:
+[
+  [1, 3, 1],
+  [1, 5, 1],
+  [4, 2, 1]
+]
+
+Output: 7
+
+
+Explanation Path
+
+1 → 3 → 1 → 1 → 1 = 7
+
+🧠 Key Observation (Interview Insight)
+
+To reach any cell (i, j), you must come from:
+
+Top cell (i-1, j)
+
+Left cell (i, j-1)
+
+So:
+
+Minimum cost to reach (i, j) = cost of current cell
+➕ minimum of the two previous paths
+
+✅ Dynamic Programming Approach
+
+Define:
+
+dp[i][j] = minimum path sum to reach cell (i, j)
+
+🔹 Recurrence Relation
+dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])
+
+🔹 Base Cases
+dp[0][0] = grid[0][0]
+
+
+First row:
+
+dp[0][j] = dp[0][j-1] + grid[0][j]
+
+
+First column:
+
+dp[i][0] = dp[i-1][0] + grid[i][0]
+
+🪜 Step-by-Step Dry Run
+
+Grid:
+
+1   3   1
+1   5   1
+4   2   1
+
+
+DP Table:
+
+1   4   5
+2   7   6
+6   8   7
+
+
+✅ Answer = dp[2][2] = 7
+
+💻 Java Code (Clean & Interview-Ready)
+class Solution {
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+
+        int[][] dp = new int[m][n];
+
+        // Base case
+        dp[0][0] = grid[0][0];
+
+        // Fill first column
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
+        }
+
+        // Fill first row
+        for (int j = 1; j < n; j++) {
+            dp[0][j] = dp[0][j - 1] + grid[0][j];
+        }
+
+        // Fill rest of dp table
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+}
+
+🧩 Line-by-Line Explanation (What Interviewers Like)
+dp[0][0] = grid[0][0];
+
+
+✔ Only one way to start
+
+dp[i][0] = dp[i - 1][0] + grid[i][0];
+
+
+✔ First column → can only come from top
+
+dp[0][j] = dp[0][j - 1] + grid[0][j];
+
+
+✔ First row → can only come from left
+
+dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);
+
+
+✔ Choose cheapest path to current cell
+
+⏱ Time & Space Complexity
+Type	Complexity
+Time	O(m × n)
+Space	O(m × n)
+⚡ Space Optimized Version (Follow-up)
+
+Use the grid itself or a 1D array
+➡️ space reduced to O(n)
+
+(Interviewers LOVE this follow-up)
+
+🎯 What to SAY in Interview
+
+“This is a classic dynamic programming grid problem.
+Since each cell depends only on top and left, I used DP.
+I built the solution bottom-up and returned the last cell.”
