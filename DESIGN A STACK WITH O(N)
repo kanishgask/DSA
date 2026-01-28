@@ -1,0 +1,136 @@
+✅ DESIGN STACK WITH O(1) getMin() (No Extra Space)
+🔹 Problem Statement (Interview Version)
+
+Design a stack that supports the following operations in O(1) time:
+
+push(x)
+
+pop()
+
+top()
+
+getMin()
+
+⚠️ Constraint:
+You are NOT allowed to use an extra stack.
+
+🧠 Key Insight (The Trick 🔥)
+
+When pushing a new value smaller than current minimum,
+we encode the value before pushing.
+
+🔹 Encoding Formula
+encodedValue = 2 * newValue - currentMin
+
+
+This helps us retrieve the old minimum later.
+
+🧩 How It Works
+Push(x)
+if stack is empty:
+    push x
+    min = x
+else if x >= min:
+    push x
+else:
+    push (2*x - min)
+    min = x
+
+Pop()
+if top >= min:
+    pop normally
+else:
+    previousMin = 2*min - top
+    min = previousMin
+
+Top()
+if top >= min:
+    return top
+else:
+    return min
+
+🪜 Example Dry Run
+
+Operations:
+
+push(5)
+push(3)
+push(2)
+
+
+Internal stack:
+
+[5, 1, 1]   (encoded values)
+min = 2
+
+
+When popping:
+
+pop() → restores previous min = 3
+
+💻 Java Code (Interview-Ready)
+import java.util.Stack;
+
+class MinStack {
+    Stack<Long> stack = new Stack<>();
+    long min;
+
+    public void push(int x) {
+        if (stack.isEmpty()) {
+            stack.push((long) x);
+            min = x;
+        } else if (x >= min) {
+            stack.push((long) x);
+        } else {
+            stack.push(2L * x - min); // encoded value
+            min = x;
+        }
+    }
+
+    public void pop() {
+        if (stack.isEmpty()) return;
+
+        long top = stack.pop();
+        if (top < min) {
+            min = 2 * min - top; // restore previous min
+        }
+    }
+
+    public int top() {
+        long top = stack.peek();
+        if (top < min)
+            return (int) min;
+        return (int) top;
+    }
+
+    public int getMin() {
+        return (int) min;
+    }
+}
+
+🧩 Line-by-Line Explanation
+stack.push(2*x - min);
+
+
+✔ Stores info about previous minimum
+
+if (top < min)
+
+
+✔ Detects encoded value
+
+min = 2*min - top;
+
+
+✔ Recovers previous minimum
+
+⏱ Complexity
+Operation	Time	Space
+push	O(1)	O(1)
+pop	O(1)	O(1)
+top	O(1)	O(1)
+getMin	O(1)	O(1)
+🎯 What to SAY in Interview
+
+“Instead of using an extra stack, I encode values when a new minimum appears.
+This allows restoring previous minimums during pop operations while keeping O(1) space.”
