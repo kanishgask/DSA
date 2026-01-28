@@ -1,0 +1,146 @@
+✅ KMP ALGORITHM (Knuth–Morris–Pratt)
+🔹 Problem Statement (Interview Version)
+
+Given a text string txt and a pattern string pat, find the first index where pat appears in txt.
+
+📌 Return -1 if the pattern does not exist.
+
+📌 Example
+Text    = "ababcabcabababd"
+Pattern = "ababd"
+
+Output = 10
+
+🧠 Why KMP?
+Naive Approach
+
+Try matching from every index
+
+Worst case: O(n × m)
+
+🔥 KMP Optimization
+
+Avoid re-checking characters
+
+Use LPS array (Longest Prefix which is also Suffix)
+
+🧩 Core Concept: LPS Array
+🔹 LPS Meaning
+lps[i] = length of longest proper prefix of pattern[0..i]
+         which is also a suffix
+
+🔹 Example: Pattern = "ababd"
+Index	Char	LPS
+0	a	0
+1	b	0
+2	a	1
+3	b	2
+4	d	0
+
+LPS = [0, 0, 1, 2, 0]
+
+🛠 Step 1: Build LPS Array (IMPORTANT)
+💻 Java Code (LPS)
+class Solution {
+    private void buildLPS(String pat, int[] lps) {
+        int len = 0;
+        lps[0] = 0;
+        int i = 1;
+
+        while (i < pat.length()) {
+            if (pat.charAt(i) == pat.charAt(len)) {
+                len++;
+                lps[i] = len;
+                i++;
+            } else {
+                if (len != 0) {
+                    len = lps[len - 1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+    }
+
+🧠 What’s Happening?
+
+len tracks prefix length
+
+On mismatch, we don’t restart
+
+Jump using lps[len-1]
+
+🛠 Step 2: Pattern Searching Using LPS
+💻 Full Java Code (Interview-Ready)
+class Solution {
+    public int strStr(String txt, String pat) {
+        if (pat.length() == 0) return 0;
+
+        int n = txt.length();
+        int m = pat.length();
+        int[] lps = new int[m];
+
+        // Build LPS
+        buildLPS(pat, lps);
+
+        int i = 0, j = 0;
+
+        while (i < n) {
+            if (txt.charAt(i) == pat.charAt(j)) {
+                i++;
+                j++;
+            }
+
+            if (j == m) {
+                return i - j; // match found
+            } else if (i < n && txt.charAt(i) != pat.charAt(j)) {
+                if (j != 0)
+                    j = lps[j - 1];
+                else
+                    i++;
+            }
+        }
+        return -1;
+    }
+
+    private void buildLPS(String pat, int[] lps) {
+        int len = 0;
+        lps[0] = 0;
+        int i = 1;
+
+        while (i < pat.length()) {
+            if (pat.charAt(i) == pat.charAt(len)) {
+                len++;
+                lps[i] = len;
+                i++;
+            } else {
+                if (len != 0) {
+                    len = lps[len - 1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+    }
+}
+
+🪜 Dry Run (Core Idea)
+
+At mismatch:
+
+Do NOT move text pointer back
+Move pattern pointer using LPS
+
+
+That’s the magic.
+
+⏱ Complexity
+Type	Complexity
+Time	O(n + m)
+Space	O(m)
+🎯 What to SAY in Interview
+
+“KMP improves brute-force string matching by preprocessing the pattern into an LPS array.
+On mismatch, we shift the pattern intelligently instead of re-checking characters.”
