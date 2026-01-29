@@ -1,0 +1,152 @@
+MONOTONIC STACK – SUM OF SUBARRAY MINIMUMS
+
+👉 Tests monotonic stack mastery
+👉 Asked in Amazon, Google, Adobe, Flipkart
+👉 Harder than Next Greater Element
+
+1️⃣ Problem Statement
+
+Given an integer array arr, find the sum of the minimum value of every subarray.
+
+Since the answer can be large, return it modulo (10⁹ + 7).
+
+Example
+Input: arr = [3,1,2,4]
+Output: 17
+
+Explanation
+
+Subarrays and minimums:
+
+[3] → 3
+[3,1] → 1
+[3,1,2] → 1
+[3,1,2,4] → 1
+[1] → 1
+[1,2] → 1
+[1,2,4] → 1
+[2] → 2
+[2,4] → 2
+[4] → 4
+Sum = 17
+
+2️⃣ Key Idea 💡 (CRUCIAL)
+
+Instead of generating subarrays (O(n²)),
+we count how many subarrays each element is the minimum of.
+
+For each element:
+
+contribution = arr[i] × left × right
+
+
+Where:
+
+left = number of elements greater than arr[i] on left
+
+right = number of elements greater or equal on right
+
+3️⃣ Algorithm (Monotonic Stack)
+Step 1: Previous Smaller Element (PSE)
+
+Use monotonic increasing stack
+
+Find distance to previous smaller element
+
+Step 2: Next Smaller Element (NSE)
+
+Use monotonic stack again
+
+Find distance to next smaller element
+
+Step 3: Calculate Contribution
+
+Add:
+
+arr[i] × left[i] × right[i]
+
+4️⃣ Java Code (Interview-Ready)
+import java.util.*;
+
+class SumOfSubarrayMinimums {
+
+    public static int sumSubarrayMins(int[] arr) {
+
+        int n = arr.length;
+        int MOD = 1_000_000_007;
+
+        int[] left = new int[n];
+        int[] right = new int[n];
+
+        Stack<Integer> stack = new Stack<>();
+
+        // Step 1: Previous Less Element
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && arr[stack.peek()] > arr[i]) {
+                stack.pop();
+            }
+
+            left[i] = stack.isEmpty() ? (i + 1) : (i - stack.peek());
+            stack.push(i);
+        }
+
+        stack.clear();
+
+        // Step 2: Next Less or Equal Element
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && arr[stack.peek()] >= arr[i]) {
+                stack.pop();
+            }
+
+            right[i] = stack.isEmpty() ? (n - i) : (stack.peek() - i);
+            stack.push(i);
+        }
+
+        // Step 3: Contribution
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            long contrib = (long) arr[i] * left[i] * right[i];
+            sum = (sum + contrib) % MOD;
+        }
+
+        return (int) sum;
+    }
+}
+
+5️⃣ Line-by-Line Explanation 🔍
+🔹 Left Array
+left[i] = i - stack.peek();
+
+
+👉 Count of subarrays ending at i where arr[i] is minimum
+
+🔹 Right Array
+right[i] = stack.peek() - i;
+
+
+👉 Count of subarrays starting at i
+
+🔹 Why > on left and >= on right? 🤔
+
+To avoid double counting duplicates.
+
+6️⃣ Dry Run (arr = [3,1,2,4]) 🧠
+Index	Value	Left	Right	Contribution
+0	3	1	1	3
+1	1	2	3	6
+2	2	1	2	4
+3	4	1	1	4
+
+Sum = 17
+
+7️⃣ Complexity Analysis
+Metric	Complexity
+Time	O(n)
+Space	O(n)
+8️⃣ Why Interviewers Love This ❤️
+
+Deep stack logic
+
+Mathematical insight
+
+Avoiding brute force
