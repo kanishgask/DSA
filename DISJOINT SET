@@ -1,0 +1,218 @@
+🔥 QUESTION 2: DISJOINT SET (UNION–FIND)
+
+👉 Extremely important for Graph problems, Cycle detection, Connected components, MST (Kruskal’s Algorithm)
+
+1️⃣ Problem Statement
+
+Design a Disjoint Set (Union–Find) data structure that supports:
+
+find(x) → Finds the ultimate parent of x
+
+union(x, y) → Connects two elements
+
+Efficient operations using:
+
+Path Compression
+
+Union by Rank
+
+Example Problem
+n = 5
+Union(0, 1)
+Union(1, 2)
+Union(3, 4)
+
+Find(2) → 0
+Find(4) → 3
+Are 2 and 4 connected? → No
+
+2️⃣ Key Idea 💡
+
+Disjoint Set:
+
+Keeps track of groups
+
+Each group has one leader (parent)
+
+Two optimizations:
+
+Path Compression → makes find fast
+
+Union by Rank → keeps tree shallow
+
+3️⃣ Data Structures Used
+
+parent[] → stores parent of each node
+
+rank[] → approximate depth of tree
+
+4️⃣ Algorithm
+➤ Initialize
+
+Each node is its own parent
+
+Rank = 0
+
+➤ Find (with Path Compression)
+
+If node is its own parent → return it
+
+Else:
+
+Recursively find parent
+
+Attach directly to root
+
+➤ Union (by Rank)
+
+Find root of both elements
+
+Attach smaller depth tree under larger
+
+If equal, increase rank
+
+5️⃣ Java Code (Interview-Ready)
+class DisjointSet {
+
+    int[] parent;
+    int[] rank;
+
+    // Step 1: Constructor
+    public DisjointSet(int n) {
+        parent = new int[n];
+        rank = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            parent[i] = i; // each node is its own parent
+            rank[i] = 0;
+        }
+    }
+
+    // Step 2: Find with Path Compression
+    public int find(int node) {
+        if (parent[node] != node) {
+            parent[node] = find(parent[node]); 
+        }
+        return parent[node];
+    }
+
+    // Step 3: Union by Rank
+    public void union(int u, int v) {
+
+        int parentU = find(u);
+        int parentV = find(v);
+
+        if (parentU == parentV) {
+            return; // already in same set
+        }
+
+        if (rank[parentU] < rank[parentV]) {
+            parent[parentU] = parentV;
+        } 
+        else if (rank[parentU] > rank[parentV]) {
+            parent[parentV] = parentU;
+        } 
+        else {
+            parent[parentV] = parentU;
+            rank[parentU]++;
+        }
+    }
+}
+
+6️⃣ Line-by-Line Explanation 🔍
+🔹 parent and rank arrays
+int[] parent;
+int[] rank;
+
+
+parent[i] → leader of node i
+
+rank[i] → depth of tree
+
+🔹 Constructor
+parent[i] = i;
+rank[i] = 0;
+
+
+👉 Every node starts as independent set
+
+🔹 Find Method
+if (parent[node] != node)
+
+
+👉 Node is not root
+
+parent[node] = find(parent[node]);
+
+
+👉 Path compression
+
+Flattens structure
+
+Makes future calls faster
+
+🔹 Union Method
+int parentU = find(u);
+int parentV = find(v);
+
+
+👉 Find leaders
+
+if (parentU == parentV) return;
+
+
+👉 Cycle prevention
+
+rank[parentU] < rank[parentV]
+
+
+👉 Attach smaller depth tree under larger
+
+rank[parentU]++;
+
+
+👉 Increase rank when equal height trees merge
+
+7️⃣ Dry Run Example 🧠
+Initial
+parent = [0,1,2,3,4]
+rank   = [0,0,0,0,0]
+
+union(0,1)
+parent = [0,0,2,3,4]
+rank   = [1,0,0,0,0]
+
+union(1,2)
+find(1) → 0
+find(2) → 2
+
+parent = [0,0,0,3,4]
+rank   = [1,0,0,0,0]
+
+union(3,4)
+parent = [0,0,0,3,3]
+rank   = [1,0,0,1,0]
+
+find(2)
+2 → parent[2] = 0
+
+
+✅ Path compressed
+
+8️⃣ Time & Space Complexity
+Operation	Complexity
+Find	O(α(n)) ≈ O(1)
+Union	O(α(n))
+Space	O(n)
+
+👉 α(n) = inverse Ackermann (almost constant)
+
+9️⃣ Where This Is Used (Interview Gold ⭐)
+
+Redundant Connection
+
+Cycle detection in Graph
+
+Kruskal’s Minimum Spanning Tree
+
+Number of Connected Components
