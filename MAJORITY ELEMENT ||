@@ -1,0 +1,182 @@
+MAJORITY ELEMENT – II (Elements Appearing More Than ⌊n/3⌋ Times)
+
+👉 You already solved Majority Element (n/2)
+👉 This n/3 version is harder and frequently asked in product-based interviews
+
+1️⃣ Problem Statement
+
+Given an integer array nums, return all elements that appear more than ⌊n/3⌋ times.
+
+At most 2 elements can satisfy this condition.
+
+Example 1
+Input: nums = [3,2,3]
+Output: [3]
+
+Example 2
+Input: nums = [1,1,1,3,3,2,2,2]
+Output: [1,2]
+
+2️⃣ Key Observation 💡 (VERY IMPORTANT)
+
+For n/3, there can be at most two majority elements
+
+Uses extended Moore’s Voting Algorithm
+
+3️⃣ Algorithm (Two-Pass Approach)
+Pass 1: Find Candidates
+
+Maintain:
+
+candidate1, candidate2
+
+count1, count2
+
+Pass 2: Verify
+
+Count actual frequency of candidates
+
+Include only if count > ⌊n/3⌋
+
+4️⃣ Algorithm Steps
+➤ First Pass
+
+If number equals candidate1 → count1++
+
+Else if equals candidate2 → count2++
+
+Else if count1 == 0 → set candidate1
+
+Else if count2 == 0 → set candidate2
+
+Else → decrement both counts
+
+➤ Second Pass
+
+Re-count frequency
+
+Confirm valid majorities
+
+5️⃣ Java Code (Clean & Interview-Ready)
+import java.util.*;
+
+class MajorityElementII {
+
+    public static List<Integer> majorityElement(int[] nums) {
+
+        int candidate1 = 0, candidate2 = 0;
+        int count1 = 0, count2 = 0;
+
+        // First pass: find candidates
+        for (int num : nums) {
+            if (candidate1 == num) {
+                count1++;
+            } else if (candidate2 == num) {
+                count2++;
+            } else if (count1 == 0) {
+                candidate1 = num;
+                count1 = 1;
+            } else if (count2 == 0) {
+                candidate2 = num;
+                count2 = 1;
+            } else {
+                count1--;
+                count2--;
+            }
+        }
+
+        // Second pass: verify candidates
+        count1 = 0;
+        count2 = 0;
+
+        for (int num : nums) {
+            if (num == candidate1) count1++;
+            else if (num == candidate2) count2++;
+        }
+
+        List<Integer> result = new ArrayList<>();
+        int n = nums.length;
+
+        if (count1 > n / 3) result.add(candidate1);
+        if (count2 > n / 3) result.add(candidate2);
+
+        return result;
+    }
+}
+
+6️⃣ Line-by-Line Explanation 🔍
+🔹 Candidate Variables
+int candidate1 = 0, candidate2 = 0;
+int count1 = 0, count2 = 0;
+
+
+Store possible majority elements
+
+🔹 First Pass Logic
+if (candidate1 == num)
+    count1++;
+
+
+👉 Strengthen candidate1
+
+else if (count1 == 0)
+    candidate1 = num;
+
+
+👉 Pick a new candidate if slot is empty
+
+else {
+    count1--;
+    count2--;
+}
+
+
+👉 Pairwise elimination (core trick)
+
+🔹 Why Elimination Works 🧠
+
+Removing 3 different elements keeps majority intact
+(because majority appears more than n/3)
+
+🔹 Second Pass
+count1 = 0;
+count2 = 0;
+
+
+Reset counters to verify actual frequency
+
+7️⃣ Example Dry Run 🧠
+Input
+nums = [1,1,1,3,3,2,2,2]
+n = 8 → n/3 = 2
+
+After Pass 1
+candidate1 = 1
+candidate2 = 2
+
+After Pass 2
+count(1) = 3
+count(2) = 3
+
+
+✅ Output → [1, 2]
+
+8️⃣ Time & Space Complexity
+Metric	Complexity
+Time	O(n)
+Space	O(1)
+9️⃣ Why Interviewers LOVE This ❤️
+
+Constant space
+
+Non-intuitive logic
+
+Tests algorithmic insight
+
+🎯 FINAL SUMMARY (Your Missing 5)
+#	Question
+1	Trie (Prefix Tree)
+2	Disjoint Set (Union-Find)
+3	Topological Sort (Kahn)
+4	Fenwick Tree
+5	Majority Element II (n/3)
