@@ -1,0 +1,236 @@
+🔥 TOP DSA QUESTION #1 (Not in Your List)
+IMPLEMENT TRIE (PREFIX TREE)
+
+👉 Very important for FAANG, string problems, autocomplete, search engines
+
+1️⃣ Problem Statement
+
+Design a Trie (Prefix Tree) data structure that supports the following operations:
+
+insert(String word) → Insert a word into the trie
+
+search(String word) → Return true if the word exists
+
+startsWith(String prefix) → Return true if any word starts with this prefix
+
+Example
+Trie trie = new Trie();
+trie.insert("apple");
+trie.search("apple");   // true
+trie.search("app");     // false
+trie.startsWith("app"); // true
+trie.insert("app");
+trie.search("app");     // true
+
+2️⃣ Key Idea (Very Important 💡)
+
+A Trie:
+
+Stores words character by character
+
+Each node represents one character
+
+Paths from root → leaf represent a word
+
+3️⃣ Trie Node Structure
+
+Each Trie node contains:
+
+children[26] → for characters a to z
+
+isEnd → marks end of a word
+
+4️⃣ Algorithm
+➤ Insert Word
+
+Start from root
+
+For each character:
+
+If child does not exist → create it
+
+Move to next node
+
+Mark isEnd = true
+
+➤ Search Word
+
+Traverse character by character
+
+If any character missing → return false
+
+After traversal, check isEnd
+
+➤ Starts With
+
+Traverse prefix
+
+If traversal succeeds → return true
+
+5️⃣ Java Code (Clean + Interview Ready)
+class Trie {
+
+    // Step 1: Trie Node definition
+    private class TrieNode {
+        TrieNode[] children;
+        boolean isEnd;
+
+        public TrieNode() {
+            children = new TrieNode[26]; // a-z
+            isEnd = false;
+        }
+    }
+
+    private TrieNode root;
+
+    // Step 2: Constructor
+    public Trie() {
+        root = new TrieNode(); // empty root
+    }
+
+    // Step 3: Insert word
+    public void insert(String word) {
+        TrieNode current = root;
+
+        for (char ch : word.toCharArray()) {
+            int index = ch - 'a';
+
+            if (current.children[index] == null) {
+                current.children[index] = new TrieNode();
+            }
+
+            current = current.children[index];
+        }
+
+        current.isEnd = true;
+    }
+
+    // Step 4: Search word
+    public boolean search(String word) {
+        TrieNode current = root;
+
+        for (char ch : word.toCharArray()) {
+            int index = ch - 'a';
+
+            if (current.children[index] == null) {
+                return false;
+            }
+
+            current = current.children[index];
+        }
+
+        return current.isEnd;
+    }
+
+    // Step 5: StartsWith prefix
+    public boolean startsWith(String prefix) {
+        TrieNode current = root;
+
+        for (char ch : prefix.toCharArray()) {
+            int index = ch - 'a';
+
+            if (current.children[index] == null) {
+                return false;
+            }
+
+            current = current.children[index];
+        }
+
+        return true;
+    }
+}
+
+6️⃣ Line-by-Line Explanation (Very Detailed 🔍)
+🔹 TrieNode Class
+TrieNode[] children;
+boolean isEnd;
+
+
+children[26] → links to next characters
+
+isEnd → marks end of complete word
+
+🔹 Insert Function
+TrieNode current = root;
+
+
+👉 Start from root
+
+int index = ch - 'a';
+
+
+👉 Converts character to index (e.g., 'c' - 'a' = 2)
+
+if (current.children[index] == null)
+    current.children[index] = new TrieNode();
+
+
+👉 Create node if character path doesn’t exist
+
+current = current.children[index];
+
+
+👉 Move to next node
+
+current.isEnd = true;
+
+
+👉 Mark end of word
+
+🔹 Search Function
+if (current.children[index] == null)
+    return false;
+
+
+👉 If character path missing → word not present
+
+return current.isEnd;
+
+
+👉 Ensures entire word exists (not just prefix)
+
+🔹 StartsWith Function
+
+Same traversal as search, but:
+
+return true;
+
+
+👉 No need to check isEnd
+
+7️⃣ Example Walkthrough 🧠
+Insert "apple"
+root
+ └─ a
+    └─ p
+       └─ p
+          └─ l
+             └─ e (isEnd = true)
+
+Search "app"
+
+Traverses a → p → p
+
+isEnd = false
+❌ returns false
+
+StartsWith "app"
+
+Traversal successful
+✅ returns true
+
+8️⃣ Time & Space Complexity
+Operation	Time	Space
+Insert	O(n)	O(n)
+Search	O(n)	O(1)
+Prefix	O(n)	O(1)
+
+👉 n = length of word
+
+9️⃣ Why Interviewers Love This Question ❤️
+
+Tests data structures
+
+Tests string handling
+
+Used in autocomplete, spell checkers, dictionaries
