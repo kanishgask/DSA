@@ -1,0 +1,206 @@
+TOPOLOGICAL SORT – KAHN’S ALGORITHM (BFS)
+
+👉 Fundamental for DAG graphs, dependency resolution, build systems, task scheduling
+
+Even though you solved Alien Dictionary and Course Schedule, interviewers still ask plain Topological Sort very often.
+
+1️⃣ Problem Statement
+
+Given a Directed Acyclic Graph (DAG) with V vertices and E edges, return a topological ordering of the vertices.
+
+👉 A topological order is a linear ordering such that
+for every directed edge u → v, vertex u comes before v.
+
+Example
+V = 6
+Edges:
+5 → 2
+5 → 0
+4 → 0
+4 → 1
+2 → 3
+3 → 1
+
+Output:
+5 4 2 3 1 0   (one valid order)
+
+2️⃣ Key Idea 💡 (Super Important)
+
+Kahn’s Algorithm (BFS based):
+
+Count indegree of every node
+
+Nodes with indegree = 0 have no dependencies
+
+Process them first
+
+If graph has a cycle → ❌ topological sort not possible
+
+3️⃣ Algorithm (Step-by-Step)
+Step 1: Build Graph
+
+Use Adjacency List
+
+Step 2: Compute Indegree
+
+Count number of incoming edges for each node
+
+Step 3: Queue Initialization
+
+Push all nodes with indegree = 0
+
+Step 4: BFS
+
+Remove node from queue
+
+Add it to answer
+
+Reduce indegree of neighbors
+
+If neighbor indegree becomes 0, add to queue
+
+Step 5: Cycle Check
+
+If answer size != V → cycle exists
+
+4️⃣ Java Code (Clean & Interview-Ready)
+import java.util.*;
+
+class TopologicalSort {
+
+    public static List<Integer> topoSort(int V, int[][] edges) {
+
+        // Step 1: Create adjacency list
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        // Step 2: Build graph
+        for (int[] edge : edges) {
+            adj.get(edge[0]).add(edge[1]);
+        }
+
+        // Step 3: Compute indegree
+        int[] indegree = new int[V];
+        for (int i = 0; i < V; i++) {
+            for (int neighbor : adj.get(i)) {
+                indegree[neighbor]++;
+            }
+        }
+
+        // Step 4: Queue for BFS
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < V; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+
+        // Step 5: BFS
+        List<Integer> result = new ArrayList<>();
+
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            result.add(node);
+
+            for (int neighbor : adj.get(node)) {
+                indegree[neighbor]--;
+
+                if (indegree[neighbor] == 0) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+
+        // Step 6: Cycle detection
+        if (result.size() != V) {
+            return new ArrayList<>(); // cycle exists
+        }
+
+        return result;
+    }
+}
+
+5️⃣ Line-by-Line Explanation 🔍
+🔹 Adjacency List
+List<List<Integer>> adj = new ArrayList<>();
+
+
+Stores graph as:
+
+u → list of v
+
+🔹 Build Graph
+adj.get(edge[0]).add(edge[1]);
+
+
+Edge: u → v means u must come before v
+
+🔹 Indegree Calculation
+indegree[neighbor]++;
+
+
+Counts number of dependencies for each node
+
+🔹 Queue Initialization
+if (indegree[i] == 0)
+    queue.offer(i);
+
+
+Nodes with no dependencies start first
+
+🔹 BFS Processing
+int node = queue.poll();
+result.add(node);
+
+
+Choose safe node
+
+indegree[neighbor]--;
+
+
+Remove dependency
+
+if (indegree[neighbor] == 0)
+    queue.offer(neighbor);
+
+
+Now neighbor is ready
+
+🔹 Cycle Detection
+if (result.size() != V)
+
+
+Some nodes never reached → cycle exists
+
+6️⃣ Example Dry Run 🧠
+Initial Indegree
+Node:     0 1 2 3 4 5
+Indegree: 2 2 1 1 0 0
+
+Queue
+[4, 5]
+
+Process Flow
+4 → reduce indegree of 0,1
+5 → reduce indegree of 2,0
+2 → reduce indegree of 3
+3 → reduce indegree of 1
+
+Final Order
+[4, 5, 2, 3, 1, 0]
+
+7️⃣ Time & Space Complexity
+Type	Complexity
+Time	O(V + E)
+Space	O(V + E)
+8️⃣ Where Interviewers Use This ❤️
+
+Task Scheduling
+
+Course Prerequisites
+
+Build Dependencies
+
+Deadlock Detection
