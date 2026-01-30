@@ -1,0 +1,116 @@
+🚀 PROBLEM: MINIMUM NUMBER OF ARROWS TO BURST BALLOONS
+🔹 Problem Statement
+
+You are given a 2D array points where
+points[i] = [start, end] represents the horizontal diameter of a balloon.
+
+An arrow can be shot vertically from any x-coordinate and bursts all balloons whose range includes that x-coordinate.
+
+👉 Return the minimum number of arrows required to burst all balloons.
+
+🔹 Why this problem is IMPORTANT
+
+✔ Classic Greedy Interval problem
+✔ Appears simple but tests thinking clarity
+✔ Very common in Amazon / Google / Microsoft
+✔ Similar idea reused in meeting rooms, interval scheduling
+
+🔹 Key Idea 💡 (Greedy Strategy)
+
+Shoot arrows at the end of intervals.
+
+Why?
+
+Shooting at the end gives the maximum chance to burst future balloons.
+
+🔹 Algorithm (Step by Step)
+
+Sort balloons by end coordinate
+
+Shoot first arrow at end of first balloon
+
+For each next balloon:
+
+If its start > arrowPosition
+
+Need a new arrow
+
+Update arrow position to current balloon’s end
+
+Count arrows
+
+🔹 Dry Run Example 🧠
+Input:
+points = [[10,16],[2,8],[1,6],[7,12]]
+
+Step 1 – Sort by end:
+[[1,6], [2,8], [7,12], [10,16]]
+
+Step 2 – Process:
+
+Arrow at 6 → bursts [1,6], [2,8]
+
+Next start = 7 > 6 → need new arrow
+
+Arrow at 12 → bursts [7,12], [10,16]
+
+✅ Answer = 2
+
+🔹 Java Code (Clean & Interview Ready)
+import java.util.*;
+
+class Solution {
+    public int findMinArrowShots(int[][] points) {
+
+        if (points == null || points.length == 0)
+            return 0;
+
+        // Sort based on ending position
+        Arrays.sort(points, (a, b) -> Integer.compare(a[1], b[1]));
+
+        int arrows = 1;
+        int arrowPos = points[0][1];
+
+        for (int i = 1; i < points.length; i++) {
+            // If current balloon starts after arrow position
+            if (points[i][0] > arrowPos) {
+                arrows++;
+                arrowPos = points[i][1];
+            }
+        }
+        return arrows;
+    }
+}
+
+🔹 Line-by-Line Explanation 🧩
+Arrays.sort(points, (a, b) -> Integer.compare(a[1], b[1]));
+
+
+➡ Sort balloons based on ending x-coordinate
+
+int arrows = 1;
+int arrowPos = points[0][1];
+
+
+➡ First arrow shot at end of first balloon
+
+if (points[i][0] > arrowPos)
+
+
+➡ If balloon starts after arrow → cannot burst → new arrow needed
+
+arrows++;
+arrowPos = points[i][1];
+
+
+➡ Shoot new arrow at the end of current balloon
+
+🔹 Time & Space Complexity
+Metric	Value
+Time	O(N log N) (sorting)
+Space	O(1)
+🔹 Interview One-Liner 💡
+
+“This is a greedy interval problem where choosing the balloon’s end coordinate for arrow placement minimizes total arrows.”
+
+Say this → Interviewer smiles 🙂
