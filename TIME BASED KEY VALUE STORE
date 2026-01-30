@@ -1,0 +1,167 @@
+🚀 PROBLEM: TIME BASED KEY–VALUE STORE
+🔹 Problem Statement
+
+Design a Time Based Key-Value Store that supports the following operations:
+
+set(key, value, timestamp)
+
+Stores the key with the given value at the given timestamp.
+
+get(key, timestamp)
+
+Returns the value such that its timestamp is less than or equal to the given timestamp.
+
+If there are multiple values, return the one with the largest timestamp ≤ given timestamp.
+
+If no such value exists, return an empty string "".
+
+Constraints
+
+1 <= key.length, value.length <= 100
+
+1 <= timestamp <= 10^7
+
+All timestamps for a key are strictly increasing.
+
+🔹 Why this is an IMPORTANT interview problem
+
+✔ Tests HashMap + Binary Search
+✔ Real-world use case (versioning, caching, logs)
+✔ Clean design question (low-level design + DSA)
+✔ Asked in Google, Amazon, Uber, Microsoft
+
+🔹 Key Insight 💡
+
+For each key, store (timestamp, value) pairs.
+
+Since timestamps are always increasing, we can:
+
+Store them in a List
+
+Use Binary Search during get() operation
+
+🔹 Data Structure Used
+HashMap<String, List<Pair(timestamp, value)>>
+
+🔹 Algorithm
+set(key, value, timestamp)
+
+If key does not exist → create new list
+
+Add (timestamp, value) to the list
+
+⏱ Time: O(1)
+
+get(key, timestamp)
+
+If key not present → return ""
+
+Binary search on timestamps list:
+
+Find largest timestamp ≤ given timestamp
+
+Return corresponding value
+
+⏱ Time: O(log N)
+
+🔹 Java Code (Interview-ready)
+import java.util.*;
+
+class TimeMap {
+
+    // Map to store key -> list of (timestamp, value)
+    Map<String, List<Pair>> map;
+
+    public TimeMap() {
+        map = new HashMap<>();
+    }
+
+    // SET operation
+    public void set(String key, String value, int timestamp) {
+        map.putIfAbsent(key, new ArrayList<>());
+        map.get(key).add(new Pair(timestamp, value));
+    }
+
+    // GET operation
+    public String get(String key, int timestamp) {
+        if (!map.containsKey(key)) return "";
+
+        List<Pair> list = map.get(key);
+        int left = 0, right = list.size() - 1;
+        String result = "";
+
+        // Binary Search
+        while (left <= right) {
+            int mid = (left + right) / 2;
+
+            if (list.get(mid).timestamp <= timestamp) {
+                result = list.get(mid).value;
+                left = mid + 1;  // search right side
+            } else {
+                right = mid - 1;
+            }
+        }
+        return result;
+    }
+
+    // Helper class
+    class Pair {
+        int timestamp;
+        String value;
+
+        Pair(int t, String v) {
+            timestamp = t;
+            value = v;
+        }
+    }
+}
+
+🔹 Step-by-Step Example 🧠
+Operations:
+set("foo", "bar", 1)
+set("foo", "bar2", 4)
+
+get("foo", 1) → ?
+get("foo", 3) → ?
+get("foo", 4) → ?
+get("foo", 5) → ?
+
+Stored Data Structure:
+"foo" →
+[(1, "bar"), (4, "bar2")]
+
+get("foo", 1)
+
+Largest timestamp ≤ 1 → 1
+
+✅ Output: "bar"
+
+get("foo", 3)
+
+Timestamps ≤ 3 → 1
+
+✅ Output: "bar"
+
+get("foo", 4)
+
+Timestamp = 4 exists
+
+✅ Output: "bar2"
+
+get("foo", 5)
+
+Largest timestamp ≤ 5 → 4
+
+✅ Output: "bar2"
+
+🔹 Complexity Analysis
+Operation	Time	Space
+set	O(1)	O(N)
+get	O(log N)	O(1)
+🔹 Interview Tip 🧠✨
+
+Say this in interviews:
+
+“Since timestamps are strictly increasing, we can optimize get using binary search instead of linear scan.”
+
+This line alone = strong impression 🔥
