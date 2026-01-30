@@ -1,0 +1,127 @@
+🚀 PROBLEM: TASK SCHEDULER
+🔹 Problem Statement
+
+You are given an array of characters tasks, where each character represents a task type.
+You are also given an integer n representing the cooldown interval.
+
+Each task takes 1 unit of time, and the same task must be separated by at least n units of time.
+
+👉 Return the minimum number of time units required to complete all tasks.
+
+Example
+Input:  tasks = ['A','A','A','B','B','B'], n = 2
+Output: 8
+
+🔹 Why this problem is GOLD 🥇
+
+✔ Very frequent in Google, Amazon, Microsoft
+✔ Tests Greedy + Math + Heap intuition
+✔ Multiple approaches (heap / formula)
+✔ Shows problem-solving maturity
+
+🔹 Key Insight 💡
+
+The task with maximum frequency determines the idle slots.
+
+🔹 Optimal Formula Approach (Most Expected in Interviews)
+
+Let:
+
+maxFreq = highest frequency of any task
+
+countMax = number of tasks with frequency = maxFreq
+
+Formula:
+Answer = max(
+    totalTasks,
+    (maxFreq - 1) * (n + 1) + countMax
+)
+
+🔹 Dry Run Example 🧠
+Input:
+tasks = [A, A, A, B, B, B]
+n = 2
+
+Step 1 – Frequencies
+A → 3
+B → 3
+
+Step 2 – Values
+maxFreq = 3
+countMax = 2
+
+Step 3 – Formula
+(3 - 1) * (2 + 1) + 2 = 2 * 3 + 2 = 8
+
+
+✅ Answer = 8
+
+🔹 Visual Intuition 📊
+A _ _ A _ _ A
+B _ _ B _ _ B
+
+
+Fill gaps optimally → total = 8 units
+
+🔹 Java Code (Formula-Based – BEST)
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+
+        int[] freq = new int[26];
+
+        // Count frequency
+        for (char task : tasks) {
+            freq[task - 'A']++;
+        }
+
+        int maxFreq = 0;
+        for (int f : freq) {
+            maxFreq = Math.max(maxFreq, f);
+        }
+
+        int countMax = 0;
+        for (int f : freq) {
+            if (f == maxFreq)
+                countMax++;
+        }
+
+        int partCount = maxFreq - 1;
+        int partLength = n + 1;
+        int totalSlots = partCount * partLength + countMax;
+
+        return Math.max(totalSlots, tasks.length);
+    }
+}
+
+🔹 Line-by-Line Logic 🧩
+partCount = maxFreq - 1;
+
+
+➡ Number of gaps created by most frequent task
+
+partLength = n + 1;
+
+
+➡ Each gap needs space for cooldown
+
+totalSlots = partCount * partLength + countMax;
+
+
+➡ Total length after placing max tasks
+
+Math.max(totalSlots, tasks.length)
+
+
+➡ If no idle time needed → tasks length wins
+
+🔹 Complexity
+Metric	Value
+Time	O(N)
+Space	O(1)
+🔹 Interview Mic-Drop 🎤
+
+Say this confidently:
+
+“The task with the highest frequency dictates the schedule length; others only fill the idle gaps.”
+
+💥 That’s senior-level thinking.
