@@ -1,0 +1,202 @@
+2️⃣ Find the Celebrity Problem
+📌 Why interviewers LOVE this
+
+Asked in Amazon, Google, Microsoft
+
+Tests stack / two-pointer thinking
+
+Checks how well you eliminate candidates logically
+
+Looks easy → tricky if logic isn’t clear
+
+🧠 Problem Statement
+
+You are at a party with N people (0 to N-1).
+
+You are given a helper function:
+
+knows(a, b)
+
+
+Returns true if person a knows person b
+
+Returns false otherwise
+
+A Celebrity is someone who:
+
+Everyone knows the celebrity
+
+The celebrity knows no one
+
+👉 Find the celebrity’s index, or return -1 if no celebrity exists.
+
+✨ Example
+N = 4
+
+knows matrix:
+0 1 1 0
+0 0 1 0
+0 0 0 0
+0 1 1 0
+
+
+✅ Person 2 is the celebrity
+
+Everyone knows 2
+
+2 knows no one
+
+💡 Brute Force (❌ Not Preferred)
+
+For each person:
+
+Check if they know nobody → O(N)
+
+Check if everyone knows them → O(N)
+
+Total = O(N²) ❌
+
+Interviewers want O(N) 💥
+
+🚀 Optimal Approach (Key Insight)
+
+👉 If A knows B, then:
+
+A cannot be a celebrity
+
+Maybe B is
+
+So we eliminate people one by one until only one candidate remains.
+
+🧩 Algorithm (Two-Pointer Method)
+
+Start with:
+
+left = 0
+
+right = N - 1
+
+While left < right:
+
+If left knows right → left++
+
+Else → right--
+
+Now only one candidate remains
+
+Verify:
+
+Candidate knows nobody
+
+Everyone knows the candidate
+
+Return candidate or -1
+
+✅ Java Code
+public class CelebrityProblem {
+
+    // Example knows API
+    static boolean knows(int a, int b, int[][] matrix) {
+        return matrix[a][b] == 1;
+    }
+
+    public static int findCelebrity(int n, int[][] matrix) {
+        int left = 0;
+        int right = n - 1;
+
+        // Step 1: Find possible candidate
+        while (left < right) {
+            if (knows(left, right, matrix)) {
+                left++;    // left cannot be celebrity
+            } else {
+                right--;   // right cannot be celebrity
+            }
+        }
+
+        int candidate = left;
+
+        // Step 2: Verify candidate
+        for (int i = 0; i < n; i++) {
+            if (i != candidate) {
+                if (knows(candidate, i, matrix) || !knows(i, candidate, matrix)) {
+                    return -1;
+                }
+            }
+        }
+        return candidate;
+    }
+
+    public static void main(String[] args) {
+        int[][] matrix = {
+                {0, 1, 1, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 0},
+                {0, 1, 1, 0}
+        };
+
+        System.out.println(findCelebrity(4, matrix)); // Output: 2
+    }
+}
+
+🔍 Line-by-Line Explanation
+int left = 0;
+int right = n - 1;
+
+
+✔ Start with all people as candidates
+
+if (knows(left, right)) {
+    left++;
+}
+
+
+✔ If left knows right → ❌ left cannot be celebrity
+
+else {
+    right--;
+}
+
+
+✔ If left doesn't know right → ❌ right cannot be celebrity
+
+int candidate = left;
+
+
+✔ Only one possible celebrity remains
+
+Verification Step (MOST IMPORTANT 🔥)
+if (knows(candidate, i) || !knows(i, candidate))
+    return -1;
+
+
+✔ Celebrity must:
+
+Know nobody
+
+Be known by everyone
+
+🧪 Example Walkthrough
+
+Initial:
+
+left = 0, right = 3
+
+
+0 knows 3? ❌ → remove 3
+
+0 knows 2? ✅ → remove 0
+
+1 knows 2? ✅ → remove 1
+
+👉 Candidate = 2
+
+Verification ✔️
+Return 2
+
+⏱️ Time & Space Complexity
+
+Time: O(N) 🔥
+
+Space: O(1) 🔥
+
+Perfect interview solution 💯
