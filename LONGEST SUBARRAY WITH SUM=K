@@ -1,0 +1,152 @@
+4️⃣ Largest Subarray With Sum = K
+📌 Why interviewers ask this
+
+Asked in Amazon, Flipkart, Microsoft
+
+Tests prefix sum + hashmap
+
+Real-world logic (financial data, logs, analytics)
+
+🧠 Problem Statement
+
+Given an integer array and an integer K,
+find the length of the longest contiguous subarray whose sum is exactly K.
+
+✨ Examples
+Example 1
+Input: nums = [10, 5, 2, 7, 1, 9], K = 15
+Output: 4
+
+
+✔ Subarray: [5, 2, 7, 1]
+
+Example 2
+Input: nums = [-1, 2, 3], K = 5
+Output: 2
+
+
+✔ Subarray: [2, 3]
+
+💡 Key Interview Insight
+
+If:
+
+prefixSum[j] - prefixSum[i] = K
+
+
+Then:
+
+prefixSum[i] = prefixSum[j] - K
+
+
+👉 Use HashMap to store the first occurrence of each prefix sum.
+
+🧩 Algorithm (Prefix Sum + HashMap)
+
+Initialize:
+
+sum = 0
+
+maxLen = 0
+
+HashMap to store sum → index
+
+Traverse the array:
+
+Add current element to sum
+
+If:
+
+sum == K → update maxLen
+
+If:
+
+(sum - K) exists in map
+→ possible subarray found
+
+Store sum in map only if not present
+
+✅ Java Code
+import java.util.HashMap;
+
+public class LargestSubarraySumK {
+
+    public static int largestSubarray(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+
+        int sum = 0;
+        int maxLen = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+
+            // Case 1: Sum equals K
+            if (sum == k) {
+                maxLen = i + 1;
+            }
+
+            // Case 2: Subarray found
+            if (map.containsKey(sum - k)) {
+                maxLen = Math.max(maxLen, i - map.get(sum - k));
+            }
+
+            // Store first occurrence of sum
+            if (!map.containsKey(sum)) {
+                map.put(sum, i);
+            }
+        }
+        return maxLen;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {10, 5, 2, 7, 1, 9};
+        int k = 15;
+        System.out.println(largestSubarray(arr, k)); // Output: 4
+    }
+}
+
+🔍 Line-by-Line Explanation
+sum += nums[i];
+
+
+✔ Build prefix sum while traversing
+
+if (sum == k)
+    maxLen = i + 1;
+
+
+✔ Subarray from index 0 → i matches K
+
+if (map.containsKey(sum - k))
+
+
+✔ Subarray exists between:
+
+map.get(sum - k) + 1  →  i
+
+if (!map.containsKey(sum)) {
+    map.put(sum, i);
+}
+
+
+✔ Save only first index to maximize length
+
+🧪 Example Walkthrough
+
+Input: [10, 5, 2, 7, 1, 9], K = 15
+
+Index	Value	Sum	Action
+0	10	10	store
+1	5	15	✔ maxLen = 2
+2	2	17	store
+3	7	24	(24-15=9 ❌)
+4	1	25	✔ (25-15=10 found) → len=4
+5	9	34	no update
+
+✅ Answer = 4
+
+⏱️ Time & Space Complexity
+
+Time: O(n)
+
+Space: O(n)
