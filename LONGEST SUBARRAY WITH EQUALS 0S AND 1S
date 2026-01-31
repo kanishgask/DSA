@@ -1,0 +1,185 @@
+1️⃣ Longest Subarray With Equal 0s and 1s
+📌 Why this is important
+
+Asked in Amazon, Microsoft, Google
+
+Tests HashMap + prefix sum
+
+Looks simple but most people fail in interviews
+
+🧠 Problem Statement
+
+You are given a binary array (containing only 0 and 1).
+
+👉 Find the length of the longest contiguous subarray that contains equal number of 0s and 1s.
+
+✨ Example
+
+Input
+
+arr = [0, 1, 0, 1, 1, 0, 0]
+
+
+Output
+
+6
+
+
+Explanation
+The subarray [0, 1, 0, 1, 1, 0] has:
+
+3 zeros
+
+3 ones
+✅ Balanced → length = 6
+
+💡 Key Interview Insight
+
+If:
+
+number of 0s == number of 1s
+Then:
+
+Convert 0 → -1
+
+Convert 1 → +1
+
+👉 The problem becomes:
+
+Find the longest subarray with sum = 0
+
+Classic prefix sum + HashMap problem 🚀
+
+🧩 Algorithm (Step-by-Step)
+
+Initialize:
+
+sum = 0
+
+maxLen = 0
+
+HashMap to store first index of each prefix sum
+
+Traverse the array:
+
+If element is 0, treat it as -1
+
+If element is 1, treat it as +1
+
+Update prefix sum
+
+If:
+
+sum == 0 → subarray from 0 to i is balanced
+
+sum already exists in map → subarray between indices is balanced
+
+Update maxLen
+
+✅ Java Code
+import java.util.HashMap;
+
+public class LongestBalancedSubarray {
+
+    public static int findMaxLength(int[] nums) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        
+        int sum = 0;        // Prefix sum
+        int maxLen = 0;     // Result
+
+        for (int i = 0; i < nums.length; i++) {
+
+            // Step 1: Convert 0 to -1
+            if (nums[i] == 0)
+                sum = sum - 1;
+            else
+                sum = sum + 1;
+
+            // Step 2: If sum becomes 0
+            if (sum == 0) {
+                maxLen = i + 1;
+            }
+
+            // Step 3: If sum seen before
+            if (map.containsKey(sum)) {
+                maxLen = Math.max(maxLen, i - map.get(sum));
+            } 
+            // Step 4: Store first occurrence of sum
+            else {
+                map.put(sum, i);
+            }
+        }
+        return maxLen;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {0, 1, 0, 1, 1, 0, 0};
+        System.out.println(findMaxLength(arr));
+    }
+}
+
+🔍 Line-by-Line Explanation
+HashMap<Integer, Integer> map = new HashMap<>();
+
+
+✔ Stores prefixSum → first index
+
+int sum = 0;
+int maxLen = 0;
+
+
+✔ sum tracks balance
+✔ maxLen stores answer
+
+if (nums[i] == 0)
+    sum = sum - 1;
+else
+    sum = sum + 1;
+
+
+✔ Convert:
+
+0 → -1
+
+1 → +1
+
+if (sum == 0) {
+    maxLen = i + 1;
+}
+
+
+✔ From index 0 to i, equal 0s and 1s found
+
+if (map.containsKey(sum)) {
+    maxLen = Math.max(maxLen, i - map.get(sum));
+}
+
+
+✔ Same sum seen before → zero-sum subarray between indices
+
+else {
+    map.put(sum, i);
+}
+
+
+✔ Store only first occurrence to maximize length
+
+🧪 Example Walkthrough (Key Steps)
+Index	Value	Converted	Prefix Sum	Action
+0	0	-1	-1	store (-1 → 0)
+1	1	+1	0	maxLen = 2
+2	0	-1	-1	length = 2
+3	1	+1	0	maxLen = 4
+4	1	+1	1	store (1 → 4)
+5	0	-1	0	maxLen = 6
+6	0	-1	-1	length = 6
+
+✅ Final Answer = 6
+
+⏱️ Time & Space Complexity
+
+Time: O(n)
+
+Space: O(n)
+
+Perfect for interviews ✔️
