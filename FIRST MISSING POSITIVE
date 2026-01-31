@@ -1,0 +1,153 @@
+3️⃣ First Missing Positive
+📌 Why interviewers ask this
+
+Asked in Google, Amazon, Microsoft
+
+Tests array manipulation + in-place hashing
+
+Simple statement, very tricky logic
+
+Filters strong candidates instantly
+
+🧠 Problem Statement
+
+Given an unsorted integer array, find the smallest missing positive integer.
+
+Constraints:
+
+Time: O(n)
+
+Space: O(1) (in-place)
+
+✨ Example
+Example 1
+Input: [1, 2, 0]
+Output: 3
+
+Example 2
+Input: [3, 4, -1, 1]
+Output: 2
+
+Example 3
+Input: [7, 8, 9, 11, 12]
+Output: 1
+
+💡 Key Insight (VERY IMPORTANT)
+
+The answer must lie between 1 and n+1
+(n = array length)
+
+So:
+👉 We place each number x at index x-1
+
+🧩 Algorithm (In-Place Index Mapping)
+
+Traverse array
+
+While:
+
+nums[i] is in range 1..n
+
+AND nums[i] not already in correct position
+👉 Swap it with nums[nums[i] - 1]
+
+After placement:
+
+Traverse array again
+
+First index i where nums[i] != i+1 → answer = i+1
+
+If all correct → return n+1
+
+✅ Java Code
+public class FirstMissingPositive {
+
+    public static int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+
+        // Step 1: Place each number in its correct position
+        for (int i = 0; i < n; i++) {
+            while (nums[i] > 0 && nums[i] <= n 
+                   && nums[nums[i] - 1] != nums[i]) {
+
+                int correctIndex = nums[i] - 1;
+
+                // Swap nums[i] with nums[correctIndex]
+                int temp = nums[i];
+                nums[i] = nums[correctIndex];
+                nums[correctIndex] = temp;
+            }
+        }
+
+        // Step 2: Find the missing number
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i + 1)
+                return i + 1;
+        }
+
+        return n + 1;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {3, 4, -1, 1};
+        System.out.println(firstMissingPositive(arr)); // Output: 2
+    }
+}
+
+🔍 Line-by-Line Explanation
+while (nums[i] > 0 && nums[i] <= n
+       && nums[nums[i] - 1] != nums[i])
+
+
+✔ Place only valid positive numbers
+✔ Prevent infinite swaps
+✔ Ensures each number goes to its correct index
+
+int correctIndex = nums[i] - 1;
+
+
+✔ Number x belongs at index x-1
+
+int temp = nums[i];
+nums[i] = nums[correctIndex];
+nums[correctIndex] = temp;
+
+
+✔ Swap current element into its correct position
+
+if (nums[i] != i + 1)
+    return i + 1;
+
+
+✔ First mismatch gives the missing positive
+
+🧪 Example Walkthrough
+
+Input: [3, 4, -1, 1]
+
+Initial:
+
+Index:  0   1   2   3
+Value:  3   4  -1   1
+
+
+After swaps:
+
+[1, -1, 3, 4]
+
+
+Scan:
+
+index 0 → 1 ✔
+
+index 1 → ❌ (expected 2)
+
+✅ Answer = 2
+
+⏱️ Time & Space Complexity
+
+Time: O(n)
+
+Space: O(1) (in-place)
+
+💯 Perfect interview solution
