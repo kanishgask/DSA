@@ -1,0 +1,153 @@
+5️⃣ Minimum Number of Platforms (Greedy Scheduling)
+📌 Why interviewers ask this
+
+Asked in Amazon, Microsoft, Infosys
+
+Tests greedy + sorting
+
+Very similar to CPU scheduling / meeting rooms
+
+Easy to explain, but logic must be precise
+
+🧠 Problem Statement
+
+Given two arrays:
+
+arrival[] → arrival time of trains
+
+departure[] → departure time of trains
+
+Find the minimum number of platforms required so that no train waits.
+
+✨ Example
+Arrival   = [900, 940, 950, 1100, 1500, 1800]
+Departure = [910, 1200, 1120, 1130, 1900, 2000]
+
+
+Output
+
+3
+
+💡 Key Idea (Greedy)
+
+👉 If one train arrives before another departs
+➡️ we need one more platform
+
+Otherwise:
+➡️ one platform becomes free
+
+🧩 Algorithm (Two Pointer + Sorting)
+
+Sort arrival[]
+
+Sort departure[]
+
+Use two pointers i and j
+
+If arrival[i] <= departure[j]:
+
+Train arrives before one leaves → need platform
+
+Else:
+
+Train departs → free a platform
+
+Track max platforms used
+
+✅ Java Code
+import java.util.Arrays;
+
+public class MinimumPlatforms {
+
+    public static int findPlatforms(int[] arr, int[] dep) {
+        Arrays.sort(arr);
+        Arrays.sort(dep);
+
+        int platforms = 1;
+        int maxPlatforms = 1;
+
+        int i = 1, j = 0;
+
+        while (i < arr.length && j < dep.length) {
+
+            // Arrival before departure → need platform
+            if (arr[i] <= dep[j]) {
+                platforms++;
+                i++;
+            } 
+            // Train departs → platform free
+            else {
+                platforms--;
+                j++;
+            }
+
+            maxPlatforms = Math.max(maxPlatforms, platforms);
+        }
+        return maxPlatforms;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {900, 940, 950, 1100, 1500, 1800};
+        int[] dep = {910, 1200, 1120, 1130, 1900, 2000};
+
+        System.out.println(findPlatforms(arr, dep)); // Output: 3
+    }
+}
+
+🔍 Line-by-Line Explanation
+Arrays.sort(arr);
+Arrays.sort(dep);
+
+
+✔ Sort arrival and departure times independently
+
+int platforms = 1;
+int maxPlatforms = 1;
+
+
+✔ One platform needed initially
+
+if (arr[i] <= dep[j]) {
+    platforms++;
+    i++;
+}
+
+
+✔ A train arrives before another leaves → need extra platform
+
+else {
+    platforms--;
+    j++;
+}
+
+
+✔ Train leaves → free one platform
+
+maxPlatforms = Math.max(maxPlatforms, platforms);
+
+
+✔ Track peak platform usage
+
+🧪 Example Walkthrough (Core Steps)
+
+Sorted:
+
+Arrivals   = [900, 940, 950, 1100, 1500, 1800]
+Departures = [910, 1120, 1130, 1200, 1900, 2000]
+
+
+900 ≤ 910 → platforms = 1
+
+940 ≤ 910 ❌ → free → platforms = 1
+
+950 ≤ 1120 → platforms = 2
+
+1100 ≤ 1120 → platforms = 3 ✔
+
+Max = 3
+
+⏱️ Time & Space Complexity
+
+Time: O(N log N) (sorting)
+
+Space: O(1) (excluding sort)
