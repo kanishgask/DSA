@@ -1,0 +1,153 @@
+✅ QUESTION 4: SMALLEST WINDOW IN A STRING CONTAINING ALL DISTINCT CHARACTERS
+
+This one is pure sliding window mastery and shows you understand optimization + frequency tracking.
+
+🔹 Problem Statement
+
+You are given a string s.
+
+Your task is to find the smallest substring (window) of s that contains all distinct characters present in the entire string.
+
+✏️ Example
+Input:  s = "aabcbcdbca"
+Output: "dbca"
+
+Explanation
+
+Distinct characters in s are:
+
+{a, b, c, d}
+
+
+Smallest window containing all → "dbca"
+
+🔹 Brute Force (for understanding ❌)
+
+Check all substrings
+
+Time Complexity: O(n³) → not acceptable
+
+🔹 Optimized Approach: Sliding Window + HashMap
+💡 Key Insight
+
+First, count total distinct characters in the string
+
+Expand window until all are included
+
+Shrink window to minimize length
+
+🔹 Algorithm (Step-by-Step)
+Step 1:
+
+Count number of distinct characters in s
+
+Step 2:
+
+Use two pointers:
+
+start → beginning of window
+
+end → expanding pointer
+
+Step 3:
+
+When window contains all distinct characters:
+
+Try shrinking from left to find minimum window
+
+⏱ Time Complexity: O(n)
+📦 Space Complexity: O(1) (at most 256 characters)
+
+🔹 Java Code
+import java.util.*;
+
+class Solution {
+    public String smallestWindow(String s) {
+        int n = s.length();
+
+        // Count total distinct characters
+        Set<Character> distinctSet = new HashSet<>();
+        for (char ch : s.toCharArray()) {
+            distinctSet.add(ch);
+        }
+        int required = distinctSet.size();
+
+        Map<Character, Integer> windowMap = new HashMap<>();
+        int start = 0, startIndex = -1;
+        int minLen = Integer.MAX_VALUE;
+        int count = 0;
+
+        for (int end = 0; end < n; end++) {
+            char ch = s.charAt(end);
+            windowMap.put(ch, windowMap.getOrDefault(ch, 0) + 1);
+
+            if (windowMap.get(ch) == 1) {
+                count++;
+            }
+
+            // Try to minimize window
+            while (count == required) {
+                if (end - start + 1 < minLen) {
+                    minLen = end - start + 1;
+                    startIndex = start;
+                }
+
+                char leftChar = s.charAt(start);
+                windowMap.put(leftChar, windowMap.get(leftChar) - 1);
+
+                if (windowMap.get(leftChar) == 0) {
+                    count--;
+                }
+                start++;
+            }
+        }
+
+        if (startIndex == -1) return "";
+        return s.substring(startIndex, startIndex + minLen);
+    }
+}
+
+🔹 Line-by-Line Explanation
+Set<Character> distinctSet = new HashSet<>();
+
+
+Finds total unique characters in the string.
+
+windowMap.put(ch, windowMap.getOrDefault(ch, 0) + 1);
+
+
+Tracks character frequency inside current window.
+
+if (windowMap.get(ch) == 1)
+
+
+New character added → increase count.
+
+while (count == required)
+
+
+Window contains all distinct characters — now try shrinking.
+
+windowMap.put(leftChar, windowMap.get(leftChar) - 1);
+
+
+Remove character from left side of window.
+
+🔹 Dry Run (Key Steps)
+Input:
+s = "aabcbcdbca"
+
+Window	Contains All?
+aabc	❌
+aabcbc	❌
+aabcbcd	✅
+dbca	✅ smallest
+
+✅ Answer = "dbca"
+
+🔹 Where This Is Asked
+
+✔ Amazon
+✔ Microsoft
+✔ PayPal
+✔ Adobe
