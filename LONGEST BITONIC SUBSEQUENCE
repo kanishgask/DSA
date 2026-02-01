@@ -1,0 +1,147 @@
+✅ QUESTION 3: LONGEST BITONIC SUBSEQUENCE (LBS)
+
+This is a classic DP + LIS question and a favorite in product-based companies.
+
+🔹 Problem Statement
+
+You are given an integer array nums.
+
+A Bitonic Subsequence is a sequence that:
+
+First strictly increases
+
+Then strictly decreases
+
+Your task is to find the length of the Longest Bitonic Subsequence.
+
+📌 The increasing or decreasing part must have at least one element.
+
+✏️ Example
+Input:  nums = [1, 11, 2, 10, 4, 5, 2, 1]
+Output: 6
+
+One valid bitonic subsequence:
+1 → 2 → 10 → 5 → 2 → 1
+
+🔹 Concept Breakdown
+
+We break the problem into two LIS problems:
+
+LIS from Left to Right
+
+LDS from Right to Left (LIS in reverse)
+
+For each index i:
+
+BitonicLength[i] = LIS[i] + LDS[i] − 1
+
+
+(We subtract 1 because nums[i] is counted twice)
+
+🔹 Algorithm (Step-by-Step)
+Step 1: Compute LIS[] array
+
+LIS[i] → Longest Increasing Subsequence ending at i
+
+Step 2: Compute LDS[] array
+
+LDS[i] → Longest Decreasing Subsequence starting from i
+
+Step 3: Combine results
+
+Find max of LIS[i] + LDS[i] − 1
+
+⏱ Time Complexity: O(n²)
+📦 Space Complexity: O(n)
+
+🔹 Java Code
+import java.util.*;
+
+class Solution {
+    public int longestBitonicSequence(int[] nums) {
+        int n = nums.length;
+        int[] lis = new int[n];
+        int[] lds = new int[n];
+
+        // Step 1: Initialize
+        Arrays.fill(lis, 1);
+        Arrays.fill(lds, 1);
+
+        // Step 2: LIS from left
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    lis[i] = Math.max(lis[i], lis[j] + 1);
+                }
+            }
+        }
+
+        // Step 3: LDS from right
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j > i; j--) {
+                if (nums[i] > nums[j]) {
+                    lds[i] = Math.max(lds[i], lds[j] + 1);
+                }
+            }
+        }
+
+        // Step 4: Find maximum bitonic length
+        int maxLen = 0;
+        for (int i = 0; i < n; i++) {
+            maxLen = Math.max(maxLen, lis[i] + lds[i] - 1);
+        }
+
+        return maxLen;
+    }
+}
+
+🔹 Line-by-Line Explanation
+int[] lis = new int[n];
+int[] lds = new int[n];
+
+
+Stores increasing and decreasing subsequence lengths.
+
+Arrays.fill(lis, 1);
+Arrays.fill(lds, 1);
+
+
+Each element itself is a subsequence of length 1.
+
+LIS Calculation
+if (nums[i] > nums[j]) {
+    lis[i] = Math.max(lis[i], lis[j] + 1);
+}
+
+
+If current number is greater, extend LIS.
+
+LDS Calculation
+if (nums[i] > nums[j]) {
+    lds[i] = Math.max(lds[i], lds[j] + 1);
+}
+
+
+Same logic, but traversing from the right.
+
+Final Result
+maxLen = Math.max(maxLen, lis[i] + lds[i] - 1);
+
+
+Combines both sequences.
+
+🔹 Dry Run (Simplified)
+nums = [1, 11, 2, 10, 4, 5, 2, 1]
+
+LIS = [1, 2, 2, 3, 3, 4, 2, 1]
+LDS = [1, 5, 2, 4, 3, 3, 2, 1]
+
+Bitonic = LIS + LDS - 1
+Max = 6
+
+🔹 Why Interviewers Ask This
+
+✔ Tests DP fundamentals
+✔ Combines multiple sub-problems
+✔ Great follow-up to LIS
+✔ Appears in Amazon, Flipkart, Adobe
