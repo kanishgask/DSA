@@ -1,0 +1,153 @@
+✅ QUESTION 2: COUNT NUMBER OF SUBARRAYS WITH XOR = K
+
+This one is very important and not in your list.
+It’s a twist version of Subarray Sum = K, so interviewers love it.
+
+🔹 Problem Statement
+
+You are given an integer array arr[] and an integer K.
+
+Your task is to find the number of contiguous subarrays whose XOR is equal to K.
+
+✏️ Example
+Input:
+arr = [4, 2, 2, 6, 4]
+K = 6
+
+Output:
+4
+
+Valid subarrays:
+
+[4, 2]
+
+[2, 2, 6]
+
+[6]
+
+[6, 4]
+
+🔹 Brute Force (Just for understanding ❌)
+
+Check XOR of all subarrays
+
+Time Complexity: O(n²) → too slow
+
+🔹 Optimized Approach: Prefix XOR + HashMap
+💡 Key Idea
+
+Very similar to Prefix Sum.
+
+Property:
+If:
+prefixXor[i] ⊕ prefixXor[j] = K
+Then:
+prefixXor[j] = prefixXor[i] ⊕ K
+
+
+So we:
+
+Keep track of XOR from index 0 to i
+
+Store frequencies in a HashMap
+
+🔹 Algorithm (Step-by-Step)
+
+Initialize a HashMap to store prefix XOR frequencies
+
+Put (0 → 1) (important base case)
+
+Traverse the array:
+
+Compute current XOR
+
+Check if (currentXor ⊕ K) exists in map
+
+Add frequency to count
+
+Update HashMap
+
+⏱ Time Complexity: O(n)
+📦 Space Complexity: O(n)
+
+🔹 Java Code
+import java.util.*;
+
+class Solution {
+    public int subarrayXor(int[] arr, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int xor = 0;
+        int count = 0;
+
+        // Base case
+        map.put(0, 1);
+
+        for (int num : arr) {
+            xor ^= num;
+
+            if (map.containsKey(xor ^ k)) {
+                count += map.get(xor ^ k);
+            }
+
+            map.put(xor, map.getOrDefault(xor, 0) + 1);
+        }
+        return count;
+    }
+}
+
+🔹 Line-by-Line Explanation
+Map<Integer, Integer> map = new HashMap<>();
+
+
+Stores frequency of prefix XOR values.
+
+int xor = 0;
+
+
+Tracks XOR from start till current index.
+
+map.put(0, 1);
+
+
+Important: XOR from start to itself equals 0.
+
+xor ^= num;
+
+
+Update XOR including current element.
+
+if (map.containsKey(xor ^ k))
+
+
+Checks whether a subarray ending here gives XOR = K.
+
+count += map.get(xor ^ k);
+
+
+Add number of valid subarrays.
+
+map.put(xor, map.getOrDefault(xor, 0) + 1);
+
+
+Update XOR frequency.
+
+🔹 Dry Run (Very Important)
+Input:
+arr = [4, 2, 2, 6, 4]
+K = 6
+
+Index	num	xor	xor ⊕ k	Count
+0	4	4	2	0
+1	2	6	0	1
+2	2	4	2	1
+3	6	2	4	3
+4	4	6	0	4
+
+✅ Final Answer = 4
+
+🔹 Why This Problem Is Special
+
+✔ XOR logic
+✔ HashMap usage
+✔ Prefix pattern
+✔ Frequently asked after Subarray Sum = K
