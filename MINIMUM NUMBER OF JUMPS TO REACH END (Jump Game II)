@@ -1,0 +1,126 @@
+✅ QUESTION 1: MINIMUM NUMBER OF JUMPS TO REACH END (Jump Game II)
+🔹 Problem Statement
+
+You are given an integer array nums, where each element represents the maximum number of steps you can jump forward from that index.
+
+Your task is to return the minimum number of jumps required to reach the last index of the array.
+
+📌 You can assume that it is always possible to reach the last index.
+
+✏️ Example
+Input:  nums = [2, 3, 1, 1, 4]
+Output: 2
+Explanation:
+Jump from index 0 → index 1 → index 4
+
+🔹 Approach Used: Greedy Algorithm
+💡 Key Idea
+
+Instead of checking all possible jumps (which is slow), we:
+
+Always jump to the farthest reachable position
+
+Increment jump count only when necessary
+
+🔹 Variables Used
+Variable	Purpose
+jumps	Counts minimum jumps
+currentEnd	End of range reachable with current jumps
+farthest	Farthest index reachable so far
+🔹 Algorithm (Step-by-Step)
+
+Start from index 0
+
+For each index:
+
+Calculate the farthest reachable position
+
+When you reach the boundary (currentEnd):
+
+Increase jump count
+
+Move boundary to farthest
+
+Repeat until second last index
+
+⏱ Time Complexity: O(n)
+📦 Space Complexity: O(1)
+
+🔹 Java Code
+class Solution {
+    public int jump(int[] nums) {
+        int jumps = 0;
+        int currentEnd = 0;
+        int farthest = 0;
+
+        // Traverse till second last index
+        for (int i = 0; i < nums.length - 1; i++) {
+
+            // Calculate the farthest index reachable
+            farthest = Math.max(farthest, i + nums[i]);
+
+            // If we reached the end of current jump range
+            if (i == currentEnd) {
+                jumps++;
+                currentEnd = farthest;
+            }
+        }
+        return jumps;
+    }
+}
+
+🔹 Line-by-Line Explanation
+int jumps = 0;
+
+
+Stores the minimum number of jumps taken.
+
+int currentEnd = 0;
+
+
+The farthest index reachable using current number of jumps.
+
+int farthest = 0;
+
+
+Tracks the maximum index reachable while iterating.
+
+for (int i = 0; i < nums.length - 1; i++)
+
+
+We stop at second last index because we don’t need to jump from the last index.
+
+farthest = Math.max(farthest, i + nums[i]);
+
+
+From index i, check how far we can jump and update farthest.
+
+if (i == currentEnd)
+
+
+When we reach the end of the current jump range, we must jump.
+
+jumps++;
+currentEnd = farthest;
+
+
+Increment jump count and update boundary for the next jump.
+
+🔹 Dry Run (Example Walkthrough)
+Input:
+nums = [2, 3, 1, 1, 4]
+
+Index (i)	nums[i]	farthest	currentEnd	jumps
+0	2	2	0 → 2	1
+1	3	4	2	1
+2	1	4	2 → 4	2
+
+✔ Reached last index
+✅ Answer = 2
+
+🔹 Why Interviewers Love This Problem
+
+✔ Tests Greedy thinking
+✔ Optimization over brute force
+✔ Clear boundary concept
+✔ Asked in Amazon, Google, Microsoft
