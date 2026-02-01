@@ -1,0 +1,175 @@
+✅ QUESTION 5: FIND ARTICULATION POINTS IN A GRAPH (TARJAN’S ALGORITHM)
+
+This is advanced graph theory and a huge plus in interviews.
+If you explain this well, interviewers know you’re solid.
+
+🔹 Problem Statement
+
+You are given an undirected connected graph with V vertices.
+
+An Articulation Point (Cut Vertex) is a vertex such that removing it (and its edges) increases the number of connected components of the graph.
+
+Your task is to find all articulation points.
+
+✏️ Example
+Graph:
+0 —— 1 —— 3
+ \   |
+   \ |
+     2
+
+
+Articulation Points:
+
+1
+
+
+Removing node 1 disconnects the graph.
+
+🔹 Key Concepts You MUST Know
+Term	Meaning
+disc[u]	Discovery time of node u in DFS
+low[u]	Lowest discovery time reachable from u
+parent[u]	Parent of u in DFS tree
+🔹 Tarjan’s Conditions
+Case 1: Root Node
+
+If root has more than one child → articulation point
+
+Case 2: Non-root Node
+
+If:
+
+low[v] ≥ disc[u]
+
+
+Then u is an articulation point.
+
+🔹 Algorithm (Step-by-Step)
+
+Perform DFS
+
+Assign discovery time and low time
+
+Track parent and children count
+
+Apply articulation conditions
+
+⏱ Time Complexity: O(V + E)
+📦 Space Complexity: O(V)
+
+🔹 Java Code
+import java.util.*;
+
+class Solution {
+
+    private int time = 0;
+
+    public void articulationPoints(int V, List<List<Integer>> adj) {
+        boolean[] visited = new boolean[V];
+        int[] disc = new int[V];
+        int[] low = new int[V];
+        int[] parent = new int[V];
+        boolean[] ap = new boolean[V];
+
+        Arrays.fill(parent, -1);
+
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                dfs(i, visited, disc, low, parent, ap, adj);
+            }
+        }
+
+        for (int i = 0; i < V; i++) {
+            if (ap[i]) {
+                System.out.print(i + " ");
+            }
+        }
+    }
+
+    private void dfs(int u, boolean[] visited, int[] disc, int[] low,
+                     int[] parent, boolean[] ap, List<List<Integer>> adj) {
+
+        visited[u] = true;
+        disc[u] = low[u] = ++time;
+        int children = 0;
+
+        for (int v : adj.get(u)) {
+
+            if (!visited[v]) {
+                children++;
+                parent[v] = u;
+                dfs(v, visited, disc, low, parent, ap, adj);
+
+                low[u] = Math.min(low[u], low[v]);
+
+                // Case 1: root node
+                if (parent[u] == -1 && children > 1) {
+                    ap[u] = true;
+                }
+
+                // Case 2: non-root node
+                if (parent[u] != -1 && low[v] >= disc[u]) {
+                    ap[u] = true;
+                }
+
+            } else if (v != parent[u]) {
+                low[u] = Math.min(low[u], disc[v]);
+            }
+        }
+    }
+}
+
+🔹 Line-by-Line Explanation
+disc[u] = low[u] = ++time;
+
+
+Assign discovery and low time.
+
+low[u] = Math.min(low[u], low[v]);
+
+
+Update low time using child’s information.
+
+if (parent[u] == -1 && children > 1)
+
+
+Root articulation condition.
+
+if (parent[u] != -1 && low[v] >= disc[u])
+
+
+Non-root articulation condition.
+
+🔹 Dry Run Insight
+
+If a child v cannot reach any ancestor of u, then removing u disconnects v.
+
+That’s why:
+
+low[v] ≥ disc[u]
+
+
+👉 articulation point confirmed.
+
+🔹 Why This Is Interview Gold 🏆
+
+✔ Deep DFS understanding
+✔ Real-world usage (networks, circuits)
+✔ Rare but high-impact question
+
+🎯 You’ve Completed All 5 NEW QUESTIONS
+
+These problems together cover:
+
+Greedy
+
+Hashing
+
+Dynamic Programming
+
+Sliding Window
+
+Graph Algorithms
+
+Exactly what top interviews expect.
