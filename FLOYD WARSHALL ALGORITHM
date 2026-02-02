@@ -1,0 +1,234 @@
+✅ QUESTION 2: FLOYD–WARSHALL ALGORITHM
+
+(All-Pairs Shortest Path)
+
+This one is a classic graph DP problem and very frequently asked in interviews + exams.
+
+📌 Problem Statement
+
+You are given a weighted directed graph with V vertices.
+Some edges may have negative weights, but no negative cycles.
+
+Your task is to find the shortest distance between every pair of vertices.
+
+👉 If there is no path between two vertices, the distance should remain infinity (INF).
+
+💡 Key Idea
+
+Floyd–Warshall uses Dynamic Programming
+
+It progressively improves shortest paths by allowing intermediate vertices
+
+Works for:
+
+Directed graphs
+
+Negative weights
+
+Detecting negative cycles
+
+🧠 Core Concept
+
+Let:
+
+dist[i][j] = shortest distance from i to j
+
+
+For every node k, check:
+
+Can path i → k → j be shorter than i → j ?
+
+
+So:
+
+dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+
+🔁 Algorithm Steps
+
+Initialize distance matrix dist
+
+dist[i][j] = weight(i → j)
+
+dist[i][i] = 0
+
+For every intermediate node k
+
+For every pair (i, j)
+
+Relax the distance using k
+
+After all iterations, dist[i][j] contains shortest paths
+
+⏱ Time & Space Complexity
+
+Time: O(V³)
+
+Space: O(V²)
+
+⚠️ Suitable only when V ≤ 500
+
+☕ Java Code (Floyd–Warshall)
+public class FloydWarshall {
+
+    static final int INF = 99999;
+
+    public static void floydWarshall(int[][] graph, int V) {
+
+        int[][] dist = new int[V][V];
+
+        // Step 1: Initialize distance matrix
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                dist[i][j] = graph[i][j];
+            }
+        }
+
+        // Step 2: Pick intermediate vertices
+        for (int k = 0; k < V; k++) {
+            for (int i = 0; i < V; i++) {
+                for (int j = 0; j < V; j++) {
+
+                    // Relaxation step
+                    if (dist[i][k] != INF && dist[k][j] != INF &&
+                        dist[i][k] + dist[k][j] < dist[i][j]) {
+
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+
+        // Print final distance matrix
+        printSolution(dist, V);
+    }
+
+    static void printSolution(int[][] dist, int V) {
+        System.out.println("Shortest distances between every pair:");
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][j] == INF)
+                    System.out.print("INF ");
+                else
+                    System.out.print(dist[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+
+        int V = 4;
+
+        int[][] graph = {
+            {0,   5,  INF, 10},
+            {INF, 0,   3, INF},
+            {INF, INF, 0,  1},
+            {INF, INF, INF, 0}
+        };
+
+        floydWarshall(graph, V);
+    }
+}
+
+🧩 Line-by-Line Explanation
+🔹 INF Constant
+static final int INF = 99999;
+
+
+Represents no direct edge between nodes.
+
+🔹 Initialization
+dist[i][j] = graph[i][j];
+
+
+Initial distances are directly from the adjacency matrix.
+
+🔹 Triple Loop (Heart of Algorithm)
+for (int k = 0; k < V; k++)
+    for (int i = 0; i < V; i++)
+        for (int j = 0; j < V; j++)
+
+
+k → allowed intermediate node
+
+i → source
+
+j → destination
+
+🔹 Relaxation Check
+if (dist[i][k] + dist[k][j] < dist[i][j])
+    dist[i][j] = dist[i][k] + dist[k][j];
+
+
+Checks if going via k gives a shorter path.
+
+🔍 Example Walkthrough
+Input Graph Matrix
+    0   1   2   3
+0 [ 0   5  INF 10 ]
+1 [ INF 0   3  INF]
+2 [ INF INF 0   1 ]
+3 [ INF INF INF 0 ]
+
+Step-by-step Key Updates
+k = 1
+
+Path:
+
+0 → 1 → 2
+5 + 3 = 8 < INF ✔
+
+
+Update:
+
+dist[0][2] = 8
+
+k = 2
+
+Path:
+
+1 → 2 → 3
+3 + 1 = 4 < INF ✔
+
+
+Update:
+
+dist[1][3] = 4
+
+k = 3
+
+Path:
+
+0 → 2 → 3
+8 + 1 = 9 < 10 ✔
+
+
+Update:
+
+dist[0][3] = 9
+
+✅ Final Output
+0 5 8 9
+INF 0 3 4
+INF INF 0 1
+INF INF INF 0
+
+🎯 Why This Question Is Important
+
+Asked in Google, Amazon, GATE, Interviews
+
+Tests:
+
+Graphs
+
+Dynamic Programming
+
+Matrix manipulation
+
+Used in:
+
+Network routing
+
+Shortest path analysis
+
+Negative cycle detection
