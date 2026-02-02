@@ -1,0 +1,203 @@
+✅ QUESTION 3: DETECT BIPARTITE GRAPH (BFS / DFS)
+
+This is a high-frequency interview problem and also very useful in graph theory & competitive coding.
+
+📌 Problem Statement
+
+You are given an undirected graph with V vertices.
+
+Determine whether the graph is bipartite.
+
+👉 A graph is bipartite if:
+
+You can divide the vertices into two disjoint sets
+
+No two adjacent vertices belong to the same set
+
+Equivalent to saying: graph can be colored using only 2 colors
+
+💡 Key Insight
+
+If the graph contains an odd-length cycle, it is NOT bipartite.
+
+🧠 Approach (Using BFS)
+
+Assign colors to nodes (0 or 1)
+
+Start BFS from any unvisited node
+
+Color neighbors with opposite color
+
+If a neighbor already has the same color, return false
+
+⚠️ Handle disconnected graphs → run BFS from every node.
+
+🧩 Algorithm Steps
+
+Initialize color[] array with -1 (uncolored)
+
+For each node:
+
+If uncolored, start BFS
+
+While BFS:
+
+Assign alternate colors
+
+If conflict found → not bipartite
+
+If BFS finishes without conflict → bipartite
+
+⏱ Time & Space Complexity
+
+Time: O(V + E)
+
+Space: O(V)
+
+☕ Java Code (BFS Approach)
+import java.util.*;
+
+public class BipartiteGraph {
+
+    public static boolean isBipartite(int V, List<List<Integer>> adj) {
+
+        int[] color = new int[V];
+        Arrays.fill(color, -1);
+
+        for (int start = 0; start < V; start++) {
+
+            if (color[start] != -1)
+                continue;
+
+            Queue<Integer> queue = new LinkedList<>();
+            queue.add(start);
+            color[start] = 0;
+
+            while (!queue.isEmpty()) {
+                int node = queue.poll();
+
+                for (int neighbor : adj.get(node)) {
+
+                    if (color[neighbor] == -1) {
+                        color[neighbor] = 1 - color[node];
+                        queue.add(neighbor);
+                    }
+                    else if (color[neighbor] == color[node]) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+
+        int V = 4;
+        List<List<Integer>> adj = new ArrayList<>();
+
+        for (int i = 0; i < V; i++)
+            adj.add(new ArrayList<>());
+
+        adj.get(0).add(1);
+        adj.get(1).add(0);
+
+        adj.get(1).add(2);
+        adj.get(2).add(1);
+
+        adj.get(2).add(3);
+        adj.get(3).add(2);
+
+        adj.get(3).add(0);
+        adj.get(0).add(3);
+
+        System.out.println(isBipartite(V, adj));
+    }
+}
+
+🧩 Line-by-Line Explanation
+🔹 Color Array
+int[] color = new int[V];
+Arrays.fill(color, -1);
+
+
+-1 → uncolored
+
+0 & 1 → two different sets
+
+🔹 Handling Disconnected Graphs
+for (int start = 0; start < V; start++)
+
+
+Ensures all components are checked.
+
+🔹 BFS Initialization
+queue.add(start);
+color[start] = 0;
+
+
+Start coloring the first node.
+
+🔹 Coloring Neighbors
+color[neighbor] = 1 - color[node];
+
+
+Assign opposite color.
+
+🔹 Conflict Detection
+else if (color[neighbor] == color[node])
+    return false;
+
+
+Same color on adjacent nodes → not bipartite
+
+🔍 Example Walkthrough
+Input Graph
+0 —— 1
+|    |
+3 —— 2
+
+
+Edges:
+
+0-1, 1-2, 2-3, 3-0
+
+Step-by-Step
+Node	Color
+0	0
+1	1
+2	0
+3	1
+
+✔ No conflict → Bipartite
+
+❌ Non-Bipartite Example
+
+Triangle:
+
+0 — 1
+ \  /
+  2
+
+
+Odd cycle → conflict → ❌
+
+🎯 Why This Question Matters
+
+Asked in Amazon, Meta, Google
+
+Tests:
+
+BFS / DFS
+
+Graph coloring
+
+Cycle logic
+
+Used in:
+
+Scheduling
+
+Matching problems
+
+Conflict detection
