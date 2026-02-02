@@ -1,0 +1,216 @@
+ALGORITHM
+📌 Problem Statement
+
+You are given an undirected, weighted graph with V vertices and E edges.
+Each edge has a weight.
+
+Your task is to find the Minimum Spanning Tree (MST) of the graph.
+
+👉 Minimum Spanning Tree:
+
+Connects all vertices
+
+Contains exactly V - 1 edges
+
+Has minimum possible total edge weight
+
+💡 Key Idea (Kruskal’s Algorithm)
+
+Sort all edges by increasing weight
+
+Add edges one by one only if they don’t form a cycle
+
+Use Disjoint Set Union (Union-Find) to detect cycles efficiently
+
+🧠 Algorithm Steps
+
+Sort all edges by weight
+
+Initialize Disjoint Set (parent + rank)
+
+For each edge (u, v, weight):
+
+If find(u) != find(v)
+
+Add edge to MST
+
+Union the sets
+
+Stop when MST contains V - 1 edges
+
+⏱ Time & Space Complexity
+
+Time: O(E log E) (sorting edges)
+
+Space: O(V) (DSU arrays)
+
+☕ Java Code (Kruskal’s Algorithm)
+import java.util.*;
+
+class Edge {
+    int src, dest, weight;
+
+    Edge(int s, int d, int w) {
+        src = s;
+        dest = d;
+        weight = w;
+    }
+}
+
+public class KruskalMST {
+
+    static int[] parent;
+    static int[] rank;
+
+    // Find with path compression
+    static int find(int x) {
+        if (parent[x] != x)
+            parent[x] = find(parent[x]);
+        return parent[x];
+    }
+
+    // Union by rank
+    static void union(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+
+        if (rootX != rootY) {
+            if (rank[rootX] < rank[rootY])
+                parent[rootX] = rootY;
+            else if (rank[rootX] > rank[rootY])
+                parent[rootY] = rootX;
+            else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+
+        int V = 4; // number of vertices
+
+        ArrayList<Edge> edges = new ArrayList<>();
+        edges.add(new Edge(0, 1, 10));
+        edges.add(new Edge(0, 2, 6));
+        edges.add(new Edge(0, 3, 5));
+        edges.add(new Edge(1, 3, 15));
+        edges.add(new Edge(2, 3, 4));
+
+        // Step 1: Sort edges by weight
+        edges.sort(Comparator.comparingInt(e -> e.weight));
+
+        parent = new int[V];
+        rank = new int[V];
+
+        // Initialize DSU
+        for (int i = 0; i < V; i++) {
+            parent[i] = i;
+            rank[i] = 0;
+        }
+
+        int mstWeight = 0;
+
+        // Step 2: Pick edges
+        for (Edge e : edges) {
+            if (find(e.src) != find(e.dest)) {
+                union(e.src, e.dest);
+                mstWeight += e.weight;
+                System.out.println(
+                    e.src + " -- " + e.dest + " == " + e.weight
+                );
+            }
+        }
+
+        System.out.println("Total weight of MST: " + mstWeight);
+    }
+}
+
+🧩 Line-by-Line Explanation
+🔹 Edge Class
+class Edge {
+    int src, dest, weight;
+}
+
+
+Represents an edge with source, destination, and weight.
+
+🔹 Disjoint Set (DSU)
+static int[] parent;
+static int[] rank;
+
+
+parent[i] → parent of node i
+
+rank[i] → height approximation (for optimization)
+
+🔹 Find (with Path Compression)
+static int find(int x) {
+    if (parent[x] != x)
+        parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+
+Finds ultimate parent
+
+Compresses path → faster future queries
+
+🔹 Union (by Rank)
+if (rank[rootX] < rank[rootY])
+    parent[rootX] = rootY;
+
+
+Attaches smaller tree under larger tree
+
+Avoids deep trees
+
+🔹 Sorting Edges
+edges.sort(Comparator.comparingInt(e -> e.weight));
+
+
+Kruskal always processes edges from minimum weight
+
+🔹 Core MST Logic
+if (find(e.src) != find(e.dest)) {
+    union(e.src, e.dest);
+    mstWeight += e.weight;
+}
+
+
+If nodes are in different sets → safe to add edge
+
+Prevents cycles
+
+🔍 Example Walkthrough
+Input Graph:
+Edges:
+0-1 (10)
+0-2 (6)
+0-3 (5)
+1-3 (15)
+2-3 (4)
+
+Step 1: Sort Edges
+2-3 (4)
+0-3 (5)
+0-2 (6)
+0-1 (10)
+1-3 (15)
+
+Step 2: Pick Edges
+Edge	Cycle?	MST
+2-3	No	✔
+0-3	No	✔
+0-2	Yes	❌
+0-1	No	✔
+Final MST Weight:
+4 + 5 + 10 = 19
+
+✅ Why This Question Is IMPORTANT
+
+Asked in FAANG, Product-based companies
+
+Tests Graphs + DSU
+
+Very common in system design foundations
