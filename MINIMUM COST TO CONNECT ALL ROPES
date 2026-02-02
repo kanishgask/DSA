@@ -1,0 +1,161 @@
+✅ QUESTION 4: MINIMUM COST TO CONNECT ALL ROPES
+
+(Greedy + Min Heap)
+
+This is a classic greedy problem and appears very often in interviews & coding rounds.
+
+📌 Problem Statement
+
+You are given n ropes, each with a certain length.
+You need to connect all ropes into one single rope.
+
+Rules:
+
+Connecting two ropes of lengths a and b costs a + b
+
+The resulting rope has length a + b
+
+Total cost is the sum of all connections
+
+🔹 Find the minimum total cost to connect all ropes.
+
+💡 Key Insight (Greedy Choice)
+
+Always connect the two smallest ropes first.
+
+Why?
+
+Larger ropes added later increase cost less
+
+This is similar to Huffman Coding
+
+🧠 Algorithm Steps
+
+Insert all rope lengths into a Min Heap
+
+While heap size > 1:
+
+Remove two smallest ropes
+
+Add their sum to total cost
+
+Insert the combined rope back
+
+Return total cost
+
+⏱ Time & Space Complexity
+
+Time: O(n log n)
+
+Space: O(n)
+
+☕ Java Code (Using PriorityQueue)
+import java.util.*;
+
+public class MinCostToConnectRopes {
+
+    public static int minCost(int[] ropes) {
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        for (int rope : ropes)
+            pq.add(rope);
+
+        int totalCost = 0;
+
+        while (pq.size() > 1) {
+
+            int first = pq.poll();
+            int second = pq.poll();
+
+            int cost = first + second;
+            totalCost += cost;
+
+            pq.add(cost);
+        }
+
+        return totalCost;
+    }
+
+    public static void main(String[] args) {
+
+        int[] ropes = {4, 3, 2, 6};
+
+        System.out.println(minCost(ropes));
+    }
+}
+
+🧩 Line-by-Line Explanation
+🔹 Min Heap Creation
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+
+Java’s PriorityQueue works as a min heap by default.
+
+🔹 Insert Ropes
+pq.add(rope);
+
+
+Adds all rope lengths into heap.
+
+🔹 Core Greedy Loop
+while (pq.size() > 1)
+
+
+Continue until one rope remains.
+
+🔹 Pick Two Smallest
+int first = pq.poll();
+int second = pq.poll();
+
+
+Greedy choice → smallest cost first.
+
+🔹 Update Cost
+totalCost += cost;
+pq.add(cost);
+
+
+Add connection cost and push combined rope back.
+
+🔍 Example Walkthrough
+Input
+Ropes = [4, 3, 2, 6]
+
+Step 1: Min Heap
+[2, 3, 4, 6]
+
+Step 2: First Merge
+2 + 3 = 5
+Cost = 5
+Heap → [4, 5, 6]
+
+Step 3: Second Merge
+4 + 5 = 9
+Total Cost = 5 + 9 = 14
+Heap → [6, 9]
+
+Step 4: Final Merge
+6 + 9 = 15
+Total Cost = 14 + 15 = 29
+
+✅ Final Answer
+29
+
+🎯 Why This Question Is Important
+
+Asked in Amazon, Microsoft, Google
+
+Tests:
+
+Greedy strategy
+
+Heap / PriorityQueue
+
+Concept used in:
+
+File merging
+
+Network optimization
+
+Huffman coding
