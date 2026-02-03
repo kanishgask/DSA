@@ -1,0 +1,156 @@
+✅ QUESTION 1: MAXIMUM SUM CIRCULAR SUBARRAY
+🔹 Problem Statement
+
+Given a circular integer array nums, return the maximum possible sum of a non-empty subarray of nums.
+
+A circular array means the end of the array connects to the beginning.
+
+📌 Example
+Input: nums = [5, -3, 5]
+Output: 10
+Explanation: The subarray [5, 5] is formed by wrapping around.
+
+
+Another example:
+
+Input: nums = [-3, -2, -3]
+Output: -2
+Explanation: Only one element can be chosen.
+
+🔹 Key Idea / Intuition
+
+There are two possible cases:
+
+Case 1️⃣: Subarray does NOT wrap
+
+→ This is just Kadane’s Algorithm (maximum subarray sum).
+
+Case 2️⃣: Subarray WRAPS around
+
+→ Total sum of array − minimum subarray sum
+
+Why?
+If you remove the minimum subarray, the remaining elements (from end + start) form the maximum circular subarray.
+
+⚠️ Edge Case
+
+If all numbers are negative, wrapping does not help.
+So return the maximum element (Kadane result).
+
+🔹 Algorithm
+
+Use Kadane’s algorithm to find:
+
+maxSubarraySum
+
+minSubarraySum
+
+Compute totalSum of array
+
+Circular max sum = totalSum - minSubarraySum
+
+Final answer:
+
+if (maxSubarraySum < 0)
+    return maxSubarraySum;
+else
+    return max(maxSubarraySum, totalSum - minSubarraySum);
+
+🔹 Time & Space Complexity
+
+Time: O(N)
+
+Space: O(1)
+
+🔹 Java Code (Clean & Interview-Ready)
+class Solution {
+    public int maxSubarraySumCircular(int[] nums) {
+        int totalSum = 0;
+
+        int maxSum = nums[0];
+        int currMax = 0;
+
+        int minSum = nums[0];
+        int currMin = 0;
+
+        for (int num : nums) {
+            // Kadane for max subarray
+            currMax = Math.max(num, currMax + num);
+            maxSum = Math.max(maxSum, currMax);
+
+            // Kadane for min subarray
+            currMin = Math.min(num, currMin + num);
+            minSum = Math.min(minSum, currMin);
+
+            totalSum += num;
+        }
+
+        // If all numbers are negative
+        if (maxSum < 0) {
+            return maxSum;
+        }
+
+        return Math.max(maxSum, totalSum - minSum);
+    }
+}
+
+🔹 Line-by-Line Explanation
+int totalSum = 0;
+
+
+Stores sum of all elements.
+
+int maxSum = nums[0], currMax = 0;
+
+
+For maximum subarray (Kadane).
+
+int minSum = nums[0], currMin = 0;
+
+
+For minimum subarray (reverse Kadane).
+
+currMax = Math.max(num, currMax + num);
+
+
+Extend previous subarray or start new one.
+
+currMin = Math.min(num, currMin + num);
+
+
+Used to find minimum subarray sum.
+
+if (maxSum < 0)
+
+
+All numbers are negative → return largest element.
+
+return Math.max(maxSum, totalSum - minSum);
+
+
+Compare non-circular vs circular answer.
+
+🔹 Worked Example
+Input
+nums = [5, -3, 5]
+
+Computation
+maxSubarraySum = 7
+minSubarraySum = -3
+totalSum = 7
+circularSum = 7 - (-3) = 10
+
+Output
+10
+
+🎯 Why This Question Is IMPORTANT
+
+Asked in Google / Amazon / Microsoft
+
+Tests:
+
+Kadane’s algorithm
+
+Edge case handling
+
+Circular array concept
