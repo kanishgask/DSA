@@ -1,0 +1,145 @@
+✅ QUESTION 4: NUMBER OF DISTINCT ISLAND SHAPES
+
+⚠️ This is different from “Number of Islands” which you already have.
+
+🔹 Problem Statement
+
+Given a 2D binary grid (1 = land, 0 = water), count the number of distinct island shapes.
+
+Two islands are considered the same if they have the same shape, even if they are located at different positions.
+
+⚠️ Rotation and reflection are NOT allowed — only translation.
+
+📌 Example
+Input:
+grid = [
+ [1,1,0,0,0],
+ [1,0,0,0,0],
+ [0,0,0,1,1],
+ [0,0,0,1,0]
+]
+
+Output: 2
+
+🔹 Explanation
+
+There are 3 islands, but 2 distinct shapes.
+
+🔹 Intuition
+
+Normal DFS/BFS finds islands, but here we must:
+
+Capture shape, not position
+
+Use relative coordinates of every land cell in the island
+
+💡 Anchor the island at its starting cell.
+
+🔹 Algorithm
+
+Traverse grid
+
+For every unvisited 1:
+
+Perform DFS
+
+Store relative coordinates (row - baseRow, col - baseCol)
+
+Store each island’s shape as a string
+
+Add to a Set
+
+Return set size
+
+🔹 Time & Space Complexity
+
+Time: O(rows × cols)
+
+Space: O(rows × cols)
+
+🔹 Java Code
+import java.util.*;
+
+class Solution {
+
+    public int numDistinctIslands(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        Set<String> shapes = new HashSet<>();
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 1 && !visited[i][j]) {
+                    List<String> shape = new ArrayList<>();
+                    dfs(grid, visited, i, j, i, j, shape);
+                    shapes.add(String.join(";", shape));
+                }
+            }
+        }
+        return shapes.size();
+    }
+
+    private void dfs(int[][] grid, boolean[][] visited,
+                     int r, int c, int baseR, int baseC,
+                     List<String> shape) {
+
+        if (r < 0 || c < 0 || r >= grid.length || c >= grid[0].length
+                || visited[r][c] || grid[r][c] == 0) {
+            return;
+        }
+
+        visited[r][c] = true;
+        shape.add((r - baseR) + "," + (c - baseC));
+
+        dfs(grid, visited, r + 1, c, baseR, baseC, shape);
+        dfs(grid, visited, r - 1, c, baseR, baseC, shape);
+        dfs(grid, visited, visited, r, c + 1, baseR, baseC, shape);
+        dfs(grid, visited, visited, r, c - 1, baseR, baseC, shape);
+    }
+}
+
+🔹 Line-by-Line Explanation
+Set<String> shapes
+
+
+Stores unique island shapes.
+
+dfs(..., baseR, baseC)
+
+
+Anchor position for relative coordinates.
+
+shape.add((r-baseR) + "," + (c-baseC))
+
+
+Captures island shape independent of location.
+
+String.join(";", shape)
+
+
+Makes the shape hashable.
+
+🔹 Worked Example (Visualization)
+
+Island A:
+
+1 1
+1
+
+
+Coordinates:
+
+(0,0), (0,1), (1,0)
+
+
+Island B (shifted):
+
+Same relative positions → same shape
+
+🎯 Why This Question Matters
+
+Tests DFS + hashing
+
+Spatial reasoning
+
+Asked in Amazon, Microsoft, Flipkart
