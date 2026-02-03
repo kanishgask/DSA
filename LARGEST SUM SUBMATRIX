@@ -1,0 +1,156 @@
+✅ QUESTION 2: LARGEST SUM SUBMATRIX (2D KADANE VARIANT)
+
+(Different from “Maximum Sum in a 2D Matrix” you already have)
+
+🔹 Problem Statement
+
+Given a 2D matrix containing positive and negative integers, find the maximum sum of any rectangular submatrix.
+
+You must return the maximum possible sum.
+
+📌 Example
+Input:
+matrix = [
+  [ 1, -3,  2],
+  [ 2,  3, -1],
+  [-1,  4, -2]
+]
+
+Output: 9
+
+🔹 Explanation
+
+The submatrix:
+
+[ 2,  3 ]
+[ -1, 4 ]
+
+
+Sum = 2 + 3 -1 + 4 = 8 ❌
+But entire column 2 + row combination gives 9 (best possible).
+
+🔹 Intuition (Interview Gold 💡)
+
+Brute force of all rectangles is O(N⁴) ❌ (too slow).
+
+Instead:
+
+Fix two rows
+
+Compress columns between those rows into a 1D array
+
+Apply Kadane’s algorithm on that 1D array
+
+This converts a 2D problem → multiple 1D max subarray problems.
+
+🔹 Algorithm (Step-by-Step)
+
+Initialize maxSum = -∞
+
+For each topRow from 0 → rows-1
+
+Create an array temp[col] initialized to 0
+
+For each bottomRow from topRow → rows-1:
+
+Add current row values into temp
+
+Apply Kadane’s Algorithm on temp
+
+Update maxSum
+
+🔹 Time & Space Complexity
+
+Time: O(rows² × cols)
+
+Space: O(cols)
+
+🔹 Java Code (Optimized & Clean)
+class Solution {
+    public int maxSumSubmatrix(int[][] matrix) {
+
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int maxSum = Integer.MIN_VALUE;
+
+        for (int top = 0; top < rows; top++) {
+            int[] temp = new int[cols];
+
+            for (int bottom = top; bottom < rows; bottom++) {
+
+                for (int col = 0; col < cols; col++) {
+                    temp[col] += matrix[bottom][col];
+                }
+
+                maxSum = Math.max(maxSum, kadane(temp));
+            }
+        }
+
+        return maxSum;
+    }
+
+    private int kadane(int[] arr) {
+        int maxEndingHere = arr[0];
+        int maxSoFar = arr[0];
+
+        for (int i = 1; i < arr.length; i++) {
+            maxEndingHere = Math.max(arr[i], maxEndingHere + arr[i]);
+            maxSoFar = Math.max(maxSoFar, maxEndingHere);
+        }
+
+        return maxSoFar;
+    }
+}
+
+🔹 Line-by-Line Explanation
+for (int top = 0; top < rows; top++)
+
+
+Fix the top row.
+
+int[] temp = new int[cols];
+
+
+Temporary array storing column sums between two rows.
+
+for (int bottom = top; bottom < rows; bottom++)
+
+
+Expand downwards from the top row.
+
+temp[col] += matrix[bottom][col];
+
+
+Compress multiple rows into one array.
+
+kadane(temp);
+
+
+Find best subarray → best rectangle between these rows.
+
+🔹 Worked Example
+
+Matrix:
+
+1  -3   2
+2   3  -1
+-1  4  -2
+
+
+Take rows 1 to 2:
+
+[ 2+(-1), 3+4, -1+(-2) ]
+→ [1, 7, -3]
+
+
+Kadane → max subarray = 1 + 7 = 8
+
+Repeated for all row pairs → global max = 9
+
+🎯 Why Companies Ask This
+
+Tests Kadane extension
+
+Strong 2D optimization
+
+Asked in Amazon, Adobe, Microsoft
