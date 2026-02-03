@@ -1,0 +1,157 @@
+QUESTION 3: SHORTEST SUBARRAY WITH SUM AT LEAST K
+
+⚠️ This is NOT the same as “Longest Subarray with Sum = K”
+This one is harder and very commonly asked.
+
+🔹 Problem Statement
+
+Given an integer array nums and an integer k, return the length of the shortest non-empty subarray with sum ≥ k.
+If no such subarray exists, return -1.
+
+📌 Example 1
+Input: nums = [2, -1, 2], k = 3
+Output: 3
+Explanation: Entire array sums to 3.
+
+📌 Example 2
+Input: nums = [1, 2], k = 4
+Output: -1
+
+📌 Example 3
+Input: nums = [84, -37, 32, 40, 95], k = 167
+Output: 3
+
+🔹 Why This Problem Is TRICKY
+
+❌ Sliding window fails because:
+
+Array contains negative numbers
+
+✅ Solution uses:
+
+Prefix Sum
+
+Monotonic Deque
+
+This combo is interview gold.
+
+🔹 Key Idea / Intuition
+
+Let:
+
+prefix[i] = sum of nums[0..i-1]
+
+
+We want:
+
+prefix[j] - prefix[i] ≥ k  →  j - i is minimum
+
+
+To do this efficiently:
+
+Use a deque that maintains increasing prefix sums
+
+Try to remove smaller subarrays early
+
+🔹 Algorithm (Step-by-Step)
+
+Build prefix sum array prefix[]
+
+Initialize empty deque dq
+
+For every index i:
+
+While deque front satisfies condition → update answer
+
+Maintain increasing order in deque
+
+Return minimum length found
+
+🔹 Time & Space Complexity
+
+Time: O(N)
+
+Space: O(N)
+
+🔹 Java Code (Hard-Level Interview Ready)
+import java.util.*;
+
+class Solution {
+    public int shortestSubarray(int[] nums, int k) {
+        int n = nums.length;
+        long[] prefix = new long[n + 1];
+
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+
+        Deque<Integer> dq = new ArrayDeque<>();
+        int minLen = Integer.MAX_VALUE;
+
+        for (int i = 0; i <= n; i++) {
+
+            // Try to shrink window from front
+            while (!dq.isEmpty() && prefix[i] - prefix[dq.peekFirst()] >= k) {
+                minLen = Math.min(minLen, i - dq.pollFirst());
+            }
+
+            // Maintain increasing order
+            while (!dq.isEmpty() && prefix[i] <= prefix[dq.peekLast()]) {
+                dq.pollLast();
+            }
+
+            dq.offerLast(i);
+        }
+
+        return minLen == Integer.MAX_VALUE ? -1 : minLen;
+    }
+}
+
+🔹 Line-by-Line Explanation
+long[] prefix = new long[n + 1];
+
+
+Stores cumulative sums.
+
+prefix[i + 1] = prefix[i] + nums[i];
+
+
+Compute prefix sum.
+
+Deque<Integer> dq
+
+
+Stores indices of prefix array.
+
+while prefix[i] - prefix[dq.peekFirst()] >= k
+
+
+If condition satisfied, we found a valid subarray.
+
+while prefix[i] <= prefix[dq.peekLast()]
+
+
+Ensures deque remains monotonic increasing.
+
+🔹 Worked Example
+Input
+nums = [84, -37, 32, 40, 95]
+k = 167
+
+
+Prefix:
+
+[0, 84, 47, 79, 119, 214]
+
+
+Best subarray:
+
+[32, 40, 95] → sum = 167 → length = 3
+
+🎯 Why Companies LOVE This
+
+Combines prefix sums + deque
+
+Tests optimization mindset
+
+Asked in Google, Amazon, Uber
