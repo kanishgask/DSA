@@ -1,0 +1,42 @@
+QUESTION 5: FIND MEDIAN FROM DATA STREAM
+
+(Heap – NOT in your list)
+
+🔹 Algorithm
+
+Max Heap → left half
+
+Min Heap → right half
+
+Balance heaps
+
+Median depends on sizes
+
+🔹 Java Code
+import java.util.*;
+
+class MedianFinder {
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+
+    public void addNum(int num) {
+        maxHeap.offer(num);
+        minHeap.offer(maxHeap.poll());
+
+        if (maxHeap.size() < minHeap.size())
+            maxHeap.offer(minHeap.poll());
+    }
+
+    public double findMedian() {
+        if (maxHeap.size() > minHeap.size())
+            return maxHeap.peek();
+        return (maxHeap.peek() + minHeap.peek()) / 2.0;
+    }
+}
+
+🔹 Output Example
+addNum(1)
+addNum(2)
+Median → 1.5
+addNum(3)
+Median → 2
