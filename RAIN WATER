@@ -1,0 +1,114 @@
+
+🔥 Difficult DSA Problem: Trapping Rain Water
+🧠 Problem Statement
+Given n non-negative integers representing the height of bars, where the width of each bar is 1, compute how much water can be trapped after raining.
+📌 Example
+Copy code
+
+Input: height = [4,2,0,3,2,5]
+Output: 9
+🖼️ Intuition (Very Important)
+Water can be trapped only if there is a taller bar on both sides.
+For each index i:
+Copy code
+
+Water at i =
+min(max height on left, max height on right) - height[i]
+If this value is negative → no water.
+🚫 Brute Force (Not recommended)
+For every bar, scan left and right
+Time: O(n²) ❌
+We need O(n) solution.
+✅ Optimal Algorithm (Two Pointer Technique)
+🔑 Idea
+Use two pointers:
+left starts at beginning
+right starts at end
+Maintain:
+leftMax → highest bar from left
+rightMax → highest bar from right
+⚙️ Algorithm Steps
+Initialize:
+Copy code
+
+left = 0
+right = n - 1
+leftMax = 0
+rightMax = 0
+water = 0
+While left < right:
+If height[left] <= height[right]:
+If height[left] >= leftMax
+Update leftMax
+Else
+Add leftMax - height[left] to water
+Move left++
+Else:
+If height[right] >= rightMax
+Update rightMax
+Else
+Add rightMax - height[right] to water
+Move right--
+✏️ Dry Run (Example)
+Input
+Copy code
+
+[4,2,0,3,2,5]
+Index
+Height
+Water Trapped
+1
+2
+2
+2
+0
+4
+3
+3
+1
+4
+2
+2
+Total = 9 units
+💻 Java Code (Interview-Ready)
+Copy code
+Java
+class Solution {
+    public int trap(int[] height) {
+        int left = 0;
+        int right = height.length - 1;
+        int leftMax = 0, rightMax = 0;
+        int water = 0;
+
+        while (left < right) {
+            if (height[left] <= height[right]) {
+                if (height[left] >= leftMax) {
+                    leftMax = height[left];
+                } else {
+                    water += leftMax - height[left];
+                }
+                left++;
+            } else {
+                if (height[right] >= rightMax) {
+                    rightMax = height[right];
+                } else {
+                    water += rightMax - height[right];
+                }
+                right--;
+            }
+        }
+        return water;
+    }
+}
+⏱️ Complexity
+Type
+Value
+Time
+O(n)
+Space
+O(1)
+🎯 Why Interviewers LOVE this question
+✔ Tests two pointers
+✔ Tests greedy thinking
+✔ Tests edge case handling
+✔ Separates average vs strong candidates
