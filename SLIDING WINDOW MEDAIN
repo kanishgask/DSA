@@ -1,0 +1,169 @@
+SLIDING WINDOW MEDIAN
+
+(Hard · FAANG-level · Data Structures)
+
+This problem instantly levels up your repo because it mixes heaps + sliding window logic.
+
+1️⃣ Problem Statement
+
+You are given:
+
+An integer array nums
+
+An integer k (window size)
+
+For each sliding window of size k, return the median of the elements inside the window.
+
+Example
+Input:
+nums = [1, 3, -1, -3, 5, 3, 6, 7]
+k = 3
+
+Output:
+[1, -1, -1, 3, 5, 6]
+
+2️⃣ Why This Problem Is Important
+
+✔ Combines priority queues (heaps)
+✔ Very common Google / Amazon problem
+✔ Tests real-world DS usage
+✔ Hard to solve cleanly ❗
+
+3️⃣ Key Idea (Intuition)
+
+Maintain two heaps:
+
+Heap	Purpose
+Max Heap	Stores smaller half
+Min Heap	Stores larger half
+
+So that:
+
+Size difference ≤ 1
+
+Median is:
+
+Top of max heap (odd k)
+
+Average of both tops (even k)
+
+4️⃣ Algorithm (High-Level)
+
+Add new element to one of the heaps
+
+Rebalance heaps
+
+Remove outgoing element (sliding window)
+
+Rebalance again
+
+Compute median
+
+5️⃣ Java Code (Interview-Ready)
+import java.util.*;
+
+class SlidingWindowMedian {
+
+    PriorityQueue<Integer> maxHeap =
+        new PriorityQueue<>(Collections.reverseOrder());
+
+    PriorityQueue<Integer> minHeap =
+        new PriorityQueue<>();
+
+    private void balance() {
+        if (maxHeap.size() > minHeap.size() + 1)
+            minHeap.add(maxHeap.poll());
+        else if (minHeap.size() > maxHeap.size())
+            maxHeap.add(minHeap.poll());
+    }
+
+    private void addNum(int num) {
+        if (maxHeap.isEmpty() || num <= maxHeap.peek())
+            maxHeap.add(num);
+        else
+            minHeap.add(num);
+        balance();
+    }
+
+    private void removeNum(int num) {
+        if (num <= maxHeap.peek())
+            maxHeap.remove(num);
+        else
+            minHeap.remove(num);
+        balance();
+    }
+
+    public double[] medianSlidingWindow(int[] nums, int k) {
+
+        double[] result = new double[nums.length - k + 1];
+        int index = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+
+            addNum(nums[i]);
+
+            if (i >= k - 1) {
+                if (k % 2 == 1)
+                    result[index++] = maxHeap.peek();
+                else
+                    result[index++] =
+                        ((double) maxHeap.peek()
+                        + minHeap.peek()) / 2.0;
+
+                removeNum(nums[i - k + 1]);
+            }
+        }
+        return result;
+    }
+}
+
+6️⃣ Line-by-Line Explanation
+🔹 Why Two Heaps?
+
+Lower half → MaxHeap
+
+Higher half → MinHeap
+
+🔹 Balancing
+if (maxHeap.size() > minHeap.size() + 1)
+
+
+Keeps size difference ≤ 1
+
+🔹 Removing Sliding Window Element
+maxHeap.remove(num);
+
+
+Java heap supports removal by value
+
+Cost: O(n) (acceptable in interviews)
+
+7️⃣ Example Walkthrough
+Input
+[1, 3, -1, -3, 5, 3, 6, 7], k = 3
+
+Windows & Medians
+[1  3  -1] → 1
+[3 -1 -3] → -1
+[-1 -3  5] → -1
+[-3  5  3] → 3
+[5   3  6] → 5
+[3   6  7] → 6
+
+8️⃣ Time & Space Complexity
+Metric	Complexity
+Time	O(N log K)
+Space	O(K)
+9️⃣ Interview One-Liners ⚡
+
+Two-heap technique
+
+Sliding window + median
+
+Balancing ensures constant median access
+
+🔟 Why This Is a GREAT ADDITION 🚀
+
+✔ Not common in basic lists
+✔ Shows heap mastery
+✔ Hard problem → high impression
