@@ -1,0 +1,178 @@
+DIJKSTRA’S ALGORITHM
+(Shortest Path in a Weighted Graph)
+1️⃣ Problem Statement
+
+You are given a weighted graph with V vertices and E edges.
+Each edge has a non-negative weight.
+
+Your task is to find the shortest distance from a given source vertex to all other vertices.
+
+👉 If a vertex is not reachable, its distance should remain infinity (∞).
+
+2️⃣ Why Dijkstra’s Algorithm?
+
+Used when all edge weights are non-negative
+
+Very common in interviews, maps, network routing
+
+Greedy algorithm
+
+Time-efficient using Priority Queue
+
+3️⃣ Real-World Example
+
+📍 Google Maps finds the shortest route from your location to all destinations.
+
+4️⃣ Algorithm (Step-by-Step)
+
+Initialize distance[] array with ∞
+
+Set distance[source] = 0
+
+Use a Min Heap / Priority Queue
+
+Pick vertex with minimum distance
+
+Relax its neighbors
+→ update distance if shorter path found
+
+Repeat until queue becomes empty
+
+5️⃣ Dry Run Example
+Graph
+0 --1--> 2
+0 --4--> 1
+2 --2--> 1
+2 --5--> 3
+1 --1--> 3
+
+Start Node: 0
+Vertex	Distance
+0	0
+1	∞
+2	∞
+3	∞
+
+After running Dijkstra:
+
+0 → 0
+1 → 3
+2 → 1
+3 → 4
+
+6️⃣ Java Code (Clean & Interview-Ready)
+import java.util.*;
+
+class DijkstraAlgorithm {
+
+    // Pair class to store node and distance
+    static class Pair {
+        int node;
+        int dist;
+
+        Pair(int node, int dist) {
+            this.node = node;
+            this.dist = dist;
+        }
+    }
+
+    public static void dijkstra(
+            int V,
+            List<List<Pair>> graph,
+            int source) {
+
+        // Distance array
+        int[] distance = new int[V];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[source] = 0;
+
+        // Min Heap based on distance
+        PriorityQueue<Pair> pq =
+                new PriorityQueue<>(
+                        (a, b) -> a.dist - b.dist);
+
+        pq.add(new Pair(source, 0));
+
+        // Main loop
+        while (!pq.isEmpty()) {
+
+            Pair current = pq.poll();
+            int u = current.node;
+
+            for (Pair neighbor : graph.get(u)) {
+
+                int v = neighbor.node;
+                int weight = neighbor.dist;
+
+                // Relaxation condition
+                if (distance[u] + weight < distance[v]) {
+                    distance[v] = distance[u] + weight;
+                    pq.add(new Pair(v, distance[v]));
+                }
+            }
+        }
+
+        // Output result
+        System.out.println("Shortest distances from source:");
+        for (int i = 0; i < V; i++) {
+            System.out.println(
+                "Node " + i + " -> " + distance[i]);
+        }
+    }
+}
+
+7️⃣ Line-by-Line Explanation (Very Important)
+🔹 Pair Class
+static class Pair {
+    int node;
+    int dist;
+}
+
+
+node → vertex number
+
+dist → current shortest distance
+
+🔹 Distance Array
+int[] distance = new int[V];
+Arrays.fill(distance, Integer.MAX_VALUE);
+distance[source] = 0;
+
+
+Initially assume all nodes are unreachable
+
+Source distance is 0
+
+🔹 Priority Queue
+PriorityQueue<Pair> pq =
+    new PriorityQueue<>((a, b) -> a.dist - b.dist);
+
+
+Always extracts minimum distance node
+
+Makes algorithm efficient
+
+🔹 Relaxation Step
+if (distance[u] + weight < distance[v]) {
+    distance[v] = distance[u] + weight;
+}
+
+
+If a shorter path exists, update distance
+
+Core idea of Dijkstra
+
+8️⃣ Time & Space Complexity
+Type	Complexity
+Time	O(E log V)
+Space	O(V + E)
+9️⃣ Important Interview Notes ⚡
+
+✅ Works only with non-negative weights
+❌ Fails for negative weights (use Bellman-Ford)
+✅ Uses Greedy approach
+✅ Very frequently asked in FAANG
+
+🔟 One-Line Explanation (For Viva)
+
+Dijkstra’s Algorithm finds the shortest path from a source to all vertices in a weighted graph using a greedy strategy and a priority queue.
