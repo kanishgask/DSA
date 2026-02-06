@@ -1,0 +1,188 @@
+0/1 KNAPSACK PROBLEM (Dynamic Programming)
+
+This is a CORE DP problem — super important for placements, exams, and viva.
+
+1️⃣ Problem Statement
+
+You are given:
+
+n items
+
+Each item has:
+
+a weight wt[i]
+
+a value val[i]
+
+A knapsack with maximum capacity W
+
+🔒 You can take each item at most once (0 or 1 time).
+
+👉 Find the maximum total value that can be put into the knapsack without exceeding capacity.
+
+2️⃣ Why is it called 0/1 Knapsack?
+
+0 → item not chosen
+
+1 → item chosen once
+
+❌ You cannot take fractional items
+
+❌ You cannot take same item multiple times
+
+3️⃣ Real-World Example
+
+🎒 You have a bag with limited capacity and expensive gadgets.
+You want to maximize value, not weight.
+
+4️⃣ Approach Used: Dynamic Programming
+Why DP?
+
+Overlapping subproblems
+
+Optimal substructure
+
+Recursive solution is exponential ❌
+
+DP reduces it to polynomial time ✅
+
+5️⃣ DP State Definition (VERY IMPORTANT)
+dp[i][w] = Maximum value using
+           first i items
+           with knapsack capacity w
+
+6️⃣ Transition Formula
+
+If weight of current item ≤ capacity:
+
+dp[i][w] = max(
+    val[i-1] + dp[i-1][w - wt[i-1]],   // take item
+    dp[i-1][w]                         // don't take
+)
+
+
+Else:
+
+dp[i][w] = dp[i-1][w]
+
+7️⃣ Algorithm (Step-by-Step)
+
+Create DP table dp[n+1][W+1]
+
+Initialize first row and column as 0
+
+Loop over items
+
+Loop over capacity
+
+Apply choice logic
+
+Answer will be dp[n][W]
+
+8️⃣ Java Code (Clean & Interview-Ready)
+class Knapsack01 {
+
+    public static int knapsack(int[] wt, int[] val, int W) {
+        int n = wt.length;
+
+        // DP table
+        int[][] dp = new int[n + 1][W + 1];
+
+        // Build dp table
+        for (int i = 1; i <= n; i++) {
+            for (int w = 1; w <= W; w++) {
+
+                // If item can be included
+                if (wt[i - 1] <= w) {
+                    dp[i][w] = Math.max(
+                            val[i - 1] + dp[i - 1][w - wt[i - 1]],
+                            dp[i - 1][w]
+                    );
+                } 
+                // Item cannot be included
+                else {
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+        return dp[n][W];
+    }
+
+    public static void main(String[] args) {
+        int[] wt = {2, 3, 4};
+        int[] val = {4, 5, 6};
+        int W = 5;
+
+        System.out.println(
+            "Maximum Profit = " + knapsack(wt, val, W)
+        );
+    }
+}
+
+9️⃣ Line-by-Line Explanation
+🔹 DP Table Creation
+int[][] dp = new int[n + 1][W + 1];
+
+
+Rows → items
+
+Columns → capacity
+
+Extra row & column for base case
+
+🔹 Loop Over Items
+for (int i = 1; i <= n; i++)
+
+
+Considering items one by one
+
+🔹 Loop Over Capacity
+for (int w = 1; w <= W; w++)
+
+
+Try every capacity from 1 to W
+
+🔹 Choice Logic
+Math.max(
+  val[i-1] + dp[i-1][w - wt[i-1]],
+  dp[i-1][w]
+)
+
+
+Pick OR skip the item
+
+Choose maximum profit
+
+🔟 Example Dry Run
+Input
+wt  = [2, 3, 4]
+val = [4, 5, 6]
+W   = 5
+
+DP Table (Simplified)
+Items	0	1	2	3	4	5
+0	0	0	0	0	0	0
+1	0	0	4	4	4	4
+2	0	0	4	5	5	9
+3	0	0	4	5	6	9
+Output
+Maximum Profit = 9
+
+1️⃣1️⃣ Time & Space Complexity
+Metric	Complexity
+Time	O(n × W)
+Space	O(n × W)
+1️⃣2️⃣ Interview One-Liners ⚡
+
+❓ Why DP? → overlapping subproblems
+
+❓ Why extra row? → base condition
+
+❓ Can we optimize space? → Yes, to O(W)
+
+1️⃣3️⃣ Common Interview Variants
+
+✔ Unbounded Knapsack
+✔ Fractional Knapsack
+✔ Subset Sum
+✔ Equal Sum Partition
