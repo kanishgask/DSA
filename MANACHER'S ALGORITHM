@@ -1,0 +1,166 @@
+MANACHER’S ALGORITHM
+(Longest Palindromic Substring in O(N))
+
+This is a rare but powerful algorithm. If you explain this well, interviewers know you’re strong in DSA.
+
+1️⃣ Problem Statement
+
+Given a string s, find the longest palindromic substring in linear time.
+
+📌 A palindrome reads the same forwards and backwards.
+
+Example
+Input  : "babad"
+Output : "bab"   (or "aba")
+
+2️⃣ Why Not Brute Force?
+Approach	Time
+Check all substrings	O(N³) ❌
+Expand Around Center	O(N²) ❌
+Manacher’s Algorithm	O(N) ✅
+3️⃣ Key Idea (Intuition)
+
+Manacher’s Algorithm:
+
+Handles odd & even length palindromes together
+
+Uses previous palindrome information
+
+Avoids re-checking characters
+
+4️⃣ Preprocessing the String (VERY IMPORTANT)
+
+Insert # between characters to make all palindromes odd-length.
+
+Example
+Original:  b a b a d
+Modified: #b#a#b#a#d#
+
+
+This simplifies logic.
+
+5️⃣ Key Arrays Used
+Variable	Meaning
+P[i]	Palindrome radius centered at i
+C	Center of current palindrome
+R	Right boundary of current palindrome
+6️⃣ Algorithm (Step-by-Step)
+
+Transform input string
+
+Initialize array P[]
+
+Loop through transformed string
+
+Use mirror property to reduce comparisons
+
+Expand palindrome when possible
+
+Update center and right boundary
+
+Extract longest palindrome from P[]
+
+7️⃣ Java Code (Clean & Explained)
+class Manacher {
+
+    public static String longestPalindrome(String s) {
+
+        // Step 1: Transform string
+        StringBuilder t = new StringBuilder("#");
+        for (char c : s.toCharArray()) {
+            t.append(c).append("#");
+        }
+
+        int n = t.length();
+        int[] P = new int[n];
+
+        int C = 0, R = 0;
+        int maxLen = 0, centerIndex = 0;
+
+        // Step 2: Main loop
+        for (int i = 0; i < n; i++) {
+
+            int mirror = 2 * C - i;
+
+            if (i < R) {
+                P[i] = Math.min(R - i, P[mirror]);
+            }
+
+            // Expand palindrome
+            int a = i + P[i] + 1;
+            int b = i - P[i] - 1;
+
+            while (a < n && b >= 0 &&
+                   t.charAt(a) == t.charAt(b)) {
+                P[i]++;
+                a++;
+                b--;
+            }
+
+            // Update center and boundary
+            if (i + P[i] > R) {
+                C = i;
+                R = i + P[i];
+            }
+
+            // Track longest palindrome
+            if (P[i] > maxLen) {
+                maxLen = P[i];
+                centerIndex = i;
+            }
+        }
+
+        // Step 3: Extract result
+        int start =
+            (centerIndex - maxLen) / 2;
+        return s.substring(start,
+                            start + maxLen);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(
+            longestPalindrome("babad"));
+    }
+}
+
+8️⃣ Line-by-Line Explanation
+🔹 String Transformation
+#b#a#b#a#d#
+
+
+Uniform handling of even & odd palindromes
+
+🔹 Mirror Logic
+int mirror = 2 * C - i;
+
+
+Uses symmetry of palindrome
+
+Reduces comparisons
+
+🔹 Expansion Logic
+while (t.charAt(a) == t.charAt(b))
+
+
+Grow palindrome outward
+
+🔹 Update Center
+if (i + P[i] > R)
+
+
+Expand window when palindrome grows larger
+
+9️⃣ Example Dry Run
+Input
+s = "babad"
+
+Output
+bab
+
+
+(or "aba" — both valid)
+
+🔟 Time & Space Complexity
+Metric	Complexity
+Time	O(N)
+Space	O(N)
