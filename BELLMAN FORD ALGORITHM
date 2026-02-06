@@ -1,0 +1,188 @@
+BELLMAN–FORD ALGORITHM
+
+(Shortest Path in Graph with Negative Weights)
+
+This one is very important because it solves a case where Dijkstra fails.
+
+1️⃣ Problem Statement
+
+Given a directed weighted graph with V vertices and E edges (weights can be negative):
+
+Find the shortest distance from a source vertex to all other vertices
+
+Detect if the graph contains a negative weight cycle
+
+👉 If a negative cycle exists, shortest path is not possible.
+
+2️⃣ Why Bellman–Ford?
+Algorithm	Negative Weights	Detects Negative Cycle
+Dijkstra	❌ No	❌ No
+Bellman–Ford	✅ Yes	✅ Yes
+
+✅ Used in routing protocols (RIP)
+✅ Very common interview theory + coding question
+
+3️⃣ Key Idea (Intuition)
+
+Shortest path in a graph with V vertices can have at most V−1 edges
+
+Relax all edges V−1 times
+
+If any distance can still be improved → negative cycle exists
+
+4️⃣ Algorithm (Step-by-Step)
+
+Initialize distance array with ∞
+
+Set distance[source] = 0
+
+Repeat V − 1 times:
+
+For every edge (u → v) with weight w
+
+Relax the edge
+
+Run one more relaxation:
+
+If distance reduces → negative cycle
+
+5️⃣ Relaxation Formula (Core of Algorithm)
+if dist[u] + weight < dist[v]
+    dist[v] = dist[u] + weight
+
+6️⃣ Java Code (Clean & Interview-Ready)
+import java.util.*;
+
+class BellmanFord {
+
+    // Edge structure
+    static class Edge {
+        int src, dest, weight;
+
+        Edge(int s, int d, int w) {
+            src = s;
+            dest = d;
+            weight = w;
+        }
+    }
+
+    static void bellmanFord(
+            int V,
+            List<Edge> edges,
+            int source) {
+
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[source] = 0;
+
+        // Step 1: Relax edges V-1 times
+        for (int i = 1; i <= V - 1; i++) {
+            for (Edge e : edges) {
+                if (dist[e.src] != Integer.MAX_VALUE &&
+                    dist[e.src] + e.weight < dist[e.dest]) {
+                    dist[e.dest] =
+                        dist[e.src] + e.weight;
+                }
+            }
+        }
+
+        // Step 2: Check for negative cycle
+        for (Edge e : edges) {
+            if (dist[e.src] != Integer.MAX_VALUE &&
+                dist[e.src] + e.weight < dist[e.dest]) {
+
+                System.out.println(
+                    "Negative weight cycle detected");
+                return;
+            }
+        }
+
+        // Print shortest distances
+        System.out.println("Shortest distances:");
+        for (int i = 0; i < V; i++) {
+            System.out.println(
+                "Vertex " + i + " -> " + dist[i]);
+        }
+    }
+}
+
+7️⃣ Line-by-Line Explanation
+🔹 Edge Class
+static class Edge {
+    int src, dest, weight;
+}
+
+
+Represents a directed edge src → dest
+
+🔹 Distance Initialization
+Arrays.fill(dist, Integer.MAX_VALUE);
+dist[source] = 0;
+
+
+Unknown distances = ∞
+
+Source distance = 0
+
+🔹 Main Relaxation Loop
+for (int i = 1; i <= V - 1; i++)
+
+
+We relax edges V−1 times
+
+Ensures shortest path found
+
+🔹 Negative Cycle Check
+if (dist[e.src] + e.weight < dist[e.dest])
+
+
+Distance improving after V−1 iterations
+
+Confirms negative cycle
+
+8️⃣ Example (Dry Run)
+Input Graph
+Edges:
+0 → 1  (4)
+0 → 2  (5)
+1 → 2  (-3)
+2 → 3  (4)
+
+Source: 0
+Distances After Algorithm
+0 → 0
+1 → 4
+2 → 1
+3 → 5
+
+9️⃣ Example with Negative Cycle
+1 → 2 (-1)
+2 → 3 (-1)
+3 → 1 (-1)
+
+
+👉 Bellman–Ford outputs:
+
+Negative weight cycle detected
+
+🔟 Time & Space Complexity
+Metric	Complexity
+Time	O(V × E)
+Space	O(V)
+1️⃣1️⃣ Interview One-Liners ⚡
+
+Bellman–Ford handles negative weights
+
+Detects negative weight cycles
+
+Slower than Dijkstra but more powerful
+
+Based on edge relaxation
+
+1️⃣2️⃣ Very Common Interview Questions
+
+🔹 Why relax V−1 times?
+👉 Longest shortest path has at most V−1 edges
+
+🔹 When to prefer Bellman–Ford?
+👉 When negative weights are present
