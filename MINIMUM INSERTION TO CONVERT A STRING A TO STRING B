@@ -1,0 +1,147 @@
+4) MINIMUM INSERTIONS / DELETIONS TO CONVERT STRING A TO STRING B
+
+🔥 Very frequently asked
+
+Appears in Amazon, Infosys, TCS Prime, Accenture
+
+DP + LCS
+
+Tests string DP fundamentals
+
+📌 Problem Statement
+
+Given two strings A and B, find:
+
+Minimum number of deletions
+
+Minimum number of insertions
+
+required to convert string A into string B.
+
+❗Replacement is NOT allowed
+
+✍ Example
+A = "heap"
+B = "pea"
+Output:
+Deletions = 2
+Insertions = 1
+
+🧠 Key Insight (INTERVIEW GOLD)
+
+The Longest Common Subsequence (LCS) of A and B determines the minimum operations.
+
+🧮 Formula
+
+Let:
+
+L = LCS(A, B)
+
+
+Then:
+
+Deletions  = length(A) - L
+Insertions = length(B) - L
+
+📐 Algorithm
+
+Compute LCS(A, B) using DP
+
+Use formulas to calculate deletions & insertions
+
+💻 Java Code
+public class MinInsertDelete {
+
+    public static void minOperations(String A, String B) {
+
+        int n = A.length();
+        int m = B.length();
+
+        int[][] dp = new int[n + 1][m + 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+
+                if (A.charAt(i - 1) == B.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+
+        int lcs = dp[n][m];
+
+        int deletions = n - lcs;
+        int insertions = m - lcs;
+
+        System.out.println("Deletions: " + deletions);
+        System.out.println("Insertions: " + insertions);
+    }
+
+    public static void main(String[] args) {
+        String A = "heap";
+        String B = "pea";
+        minOperations(A, B);
+    }
+}
+
+🔍 Line-by-Line Explanation
+int[][] dp = new int[n + 1][m + 1];
+
+
+→ DP table for LCS computation
+
+if (A.charAt(i - 1) == B.charAt(j - 1))
+
+
+→ Matching characters → part of common subsequence
+
+dp[i][j] = 1 + dp[i - 1][j - 1];
+
+
+→ Extend LCS
+
+dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+
+
+→ Skip characters to find max LCS
+
+int lcs = dp[n][m];
+
+
+→ Length of longest common subsequence
+
+int deletions = n - lcs;
+
+
+→ Remove extra chars from A
+
+int insertions = m - lcs;
+
+
+→ Insert missing chars to form B
+
+🧪 Dry Run
+A = heap
+B = pea
+LCS = "ea" → length = 2
+
+Deletions = 4 - 2 = 2 (h, p)
+Insertions = 3 - 2 = 1 (p)
+
+⏱ Complexity
+Type	Complexity
+Time	O(n × m)
+Space	O(n × m)
+🎯 Interview Tips
+
+State clearly: “Replacement not allowed”
+
+Mention LCS relation confidently
+
+This problem connects to:
+
+Edit Distance
+
+Min Insertions Palindrome
