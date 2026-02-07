@@ -1,0 +1,162 @@
+MAXIMUM SUM INCREASING SUBSEQUENCE (MSIS)
+
+🔥 Very important
+
+Asked when interviewer wants more than LIS
+
+Tests DP thinking beyond length → value-based DP
+
+Common in product-based & service-based company rounds
+
+📌 Problem Statement
+
+Given an array of integers arr[], find the maximum possible sum of an increasing subsequence.
+
+📌 Conditions:
+
+Subsequence must be strictly increasing
+
+Elements need not be contiguous
+
+✍ Example
+Input:  arr = {1, 101, 2, 3, 100}
+Output: 106
+
+
+Explanation:
+The maximum sum increasing subsequence is:
+
+1 → 2 → 3 → 100
+Sum = 106
+
+🧠 Key Difference from LIS
+LIS	MSIS
+Maximizes length	Maximizes sum
+DP based on count	DP based on values
+Result = length	Result = sum
+📐 DP Definition
+
+Let
+
+dp[i] = maximum sum of increasing subsequence ending at index i
+
+🧮 Algorithm (Step-by-Step)
+
+Initialize dp[i] = arr[i]
+(Each element is a subsequence of length 1)
+
+For every i from 1 to n-1
+
+For every j from 0 to i-1
+
+If arr[j] < arr[i]:
+
+dp[i] = max(dp[i], dp[j] + arr[i])
+
+
+Answer = max(dp[i]) for all i
+
+💻 Java Code (Interview-ready)
+public class MaximumSumIncreasingSubsequence {
+
+    public static int maxSumIS(int[] arr) {
+
+        int n = arr.length;
+        int[] dp = new int[n];
+
+        // Step 1: Initialize
+        for (int i = 0; i < n; i++) {
+            dp[i] = arr[i];
+        }
+
+        // Step 2: Build DP
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+
+                if (arr[j] < arr[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + arr[i]);
+                }
+            }
+        }
+
+        // Step 3: Find max sum
+        int maxSum = 0;
+        for (int i = 0; i < n; i++) {
+            maxSum = Math.max(maxSum, dp[i]);
+        }
+
+        return maxSum;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 101, 2, 3, 100};
+        System.out.println(maxSumIS(arr));
+    }
+}
+
+🔍 Line-by-Line Explanation
+int[] dp = new int[n];
+
+
+→ dp[i] stores maximum sum ending at index i
+
+dp[i] = arr[i];
+
+
+→ Single element subsequence → sum is element itself
+
+for (int i = 1; i < n; i++)
+
+
+→ Consider each element as a possible ending element
+
+for (int j = 0; j < i; j++)
+
+
+→ Check all previous elements
+
+if (arr[j] < arr[i])
+
+
+→ Ensure strictly increasing
+
+dp[i] = Math.max(dp[i], dp[j] + arr[i]);
+
+
+→ Either:
+
+start new subsequence at i, or
+
+extend subsequence ending at j
+
+maxSum = Math.max(maxSum, dp[i]);
+
+
+→ Final answer is maximum over all DP states
+
+🧪 Dry Run
+arr = {1, 101, 2, 3, 100}
+
+dp[] progression:
+i=0 → [1]
+i=1 → [1, 102]
+i=2 → [1,102,3]
+i=3 → [1,102,3,6]
+i=4 → [1,102,3,6,106]
+
+
+✅ Answer = 106
+
+⏱ Complexity
+Type	Complexity
+Time	O(n²)
+Space	O(n)
+🎯 Interview Talking Points
+
+“This is a value-based DP variation of LIS”
+
+Initialization is crucial
+
+Can’t use binary search optimization like LIS
+
+Asked as a follow-up to LIS
