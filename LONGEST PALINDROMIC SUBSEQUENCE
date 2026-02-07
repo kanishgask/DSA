@@ -1,0 +1,129 @@
+2) LONGEST PALINDROMIC SUBSEQUENCE (LPS)
+
+🔥 Very important
+
+Asked in DP rounds
+
+Variation of LCS
+
+Loved by interviewers because it tests DP thinking
+
+📌 Problem Statement
+
+Given a string s, find the length of the Longest Palindromic Subsequence.
+
+A palindromic sequence reads the same forward and backward.
+
+Note:
+
+Characters do not need to be contiguous
+
+This is NOT substring
+
+✍ Example
+Input: "bbbab"
+Output: 4
+
+
+Explanation:
+The longest palindromic subsequence is "bbbb"
+
+🧠 Key Observation (INTERVIEW GOLD)
+
+LPS of a string = LCS(string, reverse(string))
+
+Because:
+
+A palindrome reads same forward & backward
+
+Matching characters in string and its reverse form palindromes
+
+🧮 Algorithm
+
+Let rev = reverse of string s
+
+Compute LCS(s, rev) using Dynamic Programming
+
+Result is the Longest Palindromic Subsequence length
+
+📐 DP Definition
+dp[i][j] = LCS length of first i chars of s
+           and first j chars of reversed string
+
+💻 Java Code
+public class LongestPalindromicSubsequence {
+
+    public static int longestPalindromeSubseq(String s) {
+
+        String rev = new StringBuilder(s).reverse().toString();
+        int n = s.length();
+
+        int[][] dp = new int[n + 1][n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+
+                if (s.charAt(i - 1) == rev.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[n][n];
+    }
+
+    public static void main(String[] args) {
+        String s = "bbbab";
+        System.out.println(longestPalindromeSubseq(s));
+    }
+}
+
+🔍 Line-by-Line Explanation
+String rev = new StringBuilder(s).reverse().toString();
+
+
+→ Reverse string to compare palindrome order
+
+int[][] dp = new int[n + 1][n + 1];
+
+
+→ DP table for LCS computation
+
+for (int i = 1; i <= n; i++)
+    for (int j = 1; j <= n; j++)
+
+
+→ Compare each char of s with each char of rev
+
+if (s.charAt(i - 1) == rev.charAt(j - 1))
+
+
+→ Matching characters contribute to palindrome
+
+dp[i][j] = 1 + dp[i - 1][j - 1];
+
+
+→ Extend palindromic subsequence
+
+dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+
+
+→ Try skipping characters
+
+return dp[n][n];
+
+
+→ Full string result
+
+🧪 Dry Run (Concept)
+s    = b b b a b
+rev  = b a b b b
+
+
+Matching pairs build "bbbb" → length = 4
+
+⏱ Complexity
+Type	Complexity
+Time	O(n²)
+Space	O(n²)
