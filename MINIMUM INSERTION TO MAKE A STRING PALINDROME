@@ -1,0 +1,137 @@
+MINIMUM INSERTIONS TO MAKE A STRING PALINDROME
+
+🔥 Extremely important
+
+Asked in Amazon / Google / Microsoft
+
+DP + Palindrome logic
+
+Directly related to Longest Palindromic Subsequence
+
+📌 Problem Statement
+
+Given a string s, return the minimum number of insertions required to make the string a palindrome.
+
+You may insert characters at any position.
+
+✍ Example
+Input: "leetcode"
+Output: 5
+
+
+Explanation:
+One palindrome possible: "leetcodocteel"
+Minimum insertions required = 5
+
+🧠 Key Insight (INTERVIEW GOLD)
+
+Minimum Insertions = Length of String − Length of Longest Palindromic Subsequence
+
+Why?
+
+LPS gives characters already in palindromic order
+
+Remaining characters must be inserted
+
+🧮 Formula
+minInsertions = n - LPS(s)
+
+📐 Algorithm
+
+Compute LPS(s)
+(using LCS of s and reverse(s))
+
+Return:
+
+n - LPS
+
+💻 Java Code
+public class MinInsertionsPalindrome {
+
+    public static int minInsertions(String s) {
+
+        int n = s.length();
+        String rev = new StringBuilder(s).reverse().toString();
+
+        int[][] dp = new int[n + 1][n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+
+                if (s.charAt(i - 1) == rev.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+
+        int lps = dp[n][n];
+        return n - lps;
+    }
+
+    public static void main(String[] args) {
+        String s = "leetcode";
+        System.out.println(minInsertions(s));
+    }
+}
+
+🔍 Line-by-Line Explanation
+String rev = new StringBuilder(s).reverse().toString();
+
+
+→ Reverse string for LPS calculation
+
+int[][] dp = new int[n + 1][n + 1];
+
+
+→ DP table for LCS (LPS logic)
+
+if (s.charAt(i - 1) == rev.charAt(j - 1))
+
+
+→ Matching characters → part of palindrome
+
+dp[i][j] = 1 + dp[i - 1][j - 1];
+
+
+→ Extend palindromic subsequence
+
+dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+
+
+→ Skip one character
+
+int lps = dp[n][n];
+
+
+→ Length of longest palindromic subsequence
+
+return n - lps;
+
+
+→ Remaining characters must be inserted
+
+🧪 Dry Run
+s = "leetcode"
+Reverse = "edocteel"
+LPS length = 3 ("ete")
+Min insertions = 8 − 3 = 5
+
+⏱ Complexity
+Type	Complexity
+Time	O(n²)
+Space	O(n²)
+🎯 Interview Talking Points
+
+Convert problem → LPS
+
+Show formula confidently
+
+Mention it works for insertions only
+
+Related problems:
+
+Min deletions
+
+Min insertions + deletions
