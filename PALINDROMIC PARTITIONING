@@ -1,0 +1,161 @@
+Palindromic Partitioning – Minimum Cuts
+
+This is a HIGH-LEVEL DP problem asked in:
+
+MAANG interviews
+
+Advanced coding rounds
+
+Competitive programming
+
+🎯 Aim
+
+To partition a given string into substrings such that:
+
+Every substring is a palindrome
+
+The number of cuts is minimum
+
+🔍 Problem Statement
+
+Given a string s, return the minimum number of cuts needed so that every substring of the partition is a palindrome.
+
+Example
+Input:  s = "aab"
+Output: 1
+
+
+Explanation
+
+"a | ab" ❌
+"aa | b" ✅   → only 1 cut
+
+🧠 Key Observation
+
+If the entire string is already a palindrome → 0 cuts
+
+Bruteforce is exponential ❌
+
+Dynamic Programming is required ✅
+
+⚙️ Approach
+
+We use DP + Palindrome Precomputation
+
+Two DP arrays:
+
+isPal[i][j] → checks if substring s[i..j] is palindrome
+
+dp[i] → minimum cuts needed for substring s[0..i]
+
+🪜 Algorithm
+Step 1: Precompute Palindromes
+
+Fill isPal[][] using gap technique
+
+Step 2: Compute Minimum Cuts
+
+If s[0..i] is palindrome → dp[i] = 0
+
+Else:
+
+dp[i] = min(dp[j - 1] + 1)
+where s[j..i] is palindrome
+
+💻 Java Code (Industry-Level, Clean)
+class PalindromicPartitioning {
+
+    public static int minCut(String s) {
+        int n = s.length();
+
+        // Step 1: Palindrome table
+        boolean[][] isPal = new boolean[n][n];
+
+        // Gap strategy
+        for (int g = 0; g < n; g++) {
+            for (int i = 0, j = g; j < n; i++, j++) {
+                if (g == 0)
+                    isPal[i][j] = true;
+                else if (g == 1)
+                    isPal[i][j] = (s.charAt(i) == s.charAt(j));
+                else
+                    isPal[i][j] =
+                            (s.charAt(i) == s.charAt(j)) && isPal[i + 1][j - 1];
+            }
+        }
+
+        // Step 2: DP for min cuts
+        int[] dp = new int[n];
+
+        for (int i = 0; i < n; i++) {
+
+            // If whole substring is palindrome
+            if (isPal[0][i]) {
+                dp[i] = 0;
+            } else {
+                int min = Integer.MAX_VALUE;
+
+                for (int j = i; j >= 1; j--) {
+                    if (isPal[j][i]) {
+                        min = Math.min(min, dp[j - 1] + 1);
+                    }
+                }
+                dp[i] = min;
+            }
+        }
+
+        return dp[n - 1];
+    }
+
+    public static void main(String[] args) {
+        System.out.println(minCut("aab"));
+    }
+}
+
+🧾 Output
+1
+
+🪜 Line-by-Line Explanation (Very Important)
+🔹 boolean[][] isPal
+
+Stores whether s[i..j] is a palindrome.
+
+🔹 Gap Strategy
+for (int g = 0; g < n; g++)
+
+
+g = 0 → single characters (always palindrome)
+
+g = 1 → two characters
+
+g > 1 → check ends + inner substring
+
+🔹 Main DP Array
+int[] dp = new int[n];
+
+
+dp[i] → min cuts for string 0..i
+
+🔹 If no cut needed
+if (isPal[0][i]) dp[i] = 0;
+
+🔹 Trying all partitions
+min = Math.min(min, dp[j - 1] + 1);
+
+
+Cut before index j
+
+Add 1 cut
+
+Choose minimum
+
+🧠 Dry Run: "aab"
+i	Substring	dp[i]
+0	"a"	0
+1	"aa"	0
+2	"aab"	1
+⏱️ Complexity
+
+Time: O(n²)
+
+Space: O(n²)
