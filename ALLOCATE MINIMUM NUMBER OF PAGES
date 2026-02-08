@@ -1,0 +1,167 @@
+Allocate Minimum Number of Pages
+
+(Pattern: Binary Search on Answer)
+
+🎯 Aim
+
+To allocate books to students such that:
+
+Each student gets contiguous books
+
+Every student gets at least one book
+
+The maximum pages assigned to any student is minimized
+
+🔍 Problem Statement
+
+Given:
+
+Array pages[] where pages[i] = number of pages in the i-th book
+
+An integer m = number of students
+
+Return the minimum possible value of the maximum pages assigned to a student.
+
+Example
+pages = [12, 34, 67, 90]
+students = 2
+
+Output
+113
+
+
+Explanation
+
+Student 1 → [12, 34, 67] = 113
+
+Student 2 → [90] = 90
+Max = 113 (minimum possible)
+
+🧠 Key Insight
+
+This is NOT DP
+
+Answer lies between:
+
+max(pages) (minimum possible)
+
+sum(pages) (maximum possible)
+
+👉 This screams Binary Search on Answer
+
+⚙️ Algorithm
+
+If students > number of books, return -1
+
+Set:
+
+low  = max(pages)
+high = sum(pages)
+
+
+Binary search on this range
+
+For each mid, check:
+
+Can we allocate books so that no student gets > mid pages?
+
+If yes → try smaller value
+
+If no → increase value
+
+💻 Java Code (Very Common Interview Code)
+class AllocatePages {
+
+    static boolean isPossible(int[] pages, int students, int maxPages) {
+        int count = 1;
+        int sum = 0;
+
+        for (int p : pages) {
+            if (sum + p <= maxPages) {
+                sum += p;
+            } else {
+                count++;
+                sum = p;
+
+                if (count > students)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    static int allocatePages(int[] pages, int students) {
+
+        if (students > pages.length)
+            return -1;
+
+        int low = 0, high = 0;
+
+        for (int p : pages) {
+            high += p;
+            low = Math.max(low, p);
+        }
+
+        int ans = -1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if (isPossible(pages, students, mid)) {
+                ans = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        return ans;
+    }
+
+    public static void main(String[] args) {
+        int[] pages = {12, 34, 67, 90};
+        int students = 2;
+
+        System.out.println(allocatePages(pages, students));
+    }
+}
+
+🧾 Output
+113
+
+🪜 Line-by-Line Explanation
+🔹 isPossible()
+
+Checks if allocation can be done with a given max page limit.
+
+Assign books sequentially
+
+When pages exceed maxPages, move to next student
+
+If students exceed limit → return false
+
+🔹 Binary Search Loop
+while (low <= high)
+
+
+Try a mid value
+
+If feasible → try smaller (high = mid - 1)
+
+Else → increase (low = mid + 1)
+
+📊 Dry Run Snapshot
+mid	Possible?
+150	✅
+120	❌
+135	✅
+113	✅
+112	❌
+
+Final answer = 113
+
+⏱️ Complexity
+
+Time: O(n log(sum))
+
+Space: O(1)
