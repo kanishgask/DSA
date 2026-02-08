@@ -1,0 +1,182 @@
+Strongly Connected Components (Kosaraju’s Algorithm)
+
+This is core Graph Theory and a GATE + placement favorite.
+
+🎯 Aim
+
+To find all Strongly Connected Components (SCCs) in a directed graph.
+
+🔍 What is a Strongly Connected Component?
+
+A Strongly Connected Component is a group of vertices such that:
+
+Every vertex is reachable from every other vertex in the group.
+
+🧠 Why Kosaraju’s Algorithm?
+
+Simple conceptually
+
+Uses DFS
+
+Works in O(V + E) time
+
+⚙️ Algorithm (Kosaraju – 3 Steps)
+Step 1: DFS and store vertices by finish time
+
+Perform DFS
+
+Push nodes into stack after DFS finishes
+
+Step 2: Transpose the graph
+
+Reverse all edges
+
+Step 3: DFS using stack order
+
+Pop from stack
+
+DFS in transposed graph
+
+Each DFS call gives one SCC
+
+💻 Java Code (Clean & Standard)
+import java.util.*;
+
+class KosarajuSCC {
+
+    private static void dfs1(int node, List<List<Integer>> adj,
+                             boolean[] visited, Stack<Integer> stack) {
+        visited[node] = true;
+
+        for (int nbr : adj.get(node)) {
+            if (!visited[nbr]) {
+                dfs1(nbr, adj, visited, stack);
+            }
+        }
+        stack.push(node);
+    }
+
+    private static void dfs2(int node, List<List<Integer>> transpose,
+                             boolean[] visited) {
+        visited[node] = true;
+        System.out.print(node + " ");
+
+        for (int nbr : transpose.get(node)) {
+            if (!visited[nbr]) {
+                dfs2(nbr, transpose, visited);
+            }
+        }
+    }
+
+    public static void kosaraju(int V, List<List<Integer>> adj) {
+
+        boolean[] visited = new boolean[V];
+        Stack<Integer> stack = new Stack<>();
+
+        // Step 1: Fill stack by finish time
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                dfs1(i, adj, visited, stack);
+            }
+        }
+
+        // Step 2: Transpose graph
+        List<List<Integer>> transpose = new ArrayList<>();
+        for (int i = 0; i < V; i++)
+            transpose.add(new ArrayList<>());
+
+        for (int i = 0; i < V; i++) {
+            for (int nbr : adj.get(i)) {
+                transpose.get(nbr).add(i);
+            }
+        }
+
+        // Step 3: DFS on transposed graph
+        Arrays.fill(visited, false);
+
+        System.out.println("Strongly Connected Components:");
+
+        while (!stack.isEmpty()) {
+            int node = stack.pop();
+            if (!visited[node]) {
+                dfs2(node, transpose, visited);
+                System.out.println();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+
+        int V = 5;
+        List<List<Integer>> adj = new ArrayList<>();
+
+        for (int i = 0; i < V; i++)
+            adj.add(new ArrayList<>());
+
+        adj.get(1).add(0);
+        adj.get(0).add(2);
+        adj.get(2).add(1);
+        adj.get(0).add(3);
+        adj.get(3).add(4);
+
+        kosaraju(V, adj);
+    }
+}
+
+🧾 Output
+Strongly Connected Components:
+4
+3
+0 2 1
+
+
+(Exact order may vary)
+
+🪜 Line-by-Line Explanation
+🔹 dfs1()
+
+Standard DFS
+
+Push node to stack after visiting neighbors
+
+This ensures finish time order
+
+🔹 Transpose Graph
+transpose.get(nbr).add(i);
+
+
+Reverse direction of every edge.
+
+🔹 dfs2()
+
+DFS on reversed graph
+
+Each call prints one SCC
+
+🔹 Stack Usage
+
+Stack ensures we process nodes in correct order to isolate SCCs.
+
+📊 Dry Run Summary
+
+Graph:
+
+0 → 2 → 1 ↘
+↑         |
+└─────────┘
+0 → 3 → 4
+
+
+SCCs:
+
+{0,1,2}
+
+{3}
+
+{4}
+
+⏱️ Complexity
+
+Time: O(V + E)
+
+Space: O(V + E)
