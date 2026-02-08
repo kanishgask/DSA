@@ -1,0 +1,152 @@
+Burst Balloons (Interval Dynamic Programming)
+
+This is a classic MAANG / hard interview problem.
+
+🎯 Aim
+
+Given an array of balloons, burst them in an optimal order to maximize the total coins collected.
+
+🔍 Problem Statement
+
+Each balloon has a number on it.
+When you burst balloon i, the coins gained are:
+
+nums[left] × nums[i] × nums[right]
+
+
+where left and right are the nearest unburst balloons.
+
+Example
+Input: nums = [3, 1, 5, 8]
+Output: 167
+
+🧠 Key Trick (VERY IMPORTANT)
+
+Add 1 at both ends:
+
+Original: [3,1,5,8]
+Modified: [1,3,1,5,8,1]
+
+
+Why?
+
+Removes edge-case handling
+
+Simplifies DP transitions
+
+💡 DP Idea (Interval DP)
+
+Instead of deciding which balloon to burst first,
+we decide which balloon to burst LAST in a range.
+
+This is the magic insight ✨
+
+⚙️ Algorithm
+
+Pad array with 1 at both ends
+
+Create dp[left][right]
+
+Max coins from bursting balloons between (left, right)
+
+Try every balloon i as last balloon in (left, right)
+
+Formula:
+
+dp[left][right] =
+    max(dp[left][i] + dp[i][right] + nums[left]*nums[i]*nums[right])
+
+
+Return dp[0][n+1]
+
+💻 Java Code (Hard-DP, Interview Ready)
+class BurstBalloons {
+
+    public static int maxCoins(int[] nums) {
+
+        int n = nums.length;
+
+        // Step 1: Create new array with padding
+        int[] arr = new int[n + 2];
+        arr[0] = 1;
+        arr[n + 1] = 1;
+
+        for (int i = 0; i < n; i++) {
+            arr[i + 1] = nums[i];
+        }
+
+        // Step 2: DP table
+        int[][] dp = new int[n + 2][n + 2];
+
+        // Step 3: Interval length
+        for (int len = 2; len < n + 2; len++) {
+            for (int left = 0; left + len < n + 2; left++) {
+                int right = left + len;
+
+                // Step 4: Choose last balloon to burst
+                for (int i = left + 1; i < right; i++) {
+                    int coins = dp[left][i]
+                              + dp[i][right]
+                              + arr[left] * arr[i] * arr[right];
+
+                    dp[left][right] = Math.max(dp[left][right], coins);
+                }
+            }
+        }
+
+        return dp[0][n + 1];
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {3, 1, 5, 8};
+        System.out.println(maxCoins(nums));
+    }
+}
+
+🧾 Output
+167
+
+🪜 Line-by-Line Explanation
+🔹 Padding array
+arr[0] = 1;
+arr[n + 1] = 1;
+
+
+Ensures multiplication always has valid neighbors.
+
+🔹 DP Table
+dp[left][right]
+
+
+Stores maximum coins for bursting balloons between left and right.
+
+🔹 Interval length loop
+
+We build smaller intervals first → larger ones.
+
+🔹 Core transition
+dp[left][i] + dp[i][right] + arr[left]*arr[i]*arr[right]
+
+
+Interpretation:
+
+Left side solved optimally
+
+Right side solved optimally
+
+i burst last → neighbors fixed
+
+🔍 Dry Run (High Level)
+
+For [3,1,5,8], best order is:
+
+1 → 5 → 3 → 8
+
+
+Total = 167
+
+⏱️ Complexity
+
+Time: O(n³)
+
+Space: O(n²)
