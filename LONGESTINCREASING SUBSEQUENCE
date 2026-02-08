@@ -1,0 +1,139 @@
+Longest Increasing Subsequence (LIS)
+🎯 Aim
+
+To find the length of the longest subsequence in a given array such that:
+
+The elements are strictly increasing
+
+The elements are not required to be contiguous
+
+🔍 Problem Statement
+
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+Example
+Input:  nums = [10, 9, 2, 5, 3, 7, 101, 18]
+Output: 4
+
+
+Explanation:
+The LIS is [2, 5, 7, 101]
+
+🧠 Approach Used
+
+Dynamic Programming (O(n²))
+This is the most commonly expected approach in:
+
+GATE
+
+Placements
+
+Semester exams
+
+⚙️ Algorithm
+
+Create a DP array dp[] where
+dp[i] = length of LIS ending at index i
+
+Initialize every dp[i] = 1 (each element is a subsequence by itself)
+
+For every i, compare with all previous elements j < i
+
+If nums[j] < nums[i], update:
+
+dp[i] = max(dp[i], dp[j] + 1)
+
+
+The maximum value in dp[] is the answer
+
+💻 Java Code (Clean & Interview-Ready)
+class LongestIncreasingSubsequence {
+    public static int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+
+        // Step 1: Create DP array
+        int[] dp = new int[n];
+
+        // Step 2: Initialize all values to 1
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+        }
+
+        // Step 3: Build dp array
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+
+        // Step 4: Find maximum value in dp
+        int maxLIS = 0;
+        for (int val : dp) {
+            maxLIS = Math.max(maxLIS, val);
+        }
+
+        return maxLIS;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {10, 9, 2, 5, 3, 7, 101, 18};
+        System.out.println(lengthOfLIS(nums));
+    }
+}
+
+🧾 Output
+4
+
+🪜 Line-by-Line Explanation
+🔹 int n = nums.length;
+
+Stores the size of the array.
+
+🔹 int[] dp = new int[n];
+
+Creates a DP array where:
+
+dp[i] stores LIS length ending at index i
+
+🔹 Initialization Loop
+for (int i = 0; i < n; i++) {
+    dp[i] = 1;
+}
+
+
+Each element alone is an LIS of length 1.
+
+🔹 Main DP Logic
+for (int i = 1; i < n; i++) {
+    for (int j = 0; j < i; j++) {
+        if (nums[j] < nums[i]) {
+            dp[i] = Math.max(dp[i], dp[j] + 1);
+        }
+    }
+}
+
+
+Compare current element nums[i] with all previous elements
+
+If increasing order is maintained:
+
+Extend the subsequence
+
+Update dp[i] with the best possible value
+
+🔹 Finding Final Answer
+int maxLIS = 0;
+for (int val : dp) {
+    maxLIS = Math.max(maxLIS, val);
+}
+
+
+The longest LIS may end at any index, so we return the maximum.
+
+⏱️ Time & Space Complexity
+
+Time: O(n²)
+
+Space: O(n)
