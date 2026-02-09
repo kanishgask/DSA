@@ -1,0 +1,156 @@
+Russian Doll Envelopes
+
+(Also known as Maximum Envelopes Problem)
+
+⚠️ You do not have this in your repository.
+
+📌 Problem Statement
+
+You are given n envelopes, where each envelope has:
+
+width  w
+height h
+
+
+One envelope can be placed inside another only if:
+
+w1 < w2 AND h1 < h2
+
+
+👉 Find the maximum number of envelopes you can nest (Russian doll style).
+
+📘 Example
+Input
+envelopes = [
+  [5,4],
+  [6,4],
+  [6,7],
+  [2,3]
+]
+
+Output
+3
+
+Explanation
+[2,3] → [5,4] → [6,7]
+
+💡 Key Insight (IMPORTANT)
+
+❌ Normal LIS won’t work directly
+✅ Sort smartly, then apply LIS
+
+Sorting Rule
+
+Width ascending
+
+If width same → height descending ❗ (VERY IMPORTANT)
+
+Why?
+
+Prevents choosing envelopes with same width
+
+🧩 Algorithm
+Step-by-Step
+
+Sort envelopes:
+
+width ↑
+
+height ↓ if width equal
+
+Extract heights
+
+Apply Longest Increasing Subsequence (LIS) on heights
+
+Use Binary Search Optimization (O(n log n))
+
+⏱ Time & Space Complexity
+Metric	Value
+Time	O(n log n)
+Space	O(n)
+🧑‍💻 Java Code (Interview-Ready)
+import java.util.*;
+
+public class RussianDollEnvelopes {
+
+    public static int maxEnvelopes(int[][] envelopes) {
+
+        // Step 1: Sort envelopes
+        Arrays.sort(envelopes, (a, b) -> {
+            if (a[0] == b[0])
+                return b[1] - a[1];   // height descending
+            return a[0] - b[0];       // width ascending
+        });
+
+        // Step 2: LIS on heights
+        List<Integer> lis = new ArrayList<>();
+
+        for (int[] env : envelopes) {
+            int height = env[1];
+
+            int idx = Collections.binarySearch(lis, height);
+
+            if (idx < 0)
+                idx = -(idx + 1);
+
+            if (idx == lis.size())
+                lis.add(height);
+            else
+                lis.set(idx, height);
+        }
+
+        return lis.size();
+    }
+
+    public static void main(String[] args) {
+        int[][] envelopes = {
+            {5,4},
+            {6,4},
+            {6,7},
+            {2,3}
+        };
+
+        System.out.println(maxEnvelopes(envelopes));
+    }
+}
+
+🔍 Line-by-Line Explanation
+Sorting Logic
+if (a[0] == b[0])
+    return b[1] - a[1];
+
+
+➡ Same width envelopes cannot nest, so we force height descending
+➡ Prevents false LIS growth
+
+LIS Array
+List<Integer> lis = new ArrayList<>();
+
+
+➡ Stores smallest possible ending height for subsequences
+
+Binary Search
+int idx = Collections.binarySearch(lis, height);
+
+
+➡ Finds correct position of height
+➡ Maintains LIS efficiently
+
+Replace or Append
+if (idx == lis.size())
+    lis.add(height);
+else
+    lis.set(idx, height);
+
+
+➡ Classic patience sorting idea
+
+🎯 Why This Problem Is 🔥
+
+✅ Very common FAANG question
+
+✅ Tests sorting + DP + binary search
+
+✅ Looks easy, but MANY candidates mess it up
+
+✅ Not in your list
