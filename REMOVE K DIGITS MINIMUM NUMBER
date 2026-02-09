@@ -1,0 +1,136 @@
+🧠 NEW DSA PROBLEM
+Remove K Digits (Minimum Number)
+
+⚠️ You do not have this problem in your repository.
+
+📌 Problem Statement
+
+You are given a non-negative integer number represented as a string num and an integer k.
+
+Your task is to remove exactly k digits from the number such that the resulting number is the smallest possible.
+
+➡ The result must not contain leading zeros (unless the result is 0).
+
+📘 Example
+Example 1
+num = "1432219"
+k = 3
+
+Output
+"1219"
+
+Explanation
+
+Removing 4, 3, and 2 gives the smallest number.
+
+Example 2
+num = "10200"
+k = 1
+
+Output
+"200"
+
+💡 Key Insight
+
+To make a number smaller:
+
+Remove larger digits before smaller ones
+
+This is a monotonic increasing stack problem
+
+🧩 Algorithm (Step-by-Step)
+
+Use a stack to store digits
+
+For each digit:
+
+While stack top > current digit and k > 0 → pop
+
+Push current digit
+
+If k still > 0 → remove from end
+
+Remove leading zeros
+
+Return result or "0"
+
+⏱ Time & Space Complexity
+Metric	Value
+Time	O(n)
+Space	O(n)
+🧑‍💻 Java Code (Interview-Ready)
+import java.util.*;
+
+public class RemoveKDigits {
+
+    public static String removeKdigits(String num, int k) {
+        Stack<Character> stack = new Stack<>();
+
+        // Step 1: Process digits
+        for (char digit : num.toCharArray()) {
+
+            while (!stack.isEmpty() && k > 0 && stack.peek() > digit) {
+                stack.pop();
+                k--;
+            }
+            stack.push(digit);
+        }
+
+        // Step 2: If k still > 0, remove from end
+        while (k > 0 && !stack.isEmpty()) {
+            stack.pop();
+            k--;
+        }
+
+        // Step 3: Build result without leading zeros
+        StringBuilder sb = new StringBuilder();
+        for (char c : stack) {
+            if (sb.length() == 0 && c == '0') continue;
+            sb.append(c);
+        }
+
+        return sb.length() == 0 ? "0" : sb.toString();
+    }
+
+    public static void main(String[] args) {
+        String num = "1432219";
+        int k = 3;
+        System.out.println(removeKdigits(num, k));
+    }
+}
+
+🔍 Line-by-Line Explanation
+Stack Usage
+Stack<Character> stack = new Stack<>();
+
+
+➡ Maintains digits in increasing order
+
+Greedy Removal
+while (!stack.isEmpty() && k > 0 && stack.peek() > digit)
+
+
+➡ Bigger digit before smaller → bad → remove
+
+Post-processing
+while (k > 0)
+    stack.pop();
+
+
+➡ Remove extra digits from the end
+
+Leading Zero Handling
+if (sb.length() == 0 && c == '0') continue;
+
+
+➡ Skips unwanted leading zeros
+
+🎯 Why This Problem Is 🔥
+
+✅ Classic Greedy + Stack
+
+✅ Asked in Amazon / Google
+
+✅ Easy to misunderstand logic
+
+✅ Strong test of algorithmic thinking
