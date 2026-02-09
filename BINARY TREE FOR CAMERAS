@@ -1,0 +1,153 @@
+Binary Tree Cameras
+
+⚠️ You do not have this in your repository.
+
+📌 Problem Statement
+
+You are given a binary tree.
+You must place cameras on some nodes such that:
+
+A camera placed at a node covers:
+
+the node itself
+
+its parent
+
+its immediate children
+
+🎯 Goal: Find the minimum number of cameras required to monitor the entire tree.
+
+📘 Example
+Input Tree
+        0
+       /
+      0
+       \
+        0
+
+Output
+1
+
+Explanation
+
+Placing a camera on the middle node covers all nodes.
+
+💡 Key Insight (VERY IMPORTANT)
+
+Each node can be in 3 states:
+
+State	Meaning
+0	Node needs a camera
+1	Node has a camera
+2	Node is covered
+
+➡ This is a post-order traversal + greedy DP
+
+🧩 Algorithm (Step-by-Step)
+
+Do postorder DFS
+
+Check left & right child states
+
+Apply rules:
+
+If any child needs camera → install camera
+
+If any child has camera → node is covered
+
+Else → node needs camera
+
+After traversal, if root needs camera → add one
+
+⏱ Time & Space Complexity
+Metric	Value
+Time	O(n)
+Space	O(h)
+🧑‍💻 Java Code (Interview-Ready)
+class TreeNode {
+    int val;
+    TreeNode left, right;
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+}
+
+public class BinaryTreeCameras {
+
+    private static int cameras = 0;
+
+    public static int minCameraCover(TreeNode root) {
+        if (dfs(root) == 0)
+            cameras++;
+        return cameras;
+    }
+
+    private static int dfs(TreeNode node) {
+
+        // Null nodes are considered covered
+        if (node == null)
+            return 2;
+
+        int left = dfs(node.left);
+        int right = dfs(node.right);
+
+        // Case 1: Child needs camera
+        if (left == 0 || right == 0) {
+            cameras++;
+            return 1;
+        }
+
+        // Case 2: Child has camera
+        if (left == 1 || right == 1) {
+            return 2;
+        }
+
+        // Case 3: Node needs camera
+        return 0;
+    }
+
+    public static void main(String[] args) {
+
+        TreeNode root = new TreeNode(0);
+        root.left = new TreeNode(0);
+        root.left.right = new TreeNode(0);
+
+        System.out.println(minCameraCover(root));
+    }
+}
+
+🔍 Line-by-Line Explanation
+State Meaning
+0 → needs camera
+1 → has camera
+2 → covered
+
+Null Node
+if (node == null) return 2;
+
+
+➡ Null nodes don’t need cameras
+
+Installing Camera
+if (left == 0 || right == 0)
+
+
+➡ If child is unprotected → place camera here
+
+Root Check
+if (dfs(root) == 0)
+    cameras++;
+
+
+➡ Root still uncovered → add camera
+
+🎯 Why This Problem Is 🔥
+
+✅ Tree DP (very rare)
+
+✅ Greedy + recursion
+
+✅ Asked in Google / Facebook
+
+✅ Tests deep understanding
