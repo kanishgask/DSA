@@ -1,0 +1,159 @@
+LRU CACHE (Very Important for Product Companies)
+📌 Problem Statement
+
+Design a Least Recently Used (LRU) Cache that supports the following operations in O(1) time:
+
+get(key) → Return the value of the key if exists, else -1
+
+put(key, value) → Insert or update the key
+
+When cache exceeds capacity → remove least recently used item
+
+📌 Real-World Example
+
+Browser history / Mobile apps cache
+👉 Recently used items should stay
+👉 Old unused items should go out
+
+💡 Key Idea (Interview Gold)
+
+To achieve O(1):
+
+Use HashMap → fast lookup
+
+Use Doubly Linked List → fast insert & delete
+
+👉 Most recently used → near head
+👉 Least recently used → near tail
+
+🧠 Data Structures Used
+Purpose	Data Structure
+Fast access	HashMap
+Order of usage	Doubly Linked List
+⚙️ Algorithm
+
+Initialize:
+
+HashMap <key, Node>
+
+Doubly Linked List with dummy head and tail
+
+get(key):
+
+If key not in map → return -1
+
+Else:
+
+Move node to front
+
+Return value
+
+put(key, value):
+
+If key exists:
+
+Update value
+
+Move node to front
+
+Else:
+
+Create new node
+
+Add to front
+
+If size > capacity:
+
+Remove node from tail
+
+Remove from map
+
+🧩 Java Code (Interview-Ready)
+class LRUCache {
+
+    class Node {
+        int key, value;
+        Node prev, next;
+        Node(int k, int v) {
+            key = k;
+            value = v;
+        }
+    }
+
+    private int capacity;
+    private HashMap<Integer, Node> map;
+    private Node head, tail;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        map = new HashMap<>();
+
+        head = new Node(0, 0);
+        tail = new Node(0, 0);
+
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    private void remove(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void insertAtHead(Node node) {
+        node.next = head.next;
+        head.next.prev = node;
+        head.next = node;
+        node.prev = head;
+    }
+
+    public int get(int key) {
+        if (!map.containsKey(key)) return -1;
+
+        Node node = map.get(key);
+        remove(node);
+        insertAtHead(node);
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        if (map.containsKey(key)) {
+            Node node = map.get(key);
+            node.value = value;
+            remove(node);
+            insertAtHead(node);
+        } else {
+            Node node = new Node(key, value);
+            map.put(key, node);
+            insertAtHead(node);
+
+            if (map.size() > capacity) {
+                Node lru = tail.prev;
+                remove(lru);
+                map.remove(lru.key);
+            }
+        }
+    }
+}
+
+🧪 Example Dry Run
+Capacity = 2
+
+put(1,10) → Cache: [1]
+put(2,20) → Cache: [2,1]
+get(1)    → returns 10 → Cache: [1,2]
+put(3,30) → remove 2 → Cache: [3,1]
+get(2)    → returns -1
+
+⏱️ Time & Space Complexity
+Operation	Complexity
+get	O(1)
+put	O(1)
+Space	O(N)
+🎯 Interview Tips
+
+Always mention HashMap + Doubly Linked List
+
+Explain why singly linked list won’t work
+
+Say: “All operations are O(1)” → strong impression 💪
