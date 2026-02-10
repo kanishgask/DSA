@@ -1,0 +1,118 @@
+2️⃣ BINARY TREE CAMERAS (Very Popular LeetCode / Interview Problem)
+📌 Problem Statement
+
+You are given a binary tree.
+A camera placed at a node can monitor:
+
+its parent
+
+itself
+
+its left child
+
+its right child
+
+👉 Find the minimum number of cameras needed to monitor all nodes of the tree.
+
+📌 Example
+        0
+       / \
+      0   0
+           \
+            0
+
+
+✅ Output: 2 cameras
+
+💡 Key Insight (Important!)
+
+Instead of placing cameras top-down, we decide from bottom-up.
+
+For each node, it can be in 3 states:
+
+State	Meaning
+0	Node is not covered
+1	Node has a camera
+2	Node is covered (no camera)
+🧠 Greedy Strategy
+
+If any child is NOT covered → place camera here
+
+If any child has a camera → node is covered
+
+Else → node is not covered
+
+⚙️ Algorithm (DFS – Post Order)
+
+Perform post-order traversal (left → right → root)
+
+For every node:
+
+If left or right child state = 0 → place camera
+
+If left or right child state = 1 → covered
+
+Else → not covered
+
+After traversal:
+
+If root is not covered → add one extra camera
+
+🧩 Java Code (Clean & Interview-Ready)
+class Solution {
+    int cameras = 0;
+
+    public int minCameraCover(TreeNode root) {
+        if (dfs(root) == 0) {
+            cameras++;
+        }
+        return cameras;
+    }
+
+    // 0 = not covered
+    // 1 = has camera
+    // 2 = covered
+    private int dfs(TreeNode node) {
+        if (node == null) return 2;
+
+        int left = dfs(node.left);
+        int right = dfs(node.right);
+
+        if (left == 0 || right == 0) {
+            cameras++;
+            return 1; // has camera
+        }
+
+        if (left == 1 || right == 1) {
+            return 2; // covered
+        }
+
+        return 0; // not covered
+    }
+}
+
+🧪 Dry Run (Simple Case)
+    0
+   /
+  0
+
+
+Leaf → not covered
+
+Parent sees uncovered child → place camera
+
+Camera count = 1
+
+⏱️ Time & Space Complexity
+Type	Complexity
+Time	O(N)
+Space	O(H) (recursion stack)
+🎯 Interview Gold Tips
+
+Say “post-order traversal”
+
+Mention 3-state greedy approach
+
+Emphasize bottom-up decision
+
+Common mistake ❌: placing cameras on leaves
