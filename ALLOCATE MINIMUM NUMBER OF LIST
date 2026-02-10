@@ -1,0 +1,132 @@
+ALLOCATE MINIMUM NUMBER OF PAGES
+📌 Problem Statement
+
+You are given an array pages[] where each element represents pages in a book.
+
+You must allocate books to M students such that:
+
+Each student gets at least one book
+
+Books are allocated contiguously
+
+The maximum pages assigned to a student is minimized
+
+Return that minimum possible maximum.
+
+📌 Example
+pages = [12, 34, 67, 90]
+M = 2
+
+Output: 113
+
+
+👉 Allocation:
+
+Student 1 → [12, 34, 67] → 113
+
+Student 2 → [90]
+
+💡 Key Insight
+
+This is not DP, it is:
+
+🔥 Binary Search on Answer
+
+🧠 Search Space
+
+Minimum = max(pages[])
+
+Maximum = sum(pages[])
+
+We binary search this range.
+
+⚙️ Algorithm
+
+Set:
+
+low = max(pages)
+high = sum(pages)
+
+
+While low ≤ high:
+
+mid = possible max pages
+
+Check if allocation is possible with mid
+
+If possible → try smaller value
+
+Else → increase value
+
+🔍 Feasibility Check (Greedy)
+
+Assign books sequentially
+
+If pages exceed mid, assign to next student
+
+Count students needed
+
+🧩 Java Code (Placement-Ready)
+class Solution {
+
+    public int findPages(int[] pages, int m) {
+        if (m > pages.length) return -1;
+
+        int low = 0, high = 0;
+        for (int p : pages) {
+            low = Math.max(low, p);
+            high += p;
+        }
+
+        int ans = -1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if (isPossible(pages, m, mid)) {
+                ans = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return ans;
+    }
+
+    private boolean isPossible(int[] pages, int students, int maxPages) {
+        int count = 1, sum = 0;
+
+        for (int p : pages) {
+            sum += p;
+            if (sum > maxPages) {
+                count++;
+                sum = p;
+                if (count > students) return false;
+            }
+        }
+        return true;
+    }
+}
+
+🧪 Dry Run (Key Iteration)
+low = 90
+high = 203
+
+mid = 146 → possible
+mid = 118 → possible
+mid = 104 → not possible
+mid = 113 → possible ✅
+
+⏱️ Time & Space Complexity
+Type	Complexity
+Time	O(N log S)
+Space	O(1)
+
+👉 S = sum of pages
+
+🎯 Interview Tips
+
+Say “Binary Search on Answer”
+
+Greedy feasibility check
+
+Mention contiguous allocation
