@@ -1,0 +1,125 @@
+🔹 5️⃣ WORD LADDER
+📌 Problem Statement
+
+You are given:
+
+beginWord
+
+endWord
+
+wordList
+
+Each transformation:
+
+Changes only one character
+
+Resulting word must exist in wordList
+
+Return the length of the shortest transformation sequence from beginWord to endWord.
+If not possible, return 0.
+
+📌 Example
+beginWord = "hit"
+endWord   = "cog"
+wordList  = ["hot","dot","dog","lot","log","cog"]
+
+Output: 5
+
+
+Sequence:
+
+hit → hot → dot → dog → cog
+
+💡 Key Insight
+
+This is a shortest path problem where:
+
+Each word = node
+
+One-letter change = edge
+
+All edges have equal weight
+
+👉 Use BFS, not DFS.
+
+🧠 Optimization Trick (Interview Gold)
+
+Instead of comparing each word with every other word:
+
+For each word, generate patterns:
+
+h*t, hi*, *it
+
+
+Use a HashMap<pattern, list of words>
+
+⚙️ Algorithm (BFS)
+
+Add beginWord to word list
+
+Preprocess wildcard patterns
+
+BFS from beginWord
+
+Stop when endWord is reached
+
+🧩 Java Code (Clean + Efficient)
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> set = new HashSet<>(wordList);
+        if (!set.contains(endWord)) return 0;
+
+        Queue<String> q = new LinkedList<>();
+        q.add(beginWord);
+
+        Set<String> visited = new HashSet<>();
+        visited.add(beginWord);
+
+        int level = 1;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                String word = q.poll();
+                if (word.equals(endWord)) return level;
+
+                for (int j = 0; j < word.length(); j++) {
+                    char[] arr = word.toCharArray();
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        arr[j] = c;
+                        String next = new String(arr);
+
+                        if (set.contains(next) && !visited.contains(next)) {
+                            visited.add(next);
+                            q.add(next);
+                        }
+                    }
+                }
+            }
+            level++;
+        }
+        return 0;
+    }
+}
+
+🧪 Dry Run (Key Levels)
+Level 1: hit
+Level 2: hot
+Level 3: dot, lot
+Level 4: dog, log
+Level 5: cog ✅
+
+⏱️ Time & Space Complexity
+Type	Complexity
+Time	O(N × L × 26)
+Space	O(N)
+
+👉 N = words, L = word length
+
+🎯 Interview Tips
+
+Always say “BFS gives shortest path”
+
+Mention visited set
+
+Say all transformations equal cost
