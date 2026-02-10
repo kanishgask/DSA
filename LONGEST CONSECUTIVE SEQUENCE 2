@@ -1,0 +1,99 @@
+🔹 3️⃣ LONGEST CONSECUTIVE SEQUENCE
+📌 Problem Statement
+
+Given an unsorted integer array, find the length of the longest consecutive elements sequence.
+
+👉 You must write an algorithm that runs in O(n) time.
+
+📌 Example
+Input:  [100, 4, 200, 1, 3, 2]
+Output: 4
+Explanation: The sequence [1,2,3,4]
+
+💡 Key Insight (Interview Trick!)
+
+Sorting → O(n log n) ❌ (not allowed)
+
+Use HashSet
+
+Only start counting when the number is the start of a sequence
+
+👉 A number x is start only if (x - 1) is NOT present
+
+🧠 Algorithm
+
+Insert all elements into a HashSet
+
+For each number:
+
+If (num - 1) does not exist
+
+Start a new sequence
+
+Count consecutive numbers
+
+Track maximum length
+
+⚙️ Step-by-Step Algorithm
+set = all elements
+maxLen = 0
+
+for num in set:
+    if num - 1 not in set:
+        current = num
+        length = 1
+
+        while current + 1 in set:
+            current++
+            length++
+
+        maxLen = max(maxLen, length)
+
+🧩 Java Code (Interview-Ready)
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int num : nums) set.add(num);
+
+        int longest = 0;
+
+        for (int num : set) {
+            if (!set.contains(num - 1)) {
+                int current = num;
+                int length = 1;
+
+                while (set.contains(current + 1)) {
+                    current++;
+                    length++;
+                }
+
+                longest = Math.max(longest, length);
+            }
+        }
+        return longest;
+    }
+}
+
+🧪 Dry Run
+nums = [100,4,200,1,3,2]
+
+Set = {1,2,3,4,100,200}
+
+Start points:
+1 → 2 → 3 → 4  (length = 4)
+100 → length = 1
+200 → length = 1
+
+Answer = 4
+
+⏱️ Time & Space Complexity
+Type	Complexity
+Time	O(n)
+Space	O(n)
+🎯 Interview Tips
+
+Always say “we only start when num−1 doesn’t exist”
+
+Explain why each number is visited once
+
+Mention HashSet avoids sorting
