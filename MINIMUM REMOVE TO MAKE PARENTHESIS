@@ -1,0 +1,138 @@
+MINIMUM REMOVE TO MAKE VALID PARENTHESES (Stack + Greedy)
+
+This problem checks real-world string validation, stack usage, and greedy removal.
+
+📌 Problem Statement
+
+Given a string s consisting of lowercase letters and parentheses '(' and ')', remove the minimum number of parentheses so that the resulting string is valid.
+
+A valid parentheses string:
+
+Every '(' has a matching ')'
+
+Parentheses are properly ordered
+
+Return any valid result.
+
+🔹 Example 1
+Input:  "lee(t(c)o)de)"
+Output: "lee(t(c)o)de"
+
+🔹 Example 2
+Input:  "a)b(c)d"
+Output: "ab(c)d"
+
+🔹 Example 3
+Input:  "))(("
+Output: ""
+
+🧠 Core Idea (Interview Gold)
+
+We:
+
+Use a stack to store indices of '('
+
+Remove:
+
+unmatched ')' immediately
+
+leftover '(' after traversal
+
+This guarantees minimum removals.
+
+🛠️ Algorithm (Step-by-Step)
+Step 1: Traverse the string
+
+If '(' → push index to stack
+
+If ')':
+
+If stack not empty → pop (valid pair)
+
+Else → mark this ')' for removal
+
+Step 2: Remaining '(' in stack are invalid
+
+Mark all stack indices for removal
+
+Step 3: Build final string
+
+Skip all marked indices
+
+⏱ Complexity
+
+Time: O(n)
+
+Space: O(n)
+
+☕ Java Code (Clean & Interview-Ready)
+class Solution {
+    public String minRemoveToMakeValid(String s) {
+        Stack<Integer> stack = new Stack<>();
+        Set<Integer> remove = new HashSet<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+
+            if (c == '(') {
+                stack.push(i);
+            } else if (c == ')') {
+                if (!stack.isEmpty()) {
+                    stack.pop();
+                } else {
+                    remove.add(i);
+                }
+            }
+        }
+
+        // Remaining '(' are invalid
+        while (!stack.isEmpty()) {
+            remove.add(stack.pop());
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            if (!remove.contains(i)) {
+                result.append(s.charAt(i));
+            }
+        }
+
+        return result.toString();
+    }
+}
+
+🧪 Line-by-Line Example Walkthrough
+Input
+s = "a)b(c)d"
+
+Step 1: Traverse
+Index	Char	Action
+0	a	ignore
+1	)	stack empty → mark remove
+2	b	ignore
+3	(	push index 3
+4	c	ignore
+5	)	pop index 3
+6	d	ignore
+
+No leftover '('
+
+Step 2: Build result
+
+Remove index 1
+
+"ab(c)d"
+
+🎯 Why Interviewers Love This
+
+Tests stack intuition
+
+Greedy removal logic
+
+Clean real-life problem
+
+Follow-ups:
+
+Can you do it in one pass?
+
+What if we only allow one type of bracket?
