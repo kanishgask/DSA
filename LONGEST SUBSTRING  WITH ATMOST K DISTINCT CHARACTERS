@@ -1,0 +1,133 @@
+Love the momentum 😄
+Now let’s go for a VERY IMPORTANT sliding-window + greedy problem that is NOT in your list and comes up often in Amazon / Microsoft / Atlassian.
+
+✅ LONGEST SUBSTRING WITH AT MOST K DISTINCT CHARACTERS
+
+This is a step-up from classic sliding window and interviewers use it to see if you really understand window shrinking logic.
+
+📌 Problem Statement
+
+Given a string s and an integer k, find the length of the longest substring that contains at most k distinct characters.
+
+🔹 Example 1
+Input:  s = "eceba", k = 2
+Output: 3
+Explanation: "ece"
+
+🔹 Example 2
+Input:  s = "aa", k = 1
+Output: 2
+
+🧠 Core Idea (Interview Insight)
+
+Use sliding window
+
+Expand right
+
+If distinct characters > k → shrink from left
+
+Track maximum window length
+
+🛠️ Algorithm (Step-by-Step)
+Step 1: Two pointers
+left = 0
+right = 0
+
+Step 2: HashMap to store char frequencies
+Map<Character, Integer> freq
+
+Step 3: Expand window
+
+Add s[right] to map
+
+If map size > k → shrink window
+
+Step 4: Shrink window
+
+Decrease frequency of s[left]
+
+Remove from map if frequency becomes zero
+
+Move left forward
+
+⏱ Complexity
+
+Time: O(n)
+
+Space: O(k)
+
+☕ Java Code (Clean & Interview-Ready)
+class Solution {
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        if (k == 0 || s.length() == 0) return 0;
+
+        Map<Character, Integer> freq = new HashMap<>();
+        int left = 0, maxLen = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            char c = s.charAt(right);
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+
+            while (freq.size() > k) {
+                char leftChar = s.charAt(left);
+                freq.put(leftChar, freq.get(leftChar) - 1);
+
+                if (freq.get(leftChar) == 0) {
+                    freq.remove(leftChar);
+                }
+                left++;
+            }
+
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+
+        return maxLen;
+    }
+}
+
+🧪 Example Walkthrough (Line-by-Line)
+Input
+s = "eceba", k = 2
+
+right = 0 → 'e'
+freq = {e=1}
+window = "e"
+maxLen = 1
+
+right = 1 → 'c'
+freq = {e=1, c=1}
+window = "ec"
+maxLen = 2
+
+right = 2 → 'e'
+freq = {e=2, c=1}
+window = "ece"
+maxLen = 3
+
+right = 3 → 'b'
+freq = {e=2, c=1, b=1} ❌ (size > k)
+
+
+Shrink:
+
+remove 'e'
+
+remove 'c'
+
+window = "eb"
+freq = {e=1, b=1}
+
+Final Answer
+3
+
+🎯 Why Interviewers Love This
+
+Tests sliding window mastery
+
+Follow-up questions:
+
+Exactly k distinct characters?
+
+Unicode characters?
+
+Can you do it using array instead of HashMap?
