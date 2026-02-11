@@ -1,0 +1,145 @@
+LONGEST VALID PARENTHESES (Stack + DP ⭐)
+
+This problem is different from “Minimum Remove Parentheses”.
+Here we do NOT remove, we find the longest valid substring.
+
+📌 Problem Statement
+
+Given a string s containing only '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+
+🔹 Example 1
+Input:  "(()"
+Output: 2
+Explanation: "()"
+
+🔹 Example 2
+Input:  ")()())"
+Output: 4
+Explanation: "()()"
+
+🔹 Example 3
+Input:  ""
+Output: 0
+
+🧠 Key Insight (Interview Favorite Question ❗)
+
+A valid parentheses substring must:
+
+Start after an invalid )
+
+Have balanced opening & closing brackets
+
+We use a stack of indices, not characters.
+
+🛠️ Algorithm (Stack-Based – Most Common)
+Step 1: Initialize stack
+
+Push -1 initially
+👉 This acts as a base index
+
+Step 2: Traverse string
+
+For each character at index i:
+
+If '(' → push index
+
+If ')':
+
+pop stack
+
+If stack becomes empty → push current index
+
+Else → calculate length = i - stack.peek()
+
+Step 3: Track maximum length
+⏱ Complexity
+
+Time: O(n)
+
+Space: O(n)
+
+☕ Java Code (Interview-Ready)
+class Solution {
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1); // base for valid substring
+        int maxLen = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+
+            if (c == '(') {
+                stack.push(i);
+            } else {
+                stack.pop();
+
+                if (stack.isEmpty()) {
+                    stack.push(i);
+                } else {
+                    maxLen = Math.max(maxLen, i - stack.peek());
+                }
+            }
+        }
+
+        return maxLen;
+    }
+}
+
+🧪 Line-by-Line Walkthrough
+Input
+s = ")()())"
+
+Initial
+stack = [-1]
+maxLen = 0
+
+i = 0 → ')'
+
+pop → stack empty
+
+push index 0
+
+stack = [0]
+
+i = 1 → '('
+stack = [0, 1]
+
+i = 2 → ')'
+
+pop → stack = [0]
+
+length = 2 - 0 = 2
+
+maxLen = 2
+
+i = 3 → '('
+stack = [0, 3]
+
+i = 4 → ')'
+
+pop → stack = [0]
+
+length = 4 - 0 = 4
+
+maxLen = 4
+
+i = 5 → ')'
+
+pop → stack empty
+
+push index 5
+
+✅ Final Answer
+4
+
+🎯 Why Interviewers Love This Problem
+
+Distinguishes index-stack vs char-stack
+
+Tests edge case handling
+
+Follow-up questions:
+
+Can you solve it using DP?
+
+What if string has other characters?
