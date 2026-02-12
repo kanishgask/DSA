@@ -1,0 +1,183 @@
+Matrix Chain Multiplication (MCM)
+
+⚡ Classic DP
+⚡ Interval DP Pattern
+⚡ Asked in Amazon / Microsoft / Google
+
+🧩 Problem Statement
+
+You are given an array arr[] of size n.
+
+If you have matrices:
+
+A1 = arr[0] x arr[1]
+A2 = arr[1] x arr[2]
+A3 = arr[2] x arr[3]
+...
+
+
+Find the minimum number of scalar multiplications needed to multiply all matrices.
+
+🔎 Example
+
+Input:
+
+arr = [10, 30, 5, 60]
+
+
+Matrices:
+
+A1 = 10x30
+A2 = 30x5
+A3 = 5x60
+
+Possible ways:
+
+1️⃣ ((A1 × A2) × A3)
+2️⃣ (A1 × (A2 × A3))
+
+Calculations:
+
+1️⃣
+A1 × A2 → 10×30×5 = 1500
+Then × A3 → 10×5×60 = 3000
+Total = 4500
+
+2️⃣
+A2 × A3 → 30×5×60 = 9000
+Then × A1 → 10×30×60 = 18000
+Total = 27000
+
+✅ Minimum = 4500
+
+🧠 Core Idea
+
+This is:
+
+🔥 Interval DP
+We break problem into partitions.
+
+Formula:
+
+dp[i][j] = min over k:
+dp[i][k] + dp[k+1][j] + arr[i-1] * arr[k] * arr[j]
+
+⏱ Time Complexity
+
+O(N³)
+
+Space: O(N²)
+
+💻 Java Code (Tabulation)
+class Solution {
+
+    static int matrixMultiplication(int[] arr) {
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+
+        // l = chain length
+        for (int l = 2; l < n; l++) {
+
+            for (int i = 1; i < n - l + 1; i++) {
+
+                int j = i + l - 1;
+                dp[i][j] = Integer.MAX_VALUE;
+
+                for (int k = i; k < j; k++) {
+
+                    int cost = dp[i][k] 
+                             + dp[k + 1][j]
+                             + arr[i - 1] * arr[k] * arr[j];
+
+                    dp[i][j] = Math.min(dp[i][j], cost);
+                }
+            }
+        }
+
+        return dp[1][n - 1];
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {10, 30, 5, 60};
+        System.out.println(matrixMultiplication(arr));
+    }
+}
+
+🔍 Line-by-Line Explanation
+int[][] dp = new int[n][n];
+
+dp[i][j] = minimum cost to multiply matrices from i to j.
+
+for (int l = 2; l < n; l++)
+
+l = length of matrix chain.
+
+We solve smaller chains first.
+
+Outer Loop: Starting index
+for (int i = 1; i < n - l + 1; i++)
+
+
+Pick start of interval.
+
+j calculation
+j = i + l - 1
+
+
+Ending index.
+
+Inner Loop: Partition
+for (int k = i; k < j; k++)
+
+
+Try every possible split.
+
+Cost Calculation
+dp[i][k] 
++ dp[k + 1][j]
++ arr[i - 1] * arr[k] * arr[j]
+
+
+Break into:
+Left cost
+Right cost
+Current multiplication cost
+
+🧠 Why This Is Important?
+
+This pattern is base for:
+
+Burst Balloons
+
+Palindrome Partitioning II
+
+Boolean Parenthesization
+
+Optimal BST
+
+Min Cost to Cut Stick (similar pattern)
+
+💎 Interview Insight
+
+If they ask:
+
+How to identify interval DP?
+
+Look for:
+
+Partitioning between i and j
+
+Multiplication or split cost
+
+Minimizing or maximizing over splits
+
+You have now covered:
+
+Backtracking
+
+Heaps
+
+Trie
+
+Advanced Graph
