@@ -1,0 +1,179 @@
+Excellent 🔥
+Now let’s move to a FAANG-Level HARD Graph Problem.
+
+⭐ 4th Question: Reconstruct Itinerary
+🧩 Problem Statement
+
+You are given a list of airline tickets where:
+
+tickets[i] = [from, to]
+
+
+You must reconstruct the itinerary in order such that:
+
+The itinerary must begin with "JFK"
+
+Use all tickets exactly once
+
+If multiple valid itineraries exist → return the lexicographically smallest one.
+
+🔎 Example
+
+Input:
+
+[["JFK","SFO"],
+ ["JFK","ATL"],
+ ["SFO","ATL"],
+ ["ATL","JFK"],
+ ["ATL","SFO"]]
+
+
+Output:
+
+["JFK","ATL","JFK","SFO","ATL","SFO"]
+
+🧠 Key Concept
+
+This is actually a:
+
+🔥 Eulerian Path in a Directed Graph
+
+We must:
+
+Visit all edges exactly once
+
+Start from JFK
+
+Use:
+
+Hierholzer’s Algorithm (DFS based)
+
+💡 Why PriorityQueue?
+
+Because if multiple destinations exist:
+We must choose lexicographically smallest.
+
+⏱ Time Complexity
+
+O(E log E)
+(Heap operations)
+
+Space: O(V + E)
+
+💻 Java Code
+import java.util.*;
+
+class Solution {
+
+    Map<String, PriorityQueue<String>> graph = new HashMap<>();
+    LinkedList<String> result = new LinkedList<>();
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+
+        // Step 1: Build Graph
+        for (List<String> ticket : tickets) {
+            graph.computeIfAbsent(ticket.get(0), k -> new PriorityQueue<>())
+                 .offer(ticket.get(1));
+        }
+
+        // Step 2: DFS
+        dfs("JFK");
+
+        return result;
+    }
+
+    private void dfs(String airport) {
+
+        PriorityQueue<String> destinations = graph.get(airport);
+
+        while (destinations != null && !destinations.isEmpty()) {
+            String next = destinations.poll();
+            dfs(next);
+        }
+
+        result.addFirst(airport);
+    }
+
+    public static void main(String[] args) {
+
+        Solution sol = new Solution();
+
+        List<List<String>> tickets = new ArrayList<>();
+        tickets.add(Arrays.asList("JFK","SFO"));
+        tickets.add(Arrays.asList("JFK","ATL"));
+        tickets.add(Arrays.asList("SFO","ATL"));
+        tickets.add(Arrays.asList("ATL","JFK"));
+        tickets.add(Arrays.asList("ATL","SFO"));
+
+        System.out.println(sol.findItinerary(tickets));
+    }
+}
+
+🔍 Line-by-Line Explanation
+Step 1: Build Graph
+graph.computeIfAbsent(...)
+
+
+Creates adjacency list:
+
+JFK → [ATL, SFO]
+ATL → [JFK, SFO]
+SFO → [ATL]
+
+
+PriorityQueue ensures:
+
+Always smallest destination first.
+
+Step 2: DFS (Hierholzer’s Algorithm)
+while destination exists:
+    dfs(next)
+
+
+We remove edges as we travel.
+
+Why addFirst ?
+
+Because Eulerian path is constructed in reverse order.
+
+So we insert at front.
+
+🔎 Step Execution
+
+Start:
+
+JFK → ATL → JFK → SFO → ATL → SFO
+
+Edges exhausted → build result backward.
+
+🔥 Why This is Important?
+
+Tests:
+
+Graph theory
+
+Eulerian path
+
+DFS mastery
+
+Lexicographic ordering
+
+PriorityQueue use
+
+Very common in:
+
+Google
+
+Amazon
+
+Bloomberg
+
+🧠 Interview Twist
+
+If they ask:
+
+What if we don't require lexicographically smallest?
+
+You can use:
+
+Stack instead of PriorityQueue
