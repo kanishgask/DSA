@@ -1,0 +1,183 @@
+Perfect 🔥 Let’s go to a Hard Level problem that is NOT in your list.
+
+⭐ 2nd Question: Median in a Stream (Using Two Heaps)
+🧩 Problem Statement
+
+Design a data structure that supports:
+
+addNum(int num) → Adds a number to the data structure.
+
+findMedian() → Returns the median of all elements added so far.
+
+The numbers are added one-by-one (stream of data).
+
+🔎 Example
+
+Input Operations:
+
+addNum(1)
+addNum(2)
+findMedian() → 1.5
+addNum(3)
+findMedian() → 2.0
+
+🧠 Key Idea
+
+Use Two Heaps:
+
+Max Heap (left half) → Stores smaller half of numbers
+
+Min Heap (right half) → Stores larger half of numbers
+
+Maintain condition:
+
+Size difference between heaps ≤ 1
+
+All elements in maxHeap ≤ elements in minHeap
+
+⏱ Time Complexity
+
+addNum → O(log n)
+
+findMedian → O(1)
+
+💾 Space Complexity
+
+O(n)
+
+💻 Java Code
+import java.util.*;
+
+public class MedianFinder {
+
+    private PriorityQueue<Integer> maxHeap; // Left side
+    private PriorityQueue<Integer> minHeap; // Right side
+
+    public MedianFinder() {
+        maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        minHeap = new PriorityQueue<>();
+    }
+
+    public void addNum(int num) {
+
+        // Step 1: Add to maxHeap
+        maxHeap.offer(num);
+
+        // Step 2: Ensure ordering condition
+        minHeap.offer(maxHeap.poll());
+
+        // Step 3: Balance sizes
+        if (maxHeap.size() < minHeap.size()) {
+            maxHeap.offer(minHeap.poll());
+        }
+    }
+
+    public double findMedian() {
+
+        if (maxHeap.size() > minHeap.size()) {
+            return maxHeap.peek();
+        } else {
+            return (maxHeap.peek() + minHeap.peek()) / 2.0;
+        }
+    }
+
+    public static void main(String[] args) {
+        MedianFinder mf = new MedianFinder();
+
+        mf.addNum(1);
+        mf.addNum(2);
+        System.out.println(mf.findMedian()); // 1.5
+
+        mf.addNum(3);
+        System.out.println(mf.findMedian()); // 2.0
+    }
+}
+
+🔍 Line-by-Line Explanation
+PriorityQueue<Integer> maxHeap
+
+Max heap (reverse order)
+
+Stores smaller half
+
+PriorityQueue<Integer> minHeap
+
+Normal min heap
+
+Stores larger half
+
+addNum(int num)
+1️⃣ maxHeap.offer(num)
+
+Always insert into maxHeap first.
+
+2️⃣ minHeap.offer(maxHeap.poll())
+
+Remove largest from maxHeap
+
+Put it into minHeap
+
+Ensures ordering:
+Left half ≤ Right half
+
+3️⃣ Balance Heaps
+
+If minHeap becomes larger:
+
+maxHeap.offer(minHeap.poll());
+
+
+This ensures:
+
+maxHeap size ≥ minHeap size
+
+findMedian()
+
+If odd total numbers:
+
+return maxHeap.peek();
+
+
+If even:
+
+return average of top of both heaps
+
+🔎 Step-by-Step Example
+Insert 1
+
+maxHeap = [1]
+minHeap = []
+
+Median = 1
+
+Insert 2
+
+maxHeap = [1]
+minHeap = [2]
+
+Median = (1+2)/2 = 1.5
+
+Insert 3
+
+maxHeap = [2,1]
+minHeap = [3]
+
+Median = 2
+
+💡 Why This Question is Important?
+
+Frequently asked in:
+
+Google
+
+Uber
+
+Microsoft
+
+Tests:
+
+Heap mastery
+
+Real-time data processing
+
+Data structure design
