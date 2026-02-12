@@ -1,0 +1,195 @@
+Excellent 🔥 Let’s go HARD level.
+
+⭐ 3rd Question: Maximum XOR of Two Numbers in an Array
+
+⚡ Not in your list
+⚡ Very popular in Google / Amazon
+⚡ Uses Bit Manipulation + Trie
+
+🧩 Problem Statement
+
+Given an integer array nums, return the maximum XOR of any two numbers in the array.
+
+🔎 Example
+
+Input:
+
+nums = [3,10,5,25,2,8]
+
+
+Output:
+
+28
+
+
+Explanation:
+
+5 ^ 25 = 28   (Maximum)
+
+🧠 Core Idea
+
+XOR gives maximum value when:
+
+Bits are as different as possible
+
+So we:
+
+Build a Binary Trie
+
+Insert numbers bit by bit (31 to 0)
+
+For each number, try to find opposite bit in trie
+
+🔥 Why Use Trie?
+
+For every bit:
+
+If current bit = 1 → we want 0
+
+If current bit = 0 → we want 1
+
+To maximize XOR.
+
+⏱ Time Complexity
+
+O(N × 32)
+≈ O(N)
+
+Space: O(N × 32)
+
+💻 Java Code
+class Solution {
+
+    static class TrieNode {
+        TrieNode[] children = new TrieNode[2];
+    }
+
+    public int findMaximumXOR(int[] nums) {
+
+        TrieNode root = new TrieNode();
+
+        // Step 1: Build Trie
+        for (int num : nums) {
+            insert(root, num);
+        }
+
+        int maxXOR = 0;
+
+        // Step 2: Find Maximum XOR
+        for (int num : nums) {
+            maxXOR = Math.max(maxXOR, findMax(root, num));
+        }
+
+        return maxXOR;
+    }
+
+    private void insert(TrieNode root, int num) {
+        TrieNode node = root;
+
+        for (int i = 31; i >= 0; i--) {
+            int bit = (num >> i) & 1;
+
+            if (node.children[bit] == null) {
+                node.children[bit] = new TrieNode();
+            }
+
+            node = node.children[bit];
+        }
+    }
+
+    private int findMax(TrieNode root, int num) {
+        TrieNode node = root;
+        int maxNum = 0;
+
+        for (int i = 31; i >= 0; i--) {
+
+            int bit = (num >> i) & 1;
+
+            // Prefer opposite bit
+            if (node.children[1 - bit] != null) {
+                maxNum |= (1 << i);
+                node = node.children[1 - bit];
+            } else {
+                node = node.children[bit];
+            }
+        }
+
+        return maxNum;
+    }
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        int[] nums = {3, 10, 5, 25, 2, 8};
+        System.out.println(sol.findMaximumXOR(nums));
+    }
+}
+
+🔍 Line-by-Line Explanation
+🔹 TrieNode
+TrieNode[] children = new TrieNode[2];
+
+
+Each node stores:
+
+children[0] → bit 0
+
+children[1] → bit 1
+
+🔹 insert()
+for (int i = 31; i >= 0; i--)
+
+
+We check from MSB (Most Significant Bit) to LSB.
+
+int bit = (num >> i) & 1;
+
+
+Extract ith bit.
+
+If node does not exist → create it.
+
+🔹 findMax()
+
+For each bit:
+
+1️⃣ Extract bit
+2️⃣ Check opposite bit exists
+3️⃣ If yes:
+
+maxNum |= (1 << i);
+
+
+This sets ith bit in answer.
+
+Else → go same direction.
+
+🔎 Step Example
+
+nums = [3,10,5,25]
+
+Binary:
+
+3   = 00011
+10  = 01010
+5   = 00101
+25  = 11001
+
+
+5 ^ 25:
+
+00101
+11001
+-----
+11100 = 28
+
+💡 Why This Is Important?
+
+Tests:
+
+Bit manipulation
+
+Trie optimization
+
+Low-level memory thinking
+
+Very common in top companies.
