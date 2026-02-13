@@ -1,0 +1,629 @@
+Perfect Kanishga 🔥
+Let’s do the FIRST problem — Minimum Genetic Mutation — in FULL DETAIL
+(Problem Statement + Intuition + Dry Run + Algorithm + Code + Line-by-Line Explanation + Complexity + Interview Tips)
+Perfect Kanishga 🔥
+Let’s do the FIRST problem — Minimum Genetic Mutation — in FULL DETAIL
+(Problem Statement + Intuition + Dry Run + Algorithm + Code + Line-by-Line Explanation + Complexity + Interview Tips)
+
+🧬 PROBLEM: Minimum Genetic Mutation
+✅ Problem Statement
+
+You are given:
+
+start → Starting gene string
+
+end → Target gene string
+
+bank[] → List of valid genes
+
+Rules:
+
+Each gene string is 8 characters long.
+
+Characters can only be: 'A', 'C', 'G', 'T'
+
+One mutation changes exactly one character
+
+Every intermediate mutation must exist in bank
+
+Return:
+
+Minimum number of mutations to reach end
+
+If impossible → return -1
+
+📌 Example
+start = "AACCGGTT"
+end   = "AACCGGTA"
+bank  = ["AACCGGTA"]
+
+
+Output:
+
+1
+
+
+Because only one character change is needed.
+
+🧠 WHY BFS? (Core Idea)
+
+This is a shortest path problem.
+
+Every valid mutation = one step.
+
+We must find minimum steps from start → end.
+
+👉 Whenever we need minimum moves in an unweighted graph → Use BFS
+
+This is similar to:
+
+Word Ladder
+
+Shortest path in graph
+
+Level order traversal
+
+🪜 Visual Understanding
+
+Think like this:
+
+AACCGGTT
+     ↓
+AACCGGTA
+
+
+We explore all possible mutations level by level.
+
+🧾 Step-by-Step Algorithm
+Step 1:
+
+Store all bank genes in a HashSet for fast lookup.
+
+Step 2:
+
+If end not in bank → return -1
+
+Step 3:
+
+Use Queue for BFS
+
+Step 4:
+
+For each gene:
+
+Try replacing each index with:
+
+A
+
+C
+
+G
+
+T
+
+If newly formed gene is in bank → push into queue
+
+Step 5:
+
+After processing one BFS level → increase mutation count
+
+Step 6:
+
+If you reach end → return count
+
+💻 Complete Java Code
+import java.util.*;
+
+public class MinimumGeneticMutation {
+
+    public static int minMutation(String start, String end, String[] bank) {
+
+        // Step 1: Store bank genes in HashSet
+        Set<String> set = new HashSet<>();
+        for (String gene : bank) {
+            set.add(gene);
+        }
+
+        // Step 2: If end gene not in bank, impossible
+        if (!set.contains(end)) {
+            return -1;
+        }
+
+        // Step 3: Create BFS queue
+        Queue<String> queue = new LinkedList<>();
+        queue.add(start);
+
+        int level = 0; // Mutation count
+        char[] genes = {'A', 'C', 'G', 'T'};
+
+        // Step 4: BFS Traversal
+        while (!queue.isEmpty()) {
+
+            int size = queue.size(); // Process one level at a time
+
+            for (int i = 0; i < size; i++) {
+
+                String current = queue.poll();
+
+                // If reached target
+                if (current.equals(end)) {
+                    return level;
+                }
+
+                char[] arr = current.toCharArray();
+
+                // Try mutating every character
+                for (int j = 0; j < arr.length; j++) {
+
+                    char original = arr[j];
+
+                    for (char c : genes) {
+
+                        arr[j] = c;
+                        String mutated = new String(arr);
+
+                        // If valid mutation
+                        if (set.contains(mutated)) {
+                            queue.add(mutated);
+                            set.remove(mutated); // Prevent revisiting
+                        }
+                    }
+
+                    // Restore original character
+                    arr[j] = original;
+                }
+            }
+
+            // Increase mutation count after each level
+            level++;
+        }
+
+        return -1; // No valid path found
+    }
+
+    public static void main(String[] args) {
+
+        String start = "AACCGGTT";
+        String end = "AACCGGTA";
+        String[] bank = {"AACCGGTA"};
+
+        System.out.println("Minimum Mutations: " +
+                minMutation(start, end, bank));
+    }
+}
+
+🔍 LINE BY LINE EXPLANATION
+🔹 Store bank in HashSet
+Set<String> set = new HashSet<>();
+
+
+Why?
+→ Because checking existence in array is O(n)
+→ HashSet gives O(1)
+
+🔹 If end not present
+if (!set.contains(end)) return -1;
+
+
+If end gene not even allowed → impossible.
+
+🔹 BFS Queue
+Queue<String> queue = new LinkedList<>();
+queue.add(start);
+
+
+We start from start
+
+🔹 Mutation Counter
+int level = 0;
+
+
+Level = number of mutations
+
+🔹 BFS Loop
+while (!queue.isEmpty())
+
+
+Traverse until no more mutations possible.
+
+🔹 Process level by level
+int size = queue.size();
+
+
+Ensures we count mutations correctly.
+
+🔹 If reached target
+if (current.equals(end)) return level;
+
+
+Minimum path found because BFS explores shortest first.
+
+🔹 Convert string to char array
+char[] arr = current.toCharArray();
+
+
+Because strings are immutable.
+
+🔹 Try all mutations
+for (char c : genes)
+
+
+Try replacing with:
+
+A
+
+C
+
+G
+
+T
+
+🔹 Avoid revisiting
+set.remove(mutated);
+
+
+Why?
+If we don't remove → infinite loop or repeated work.
+
+🔹 Increase level
+level++;
+
+
+After finishing one BFS layer.
+
+🧪 Dry Run Example
+
+Input:
+
+start = AACCGGTT
+end   = AACCGGTA
+bank  = ["AACCGGTA"]
+
+
+Queue = ["AACCGGTT"]
+
+Level = 0
+
+After mutation:
+"AACCGGTA" added
+
+Queue = ["AACCGGTA"]
+
+Level = 1
+
+Now current equals end → return 1
+
+⏳ Time Complexity
+
+Let:
+
+N = size of bank
+
+L = 8 (gene length)
+
+Time = O(N × L × 4)
+
+≈ O(N)
+
+🧠 Space Complexity
+
+HashSet → O(N)
+
+Queue → O(N)
+
+Total: O(N)
+
+🎯 Interview Explanation (2–3 lines)
+
+"This is a shortest path problem where each mutation is one edge. Since all edges have equal weight, I used BFS to find the minimum number of mutations. At each step, I generated all possible one-character mutations and checked if they exist in the bank. Once the target is reached, I return the mutation count."
+🧬 PROBLEM: Minimum Genetic Mutation
+✅ Problem Statement
+
+You are given:
+
+start → Starting gene string
+
+end → Target gene string
+
+bank[] → List of valid genes
+
+Rules:
+
+Each gene string is 8 characters long.
+
+Characters can only be: 'A', 'C', 'G', 'T'
+
+One mutation changes exactly one character
+
+Every intermediate mutation must exist in bank
+
+Return:
+
+Minimum number of mutations to reach end
+
+If impossible → return -1
+
+📌 Example
+start = "AACCGGTT"
+end   = "AACCGGTA"
+bank  = ["AACCGGTA"]
+
+
+Output:
+
+1
+
+
+Because only one character change is needed.
+
+🧠 WHY BFS? (Core Idea)
+
+This is a shortest path problem.
+
+Every valid mutation = one step.
+
+We must find minimum steps from start → end.
+
+👉 Whenever we need minimum moves in an unweighted graph → Use BFS
+
+This is similar to:
+
+Word Ladder
+
+Shortest path in graph
+
+Level order traversal
+
+🪜 Visual Understanding
+
+Think like this:
+
+AACCGGTT
+     ↓
+AACCGGTA
+
+
+We explore all possible mutations level by level.
+
+🧾 Step-by-Step Algorithm
+Step 1:
+
+Store all bank genes in a HashSet for fast lookup.
+
+Step 2:
+
+If end not in bank → return -1
+
+Step 3:
+
+Use Queue for BFS
+
+Step 4:
+
+For each gene:
+
+Try replacing each index with:
+
+A
+
+C
+
+G
+
+T
+
+If newly formed gene is in bank → push into queue
+
+Step 5:
+
+After processing one BFS level → increase mutation count
+
+Step 6:
+
+If you reach end → return count
+
+💻 Complete Java Code
+import java.util.*;
+
+public class MinimumGeneticMutation {
+
+    public static int minMutation(String start, String end, String[] bank) {
+
+        // Step 1: Store bank genes in HashSet
+        Set<String> set = new HashSet<>();
+        for (String gene : bank) {
+            set.add(gene);
+        }
+
+        // Step 2: If end gene not in bank, impossible
+        if (!set.contains(end)) {
+            return -1;
+        }
+
+        // Step 3: Create BFS queue
+        Queue<String> queue = new LinkedList<>();
+        queue.add(start);
+
+        int level = 0; // Mutation count
+        char[] genes = {'A', 'C', 'G', 'T'};
+
+        // Step 4: BFS Traversal
+        while (!queue.isEmpty()) {
+
+            int size = queue.size(); // Process one level at a time
+
+            for (int i = 0; i < size; i++) {
+
+                String current = queue.poll();
+
+                // If reached target
+                if (current.equals(end)) {
+                    return level;
+                }
+
+                char[] arr = current.toCharArray();
+
+                // Try mutating every character
+                for (int j = 0; j < arr.length; j++) {
+
+                    char original = arr[j];
+
+                    for (char c : genes) {
+
+                        arr[j] = c;
+                        String mutated = new String(arr);
+
+                        // If valid mutation
+                        if (set.contains(mutated)) {
+                            queue.add(mutated);
+                            set.remove(mutated); // Prevent revisiting
+                        }
+                    }
+
+                    // Restore original character
+                    arr[j] = original;
+                }
+            }
+
+            // Increase mutation count after each level
+            level++;
+        }
+
+        return -1; // No valid path found
+    }
+
+    public static void main(String[] args) {
+
+        String start = "AACCGGTT";
+        String end = "AACCGGTA";
+        String[] bank = {"AACCGGTA"};
+
+        System.out.println("Minimum Mutations: " +
+                minMutation(start, end, bank));
+    }
+}
+
+🔍 LINE BY LINE EXPLANATION
+🔹 Store bank in HashSet
+Set<String> set = new HashSet<>();
+
+
+Why?
+→ Because checking existence in array is O(n)
+→ HashSet gives O(1)
+
+🔹 If end not present
+if (!set.contains(end)) return -1;
+
+
+If end gene not even allowed → impossible.
+
+🔹 BFS Queue
+Queue<String> queue = new LinkedList<>();
+queue.add(start);
+
+
+We start from start
+
+🔹 Mutation Counter
+int level = 0;
+
+
+Level = number of mutations
+
+🔹 BFS Loop
+while (!queue.isEmpty())
+
+
+Traverse until no more mutations possible.
+
+🔹 Process level by level
+int size = queue.size();
+
+
+Ensures we count mutations correctly.
+
+🔹 If reached target
+if (current.equals(end)) return level;
+
+
+Minimum path found because BFS explores shortest first.
+
+🔹 Convert string to char array
+char[] arr = current.toCharArray();
+
+
+Because strings are immutable.
+
+🔹 Try all mutations
+for (char c : genes)
+
+
+Try replacing with:
+
+A
+
+C
+
+G
+
+T
+
+🔹 Avoid revisiting
+set.remove(mutated);
+
+
+Why?
+If we don't remove → infinite loop or repeated work.
+
+🔹 Increase level
+level++;
+
+
+After finishing one BFS layer.
+
+🧪 Dry Run Example
+
+Input:
+
+start = AACCGGTT
+end   = AACCGGTA
+bank  = ["AACCGGTA"]
+
+
+Queue = ["AACCGGTT"]
+
+Level = 0
+
+After mutation:
+"AACCGGTA" added
+
+Queue = ["AACCGGTA"]
+
+Level = 1
+
+Now current equals end → return 1
+
+⏳ Time Complexity
+
+Let:
+
+N = size of bank
+
+L = 8 (gene length)
+
+Time = O(N × L × 4)
+
+≈ O(N)
+
+🧠 Space Complexity
+
+HashSet → O(N)
+
+Queue → O(N)
+
+Total: O(N)
+
+🎯 Interview Explanation (2–3 lines)
+
+"This is a shortest path problem where each mutation is one edge. Since all edges have equal weight, I used BFS to find the minimum number of mutations. At each step, I generated all possible one-character mutations and checked if they exist in the bank. Once the target is reached, I return the mutation count."
