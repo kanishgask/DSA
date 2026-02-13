@@ -1,0 +1,255 @@
+Problem 3: Palindrome Pairs (Hard – Trie / Hashing)
+📌 PROBLEM STATEMENT
+
+You are given an array of unique strings words.
+
+Return all pairs of indices (i, j) such that:
+
+words[i] + words[j]
+
+
+forms a palindrome.
+
+🧾 Example
+Input:
+["bat","tab","cat"]
+
+Output:
+[[0,1],[1,0]]
+
+
+Because:
+
+"bat" + "tab" = "battab" ✔ palindrome
+"tab" + "bat" = "tabbat" ✔ palindrome
+
+🧾 Example 2
+Input:
+["abcd","dcba","lls","s","sssll"]
+
+Output:
+[[0,1],[1,0],[3,2],[2,4]]
+
+🧠 INTUITION
+
+We must efficiently check:
+
+For each word:
+Split it into:
+
+prefix | suffix
+
+
+Then check:
+
+1️⃣ If prefix is palindrome → search reversed(suffix)
+2️⃣ If suffix is palindrome → search reversed(prefix)
+
+Use a HashMap to store word → index for O(1) lookup.
+
+💡 CORE IDEA
+
+For every word:
+
+Try all possible splits:
+
+"" | word
+"w" | "ord"
+"wo" | "rd"
+"wor" | "d"
+"word" | ""
+
+
+For each split:
+
+Case 1:
+If prefix palindrome
+→ check reversed(suffix) exists
+
+Case 2:
+If suffix palindrome
+→ check reversed(prefix) exists
+
+🪜 ALGORITHM
+
+Store word and index in HashMap.
+
+For each word:
+
+For every possible split:
+
+Check prefix palindrome
+
+Check suffix palindrome
+
+Look for reversed counterpart
+
+Store valid pairs.
+
+💻 FULL JAVA CODE
+import java.util.*;
+
+public class PalindromePairs {
+
+    public static List<List<Integer>> palindromePairs(String[] words) {
+
+        List<List<Integer>> result = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
+
+        // Step 1: Store words with index
+        for (int i = 0; i < words.length; i++) {
+            map.put(words[i], i);
+        }
+
+        // Step 2: Check each word
+        for (int i = 0; i < words.length; i++) {
+
+            String word = words[i];
+
+            for (int j = 0; j <= word.length(); j++) {
+
+                String prefix = word.substring(0, j);
+                String suffix = word.substring(j);
+
+                // Case 1: Prefix is palindrome
+                if (isPalindrome(prefix)) {
+
+                    String reversedSuffix = new StringBuilder(suffix).reverse().toString();
+
+                    if (map.containsKey(reversedSuffix) &&
+                        map.get(reversedSuffix) != i) {
+
+                        result.add(Arrays.asList(map.get(reversedSuffix), i));
+                    }
+                }
+
+                // Case 2: Suffix is palindrome
+                // Avoid duplicate when j == word.length()
+                if (j != word.length() && isPalindrome(suffix)) {
+
+                    String reversedPrefix = new StringBuilder(prefix).reverse().toString();
+
+                    if (map.containsKey(reversedPrefix) &&
+                        map.get(reversedPrefix) != i) {
+
+                        result.add(Arrays.asList(i, map.get(reversedPrefix)));
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // Check if string is palindrome
+    private static boolean isPalindrome(String s) {
+
+        int left = 0;
+        int right = s.length() - 1;
+
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right))
+                return false;
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+
+    public static void main(String[] args) {
+
+        String[] words = {"bat","tab","cat"};
+
+        System.out.println(palindromePairs(words));
+    }
+}
+
+🔍 LINE BY LINE EXPLANATION
+🔹 Store words in HashMap
+Map<String, Integer> map = new HashMap<>();
+
+
+Stores word → index
+
+🔹 Try all splits
+for (int j = 0; j <= word.length(); j++)
+
+
+We allow j == length to include empty suffix.
+
+🔹 Extract prefix & suffix
+String prefix = word.substring(0, j);
+String suffix = word.substring(j);
+
+
+Split point at j.
+
+🔹 Case 1: Prefix palindrome
+
+If prefix is palindrome →
+We only need reversed suffix in front.
+
+Example:
+
+word = "bat"
+prefix = "b"
+suffix = "at"
+
+If prefix palindrome:
+Need reverse("at") = "ta"
+
+🔹 Check map
+map.containsKey(reversedSuffix)
+
+
+If exists and not same index → valid pair.
+
+🔹 Case 2: Suffix palindrome
+
+Same logic but reversed order.
+
+Important:
+
+j != word.length()
+
+
+Avoid duplicate cases.
+
+🔹 Palindrome Function
+
+Two pointer approach:
+
+left++
+right--
+
+
+Time: O(L)
+
+⏳ TIME COMPLEXITY
+
+Let:
+
+N = number of words
+
+L = max word length
+
+Total:
+
+O(N × L²)
+
+🧠 INTERVIEW EXPLANATION (Power Version)
+
+"I split each word at every possible position and check two cases: whether the prefix is palindrome or the suffix is palindrome. If so, I search for the reversed complement part in a HashMap to find a valid pair. This reduces the brute force O(N²L) solution to O(NL²)."
+
+⭐ What This Problem Tests
+
+String manipulation
+
+HashMap optimization
+
+Two-pointer palindrome check
+
+Edge cases (empty string)
+
+Advanced thinking
