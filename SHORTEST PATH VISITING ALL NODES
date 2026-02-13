@@ -1,0 +1,266 @@
+Shortest Path Visiting All Nodes (Hard – Bitmask + BFS)
+📌 Problem Statement
+
+You are given an undirected connected graph with n nodes labeled 0 to n-1.
+
+You can:
+
+Start at any node.
+
+Visit nodes in any order.
+
+Revisit nodes if needed.
+
+Return the length of the shortest path that visits ALL nodes at least once.
+
+🧾 Example
+Input:
+graph = [[1,2,3],[0],[0],[0]]
+
+Output:
+4
+
+
+Graph:
+
+     1
+     |
+2 — 0 — 3
+
+
+One shortest path:
+
+1 → 0 → 2 → 0 → 3
+
+
+Length = 4
+
+🧠 WHY BITMASK?
+
+We must:
+
+Track which nodes visited
+
+Minimize path length
+
+We use:
+
+mask = binary number representing visited nodes
+
+
+Example (n=4):
+
+Visited nodes 0,2
+mask = 0101 (binary) = 5
+
+
+When:
+
+mask == (1<<n) - 1
+
+
+All nodes visited 🎯
+
+💡 KEY IDEA
+
+State in BFS:
+
+(node, visited_mask)
+
+
+This is NOT normal BFS.
+
+We must track:
+
+Current node
+
+Which nodes visited so far
+
+🪜 ALGORITHM
+Step 1:
+
+Initialize BFS queue.
+
+Push all nodes as starting point:
+
+(node i, mask with only node i visited)
+
+Step 2:
+
+Maintain visited[][] to avoid repeating states
+
+visited[node][mask]
+
+Step 3:
+
+Run BFS
+
+For each neighbor:
+
+newMask = mask | (1 << neighbor)
+
+Step 4:
+
+If mask == fullMask → return steps
+
+💻 FULL JAVA CODE
+import java.util.*;
+
+public class ShortestPathVisitingAllNodes {
+
+    public static int shortestPathLength(int[][] graph) {
+
+        int n = graph.length;
+
+        int fullMask = (1 << n) - 1;
+
+        Queue<int[]> queue = new LinkedList<>();
+
+        boolean[][] visited = new boolean[n][1 << n];
+
+        // Step 1: Initialize queue with all nodes
+        for (int i = 0; i < n; i++) {
+            int mask = (1 << i);
+            queue.offer(new int[]{i, mask});
+            visited[i][mask] = true;
+        }
+
+        int steps = 0;
+
+        // Step 2: BFS
+        while (!queue.isEmpty()) {
+
+            int size = queue.size();
+
+            for (int s = 0; s < size; s++) {
+
+                int[] current = queue.poll();
+
+                int node = current[0];
+                int mask = current[1];
+
+                // Step 3: If all nodes visited
+                if (mask == fullMask) {
+                    return steps;
+                }
+
+                // Explore neighbors
+                for (int neighbor : graph[node]) {
+
+                    int newMask = mask | (1 << neighbor);
+
+                    if (!visited[neighbor][newMask]) {
+                        visited[neighbor][newMask] = true;
+                        queue.offer(new int[]{neighbor, newMask});
+                    }
+                }
+            }
+
+            steps++;
+        }
+
+        return -1;
+    }
+
+    public static void main(String[] args) {
+
+        int[][] graph = {{1,2,3},{0},{0},{0}};
+
+        System.out.println(shortestPathLength(graph));
+    }
+}
+
+🔍 LINE-BY-LINE EXPLANATION
+🔹 fullMask
+int fullMask = (1 << n) - 1;
+
+
+If n=4:
+
+1<<4 = 10000 (binary)
+-1 = 1111
+
+
+Means all nodes visited.
+
+🔹 visited array
+boolean[][] visited = new boolean[n][1 << n];
+
+
+Tracks:
+
+visited[node][mask]
+
+
+Because same node with different mask = different state.
+
+🔹 Initialization
+queue.offer(new int[]{i, mask});
+
+
+Start BFS from every node.
+
+Why?
+
+Because we can start anywhere.
+
+🔹 BFS Loop
+while (!queue.isEmpty())
+
+
+Normal BFS.
+
+🔹 Check Completion
+if (mask == fullMask)
+
+
+If all nodes visited → return steps.
+
+🔹 Update Mask
+int newMask = mask | (1 << neighbor);
+
+
+Add neighbor to visited set.
+
+🧪 DRY RUN (Simple Case)
+
+Graph:
+
+0 - 1
+
+
+n=2
+fullMask = 11 (binary 3)
+
+Start:
+
+(0, 01)
+(1, 10)
+
+
+After exploring:
+
+(1, 11)
+
+
+mask = fullMask → return 1
+
+⏳ TIME COMPLEXITY
+
+There are:
+
+n × 2^n states
+
+
+Each state processes neighbors.
+
+Time =
+
+O(n × 2^n)
+
+
+Works because n ≤ 12 (constraint).
+
+🧠 INTERVIEW EXPLANATION
+
+"This is a state-compression BFS problem. Since we must track visited nodes and revisit is allowed, I used a bitmask to represent visited nodes. Each BFS state consists of (currentNode, visitedMask). When the mask equals the full bitmask, we return the number of steps. Complexity is O(n × 2^n)."
