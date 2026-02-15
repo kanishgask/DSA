@@ -1,0 +1,316 @@
+🔥 Regular Expression Matching
+🧩 Problem Statement
+
+Given two strings:
+
+s → input string
+
+p → pattern string
+
+Implement regex matching with support for:
+
+Symbol	Meaning
+.	Matches any single character
+*	Matches zero or more of the previous element
+
+Return true if the entire string matches the pattern.
+
+📌 Important Rules
+
+Pattern must match entire string
+
+* always refers to previous character
+
+Only these two special characters exist: . and *
+
+🧪 Example 1
+Input:
+s = "aa"
+p = "a"
+
+Output: false
+
+
+Reason: Pattern only matches one 'a'
+
+🧪 Example 2
+Input:
+s = "aa"
+p = "a*"
+
+Output: true
+
+
+Reason: a* → zero or more 'a'
+
+🧪 Example 3 (Very Important)
+s = "aab"
+p = "c*a*b"
+Output = true
+
+
+Why?
+
+c* → zero 'c'
+
+a* → matches "aa"
+
+b → matches "b"
+
+❌ Why Greedy or Recursion Alone Fails?
+
+Because:
+
+* creates multiple choices
+
+Overlapping subproblems
+
+Exponential branching
+
+👉 So we use Dynamic Programming
+
+🧠 Core Idea
+
+Let:
+
+dp[i][j]
+
+
+means:
+
+Does first i characters of s
+match first j characters of p?
+
+🏗 DP Table Size
+(m+1) x (n+1)
+
+
+Because we include empty string cases.
+
+🪜 Step-by-Step Algorithm
+STEP 1️⃣ Initialization
+dp[0][0] = true
+
+
+Empty string matches empty pattern.
+
+STEP 2️⃣ Handle Patterns Like "a*" or "ab"
+
+If pattern contains *, it may match empty string.
+
+Example:
+
+p = "a*b*"
+
+
+So:
+
+if p[j-1] == '*'
+    dp[0][j] = dp[0][j-2]
+
+
+Why j-2?
+Because a* can match zero characters.
+
+STEP 3️⃣ Filling the Table
+
+Now iterate:
+
+for i in 1 to m
+  for j in 1 to n
+
+CASE 1: Normal Character or '.'
+
+If:
+
+p[j-1] == s[i-1]
+OR
+p[j-1] == '.'
+
+
+Then:
+
+dp[i][j] = dp[i-1][j-1]
+
+
+Why?
+If last characters match, reduce problem size.
+
+CASE 2: When Pattern Has '*'
+
+If:
+
+p[j-1] == '*'
+
+
+Two possibilities:
+
+Option 1️⃣ Zero Occurrence
+
+Ignore the x*
+
+dp[i][j] = dp[i][j-2]
+
+Option 2️⃣ One or More Occurrence
+
+If previous char matches:
+
+p[j-2] == s[i-1]
+OR
+p[j-2] == '.'
+
+
+Then:
+
+dp[i][j] |= dp[i-1][j]
+
+
+Why?
+Stay in pattern, reduce string.
+
+🔎 Full Dry Run (Important)
+Input
+s = "aab"
+p = "c*a*b"
+
+
+Lengths:
+m = 3
+n = 5
+
+DP table → 4 × 6
+
+Initialize
+dp[0][0] = true
+
+
+Now handle empty string vs pattern:
+
+c* → can be zero
+a* → can be zero
+
+
+So first row becomes:
+
+T F T F T F
+
+
+Now fill table step by step:
+
+When reaching:
+
+s = a a b
+p = c * a * b
+
+Eventually:
+
+dp[3][5] = true
+
+Because:
+
+c* → zero
+
+a* → match aa
+
+b → match b
+
+Final answer = true
+
+💻 Full Java Code
+public class RegexMatching {
+
+    public boolean isMatch(String s, String p) {
+        int m = s.length();
+        int n = p.length();
+        
+        boolean[][] dp = new boolean[m + 1][n + 1];
+        
+        dp[0][0] = true;
+
+        // Handle empty string vs pattern
+        for (int j = 1; j <= n; j++) {
+            if (p.charAt(j - 1) == '*') {
+                dp[0][j] = dp[0][j - 2];
+            }
+        }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+
+                char sc = s.charAt(i - 1);
+                char pc = p.charAt(j - 1);
+
+                // Case 1: exact match or '.'
+                if (pc == sc || pc == '.') {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+
+                // Case 2: '*'
+                else if (pc == '*') {
+
+                    // Zero occurrence
+                    dp[i][j] = dp[i][j - 2];
+
+                    char prev = p.charAt(j - 2);
+
+                    // One or more occurrence
+                    if (prev == sc || prev == '.') {
+                        dp[i][j] |= dp[i - 1][j];
+                    }
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
+    public static void main(String[] args) {
+        RegexMatching sol = new RegexMatching();
+        System.out.println(
+            sol.isMatch("aab", "c*a*b")
+        );
+    }
+}
+
+⏱ Complexity Analysis
+Type	Complexity
+Time	O(m × n)
+Space	O(m × n)
+🎯 Why Interviewers Love This Problem
+
+It tests:
+
+Dynamic Programming understanding
+
+Table design
+
+Edge cases handling
+
+Pattern parsing logic
+
+Deep understanding of recursion → DP conversion
+
+🔥 Important Edge Cases
+
+s = "", p = "a*" → true
+
+s = "abc", p = ".*" → true
+
+s = "ab", p = ".*c" → false
+
+🧠 If Interviewer Asks Follow-Up
+
+You should say:
+
+We can optimize space to O(n) using rolling array,
+but careful handling of * is required.
+
+🚀 Kanishga-Level Advice
+
+Since you're preparing seriously for placements:
+
+This question alone separates:
+
+Medium DSA candidates
+
+Strong Product-level candidates
