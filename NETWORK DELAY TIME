@@ -1,0 +1,297 @@
+Network Delay Time (Dijkstra’s Algorithm – Deep Explanation)
+
+This is a very common graph shortest path question.
+
+🧩 Problem Statement
+
+You are given:
+
+times[i] = (u, v, w)
+→ signal takes w time to travel from node u to node v
+
+n = total number of nodes (1 to n)
+
+k = starting node
+
+Return the minimum time required for all nodes to receive the signal.
+
+If not all nodes can be reached, return -1.
+
+🧪 Example
+Input:
+times = [[2,1,1],[2,3,1],[3,4,1]]
+n = 4
+k = 2
+
+Output:
+2
+
+Explanation
+
+Graph looks like:
+
+2 → 1 (1)
+2 → 3 (1)
+3 → 4 (1)
+
+
+From node 2:
+
+1 reached in 1
+
+3 reached in 1
+
+4 reached in 2
+
+Max time = 2
+
+🎯 What Is This Problem Really?
+
+It is:
+
+Find shortest path from source k to all nodes.
+
+Since all weights are positive
+👉 We use Dijkstra’s Algorithm
+
+🧠 Why Not BFS?
+
+Because weights are NOT equal.
+BFS only works when all edges = 1.
+
+🪜 Step-by-Step Algorithm
+STEP 1️⃣ Build Adjacency List
+
+We need:
+
+graph[u] = list of (v, weight)
+
+STEP 2️⃣ Distance Array
+dist[i] = shortest distance from k to i
+
+
+Initialize:
+
+dist[i] = ∞
+dist[k] = 0
+
+STEP 3️⃣ Use Min Heap (Priority Queue)
+
+PriorityQueue stores:
+
+(node, currentDistance)
+
+
+Always expand shortest distance first.
+
+STEP 4️⃣ Relaxation Process
+
+While heap not empty:
+
+Extract node with minimum distance
+
+For each neighbor:
+
+If new distance smaller
+
+Update dist
+
+Push into heap
+
+STEP 5️⃣ Final Result
+
+Find:
+
+max(dist[i])
+
+
+If any = infinity → return -1
+Else return max distance.
+
+🔎 Full Dry Run (Important)
+Input:
+times = [[2,1,1],[2,3,1],[3,4,1]]
+n = 4
+k = 2
+
+Initial:
+dist = [∞, ∞, 0, ∞, ∞]
+
+
+Heap:
+
+(2,0)
+
+Process Node 2
+
+Neighbors:
+
+1 (cost 1)
+
+3 (cost 1)
+
+Update:
+
+dist[1] = 1
+dist[3] = 1
+
+
+Heap:
+
+(1,1), (3,1)
+
+Process Node 1
+
+No outgoing edges.
+
+Process Node 3
+
+Neighbor:
+
+4 (cost 1)
+
+Update:
+
+dist[4] = 2
+
+
+Heap:
+
+(4,2)
+
+Process Node 4
+
+No neighbors.
+
+Final distances:
+
+1 → 1
+2 → 0
+3 → 1
+4 → 2
+
+
+Maximum = 2
+
+Return → 2
+
+💻 Full Java Code
+import java.util.*;
+
+public class NetworkDelayTime {
+
+    public int networkDelayTime(int[][] times, int n, int k) {
+
+        // Step 1: Build graph
+        List<int[]>[] graph = new ArrayList[n + 1];
+        for (int i = 1; i <= n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        for (int[] t : times) {
+            graph[t[0]].add(new int[]{t[1], t[2]});
+        }
+
+        // Step 2: Distance array
+        int[] dist = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k] = 0;
+
+        // Step 3: Min Heap
+        PriorityQueue<int[]> pq =
+                new PriorityQueue<>((a, b) -> a[1] - b[1]);
+
+        pq.add(new int[]{k, 0});
+
+        // Step 4: Dijkstra
+        while (!pq.isEmpty()) {
+
+            int[] curr = pq.poll();
+            int node = curr[0];
+            int time = curr[1];
+
+            // Skip outdated entries
+            if (time > dist[node]) continue;
+
+            for (int[] neighbor : graph[node]) {
+
+                int nextNode = neighbor[0];
+                int weight = neighbor[1];
+
+                if (dist[nextNode] > time + weight) {
+
+                    dist[nextNode] = time + weight;
+                    pq.add(new int[]{nextNode, dist[nextNode]});
+                }
+            }
+        }
+
+        // Step 5: Find max distance
+        int max = 0;
+
+        for (int i = 1; i <= n; i++) {
+
+            if (dist[i] == Integer.MAX_VALUE) {
+                return -1;
+            }
+
+            max = Math.max(max, dist[i]);
+        }
+
+        return max;
+    }
+
+    public static void main(String[] args) {
+
+        NetworkDelayTime sol = new NetworkDelayTime();
+
+        int[][] times = {{2,1,1},{2,3,1},{3,4,1}};
+
+        System.out.println(
+                sol.networkDelayTime(times, 4, 2)
+        );
+    }
+}
+
+⏱ Complexity Analysis
+
+Let:
+
+V = nodes
+
+E = edges
+
+Type	Complexity
+Time	O(E log V)
+Space	O(V + E)
+🎯 Why Interviewers Love This Question
+
+It tests:
+
+Graph representation
+
+Dijkstra understanding
+
+Heap usage
+
+Relaxation logic
+
+Handling unreachable nodes
+
+❗ Common Mistakes
+
+Forgetting to initialize distance properly
+
+Not skipping outdated heap entries
+
+Using BFS instead of Dijkstra
+
+Forgetting infinity check
+
+💬 How To Explain In Interview
+
+Say:
+
+Since edges have positive weights, we apply Dijkstra’s algorithm using a min-heap to compute shortest paths from source to all nodes.
+
+That is strong and clean.
