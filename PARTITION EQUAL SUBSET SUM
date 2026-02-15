@@ -1,0 +1,275 @@
+Partition Equal Subset Sum (0/1 Knapsack Based)
+
+This is a must-know DP pattern. Very common in interviews.
+
+🧩 Problem Statement
+
+Given an integer array nums, return true if you can divide the array into two subsets such that the sum of elements in both subsets is equal.
+
+🧪 Example 1
+Input: nums = [1,5,11,5]
+Output: true
+
+
+Explanation:
+
+Total sum = 22
+Target = 22 / 2 = 11
+
+Possible partitions:
+
+{11}
+
+{5,5,1}
+
+🧪 Example 2
+Input: nums = [1,2,3,5]
+Output: false
+
+
+Total sum = 11 (odd)
+Cannot divide equally.
+
+🎯 Important Observation
+
+If total sum is odd, return false.
+
+If total sum is even, problem becomes:
+
+Can we find a subset with sum = totalSum / 2 ?
+
+This becomes a Subset Sum Problem
+Which is a classic 0/1 Knapsack DP Problem
+
+🧠 Core Idea
+
+Let:
+
+target = totalSum / 2
+
+
+We check if subset exists with sum = target.
+
+Define:
+
+dp[i][j] = can we get sum j using first i elements?
+
+
+But we can optimize to 1D DP
+
+🪜 Step-by-Step Algorithm
+STEP 1️⃣ Calculate Sum
+
+Loop through array.
+
+If sum % 2 != 0
+→ return false
+
+Else:
+
+target = sum / 2
+
+STEP 2️⃣ DP Array
+boolean dp[target + 1]
+
+
+Meaning:
+
+dp[j] = can we form sum j?
+
+
+Initialize:
+
+dp[0] = true
+
+
+Because sum 0 is always possible (empty subset).
+
+STEP 3️⃣ Fill DP (0/1 Knapsack Logic)
+
+For each number:
+
+Traverse backward:
+
+for j = target down to num
+
+
+Why backward?
+
+To prevent using same element multiple times.
+
+Update:
+
+dp[j] = dp[j] || dp[j - num]
+
+
+Meaning:
+
+If we could previously make j - num,
+
+Then adding current num makes j.
+
+🔎 Full Dry Run (Important)
+Input:
+nums = [1,5,11,5]
+
+Total Sum:
+1+5+11+5 = 22
+target = 11
+
+Initial DP:
+Index:  0 1 2 3 4 5 6 7 8 9 10 11
+dp:     T F F F F F F F F F F  F
+
+Process 1
+dp[1] = dp[1] OR dp[0]
+
+
+Now:
+
+T T F F F F F F F F F F
+
+Process 5
+
+Update from back:
+
+dp[5] = dp[0] = true
+dp[6] = dp[1] = true
+
+
+Now:
+
+T T F F F T T F F F F F
+
+Process 11
+dp[11] = dp[0] → true
+
+
+We already found target!
+
+Process Last 5
+
+Would also confirm combination 1+5+5.
+
+Final:
+
+dp[11] = true
+
+
+Return → true
+
+💻 Optimized Java Code (Best Version)
+public class PartitionEqualSubset {
+
+    public boolean canPartition(int[] nums) {
+        
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+
+        // If total sum is odd, cannot divide equally
+        if (sum % 2 != 0) {
+            return false;
+        }
+
+        int target = sum / 2;
+
+        boolean[] dp = new boolean[target + 1];
+        dp[0] = true; // base case
+
+        for (int num : nums) {
+
+            // Traverse backwards
+            for (int j = target; j >= num; j--) {
+                dp[j] = dp[j] || dp[j - num];
+            }
+        }
+
+        return dp[target];
+    }
+
+    public static void main(String[] args) {
+        PartitionEqualSubset sol = new PartitionEqualSubset();
+
+        int[] arr = {1,5,11,5};
+        System.out.println(sol.canPartition(arr));
+    }
+}
+
+⏱ Complexity Analysis
+Type	Complexity
+Time	O(n × target)
+Space	O(target)
+
+Worst case target = sum/2
+So complexity ≈ O(n × sum)
+
+🧠 Why Backward Traversal Is Important?
+
+If we traverse forward:
+
+We might reuse the same element multiple times.
+
+Example:
+
+nums = [1]
+
+
+Forward traversal would allow infinite 1’s → incorrect.
+
+So always backward for 0/1 knapsack.
+
+🔥 Interview Follow-Up Questions
+1️⃣ Can you solve using 2D DP?
+
+Yes. But space heavy.
+
+2️⃣ Can you solve using Bitset optimization?
+
+Yes (advanced optimization).
+
+3️⃣ Can you extend this to K partitions?
+
+That becomes:
+
+Partition to K Equal Subsets
+
+
+Which is much harder (Backtracking + pruning).
+
+🎯 Why This Question Is Powerful
+
+Tests:
+
+Knapsack understanding
+
+1D DP compression
+
+Logical reduction of problem
+
+Handling edge cases
+
+⚠ Important Edge Cases
+
+[2,2,3,5] → false
+
+[1,1] → true
+
+Single element → false
+
+Large values
+
+🚀 Placement Level Tip (Very Important)
+
+If interviewer gives:
+
+"Can array be split into equal halves?"
+
+You should immediately think:
+
+Total sum even?
+Then subset sum problem.
+
+
+That’s the recognition skill recruiters test.
