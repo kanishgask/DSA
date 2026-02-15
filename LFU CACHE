@@ -1,0 +1,325 @@
+🧠 LFU Cache (Design + Data Structures – Very Advanced)
+
+This is asked in product companies like Amazon, Microsoft, Google.
+
+It tests:
+
+HashMap
+
+Doubly Linked List
+
+Frequency tracking
+
+O(1) design thinking
+
+🧩 Problem Statement
+
+Design a data structure that follows Least Frequently Used (LFU) policy.
+
+Implement:
+
+LFUCache(int capacity)
+int get(int key)
+void put(int key, int value)
+
+
+Rules:
+
+1️⃣ When capacity is full, remove the least frequently used key
+2️⃣ If multiple keys have same frequency → remove Least Recently Used (LRU)
+3️⃣ Both get() and put() must run in O(1) time
+
+🧪 Example
+Input:
+capacity = 2
+
+put(1,1)
+put(2,2)
+get(1) → returns 1
+put(3,3) → removes key 2
+get(2) → returns -1
+get(3) → returns 3
+
+🎯 What Is This Problem Really Testing?
+
+It is a combination of:
+
+LRU Cache
+
+Frequency counting
+
+Efficient O(1) removal
+
+This is NOT simple.
+
+🧠 Why Normal HashMap Is Not Enough?
+
+Because we must:
+
+✔ Track frequency
+✔ Track insertion order inside same frequency
+✔ Remove least frequently used instantly
+
+We need 3 structures.
+
+🏗 Data Structures Used
+
+We maintain:
+
+1️⃣ Key → Node Map
+Map<Integer, Node>
+
+2️⃣ Frequency → Doubly Linked List
+Map<Integer, DoublyLinkedList>
+
+
+Each frequency has its own list.
+
+3️⃣ Variable minFreq
+
+Tracks minimum frequency.
+
+📦 Node Structure
+
+Each node stores:
+
+key
+value
+frequency
+prev
+next
+
+🪜 Step-by-Step Logic
+🔹 GET(key)
+
+IF key not present
+→ return -1
+
+ELSE:
+
+Get node
+
+Increase frequency
+
+Move node to new frequency list
+
+Update minFreq if needed
+
+Return value
+
+🔹 PUT(key, value)
+
+If capacity = 0 → return
+
+If key exists:
+
+Update value
+
+Call GET(key) logic to increase frequency
+
+Else:
+If cache full:
+
+Remove head of minFreq list
+
+Create new node:
+
+freq = 1
+
+Insert into freq 1 list
+
+Set minFreq = 1
+
+🔎 Dry Run Example
+
+capacity = 2
+
+put(1,1)
+put(2,2)
+
+State:
+freq 1 → [1,2]
+
+get(1)
+
+freq 1 → [2]
+freq 2 → [1]
+
+put(3,3)
+
+Remove from freq 1 → remove 2
+
+Insert 3:
+freq 1 → [3]
+freq 2 → [1]
+
+Correct behavior.
+
+💻 Full Java Code (O(1))
+import java.util.*;
+
+class LFUCache {
+
+    class Node {
+        int key, value, freq;
+        Node prev, next;
+
+        Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+            this.freq = 1;
+        }
+    }
+
+    class DoublyLinkedList {
+        Node head, tail;
+        int size;
+
+        DoublyLinkedList() {
+            head = new Node(0, 0);
+            tail = new Node(0, 0);
+            head.next = tail;
+            tail.prev = head;
+        }
+
+        void add(Node node) {
+            node.next = head.next;
+            node.prev = head;
+            head.next.prev = node;
+            head.next = node;
+            size++;
+        }
+
+        void remove(Node node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            size--;
+        }
+
+        Node removeLast() {
+            if (size > 0) {
+                Node last = tail.prev;
+                remove(last);
+                return last;
+            }
+            return null;
+        }
+    }
+
+    int capacity, minFreq;
+    Map<Integer, Node> keyMap;
+    Map<Integer, DoublyLinkedList> freqMap;
+
+    public LFUCache(int capacity) {
+        this.capacity = capacity;
+        keyMap = new HashMap<>();
+        freqMap = new HashMap<>();
+    }
+
+    public int get(int key) {
+
+        if (!keyMap.containsKey(key)) {
+            return -1;
+        }
+
+        Node node = keyMap.get(key);
+        update(node);
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+
+        if (capacity == 0) return;
+
+        if (keyMap.containsKey(key)) {
+
+            Node node = keyMap.get(key);
+            node.value = value;
+            update(node);
+
+        } else {
+
+            if (keyMap.size() == capacity) {
+
+                DoublyLinkedList minList = freqMap.get(minFreq);
+                Node removed = minList.removeLast();
+                keyMap.remove(removed.key);
+            }
+
+            Node newNode = new Node(key, value);
+            keyMap.put(key, newNode);
+            freqMap.computeIfAbsent(1, k -> new DoublyLinkedList())
+                    .add(newNode);
+            minFreq = 1;
+        }
+    }
+
+    private void update(Node node) {
+
+        int freq = node.freq;
+
+        DoublyLinkedList list = freqMap.get(freq);
+        list.remove(node);
+
+        if (freq == minFreq && list.size == 0) {
+            minFreq++;
+        }
+
+        node.freq++;
+
+        freqMap.computeIfAbsent(node.freq,
+                k -> new DoublyLinkedList()).add(node);
+    }
+}
+
+⏱ Complexity
+Operation	Time
+get()	O(1)
+put()	O(1)
+
+Space: O(capacity)
+
+🧨 Why This Question Is Hard
+
+Because candidate must:
+
+✔ Understand linked list deeply
+✔ Manage multiple hash maps
+✔ Correctly maintain minFreq
+✔ Handle edge cases
+
+🎤 How To Explain In Interview
+
+Say:
+
+We maintain a key-to-node map and a frequency-to-doubly linked list map. Each frequency has its own LRU list. On every access, we move the node to a higher frequency list and update the minimum frequency accordingly.
+
+That sounds senior-level.
+
+🏁 TOP 5 INTERVIEW QUESTIONS COMPLETED
+
+You now understand:
+
+1️⃣ Two Sum
+2️⃣ Longest Substring
+3️⃣ Merge Intervals
+4️⃣ Network Delay Time
+5️⃣ LFU Cache
+
+This covers:
+
+Arrays
+
+Hashing
+
+Sliding Window
+
+Sorting
+
+Graphs
+
+Heap
+
+LinkedList
+
+System Design Thinking
