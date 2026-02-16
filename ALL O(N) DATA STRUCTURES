@@ -1,0 +1,329 @@
+All O(1) Data Structure
+🟢 Problem Statement
+
+Design a data structure that supports:
+
+inc(String key) → Insert key with value 1 OR increment existing key by 1.
+
+dec(String key) → Decrement key by 1. If value becomes 0 → remove key.
+
+getMaxKey() → Return any key with maximum value
+
+getMinKey() → Return any key with minimum value
+
+⚡ All operations must be O(1) time complexity.
+🟢 Example
+Input:
+inc("a")
+inc("b")
+inc("b")
+inc("c")
+inc("c")
+inc("c")
+
+getMaxKey() → "c"
+getMinKey() → "a"
+
+dec("c")
+dec("c")
+
+getMaxKey() → "b"
+getMinKey() → "a"
+
+🟢 Why Normal Map Won’t Work?
+
+If we use:
+
+HashMap<String, Integer>
+
+
+To get max/min we must scan entire map → O(n) ❌
+
+We need true O(1).
+
+🟢 Core Idea
+
+We use:
+
+✅ HashMap → key → Node
+
+✅ Doubly Linked List → ordered by frequency
+
+✅ Each node contains:
+
+frequency
+
+set of keys with that frequency
+
+🟢 Structure Visualization
+Head <-> [freq=1] <-> [freq=2] <-> [freq=3] <-> Tail
+          |             |              |
+        {a}           {b}           {c}
+
+
+Head → smallest frequency
+
+Tail → largest frequency
+
+🟢 Algorithm
+🔹 inc(key)
+
+If key new:
+
+Add to frequency 1 node
+
+Else:
+
+Remove from current freq node
+
+Move to next freq node
+
+Remove empty nodes
+
+🔹 dec(key)
+
+Reduce frequency
+
+If 0 → remove key
+
+Remove empty nodes
+
+🔹 getMaxKey()
+
+Return any key from Tail.previous
+
+🔹 getMinKey()
+
+Return any key from Head.next
+
+🟢 Java Implementation
+import java.util.*;
+
+class AllOne {
+
+    class Node {
+        int freq;
+        Set<String> keys;
+        Node prev, next;
+
+        Node(int f) {
+            freq = f;
+            keys = new HashSet<>();
+        }
+    }
+
+    private HashMap<String, Node> map;
+    private Node head, tail;
+
+    public AllOne() {
+        map = new HashMap<>();
+        head = new Node(0);
+        tail = new Node(0);
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    public void inc(String key) {
+
+        if(!map.containsKey(key)) {
+
+            if(head.next.freq == 1) {
+                head.next.keys.add(key);
+                map.put(key, head.next);
+            } else {
+                Node node = new Node(1);
+                node.keys.add(key);
+                insertAfter(head, node);
+                map.put(key, node);
+            }
+
+        } else {
+            Node curr = map.get(key);
+            Node next = curr.next;
+
+            if(next != tail && next.freq == curr.freq + 1) {
+                next.keys.add(key);
+            } else {
+                Node newNode = new Node(curr.freq + 1);
+                newNode.keys.add(key);
+                insertAfter(curr, newNode);
+                next = newNode;
+            }
+
+            curr.keys.remove(key);
+            if(curr.keys.isEmpty())
+                remove(curr);
+
+            map.put(key, next);
+        }
+    }
+
+    public void dec(String key) {
+
+        if(!map.containsKey(key))
+            return;
+
+        Node curr = map.get(key);
+
+        if(curr.freq == 1) {
+            map.remove(key);
+        } else {
+            Node prev = curr.prev;
+
+            if(prev != head && prev.freq == curr.freq - 1) {
+                prev.keys.add(key);
+            } else {
+                Node newNode = new Node(curr.freq - 1);
+                newNode.keys.add(key);
+                insertAfter(prev, newNode);
+                prev = newNode;
+            }
+
+            map.put(key, prev);
+        }
+
+        curr.keys.remove(key);
+        if(curr.keys.isEmpty())
+            remove(curr);
+    }
+
+    public String getMaxKey() {
+        if(tail.prev == head)
+            return "";
+        return tail.prev.keys.iterator().next();
+    }
+
+    public String getMinKey() {
+        if(head.next == tail)
+            return "";
+        return head.next.keys.iterator().next();
+    }
+
+    private void insertAfter(Node prev, Node node) {
+        node.next = prev.next;
+        node.prev = prev;
+        prev.next.prev = node;
+        prev.next = node;
+    }
+
+    private void remove(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+}
+
+🟢 Line by Line Explanation (Important for Interviews)
+✅ Node Class
+class Node {
+    int freq;
+    Set<String> keys;
+    Node prev, next;
+}
+
+
+Each node represents a frequency bucket.
+
+✅ Constructor
+head = new Node(0);
+tail = new Node(0);
+
+
+Dummy nodes simplify edge cases.
+
+✅ inc(key)
+Case 1: New Key
+
+Insert into frequency 1 bucket.
+
+If bucket exists → reuse
+Else → create new bucket.
+
+Case 2: Existing Key
+
+Find current node
+
+Move to freq + 1 bucket
+
+Remove from old bucket
+
+Delete empty bucket
+
+✅ dec(key)
+
+If freq = 1 → remove key
+
+Else move to freq - 1
+
+Cleanup empty nodes
+
+✅ getMaxKey()
+tail.prev.keys.iterator().next();
+
+
+Last real node = maximum frequency
+
+✅ getMinKey()
+head.next.keys.iterator().next();
+
+
+First real node = minimum frequency
+
+🟢 Dry Run Example
+
+Operations:
+
+inc("a")
+inc("b")
+inc("b")
+inc("c")
+inc("c")
+inc("c")
+
+
+Structure:
+
+[1:{a}] <-> [2:{b}] <-> [3:{c}]
+
+
+Max → c
+Min → a
+
+After:
+
+dec("c")
+dec("c")
+
+
+Structure:
+
+[1:{a}] <-> [2:{b,c}]
+
+
+Max → b or c
+Min → a
+
+🟢 Why This Is Hard?
+
+✔ Requires designing custom data structure
+✔ Linked list + hashing
+✔ Frequency buckets
+✔ Real O(1) operations
+
+Very common in:
+
+Google
+
+Amazon
+
+Uber
+
+Meta
+
+🟢 Time Complexity
+Operation	Complexity
+inc	O(1)
+dec	O(1)
+getMax	O(1)
+getMin	O(1)
+
+🔥 This problem shows strong system design + DSA mastery.
