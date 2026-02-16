@@ -1,0 +1,222 @@
+Design Browser History
+
+(Stack / Doubly Linked List Design Problem)
+
+🟢 Problem Statement
+
+Design a browser history system that supports:
+
+BrowserHistory(String homepage)
+void visit(String url)
+String back(int steps)
+String forward(int steps)
+
+Rules:
+
+Browser starts at homepage
+
+visit(url):
+
+Clears forward history
+
+Moves to new URL
+
+back(steps):
+
+Move back at most steps
+
+forward(steps):
+
+Move forward at most steps
+
+🟢 Example
+Input:
+BrowserHistory("google.com")
+visit("facebook.com")
+visit("youtube.com")
+back(1)
+back(1)
+forward(1)
+visit("linkedin.com")
+forward(2)
+back(2)
+back(7)
+
+Output:
+"facebook.com"
+"google.com"
+"facebook.com"
+"linkedin.com"
+"google.com"
+
+🟢 Approach 1 (Simple & Clean)
+
+Use:
+
+ArrayList to store history
+
+Pointer to track current position
+
+This is simpler and preferred in interviews.
+
+🟢 Data Structures
+Structure	Purpose
+ArrayList	Store pages
+int current	Current index
+🟢 Algorithm
+visit(url)
+
+Remove all elements after current index
+
+Add new url
+
+Move pointer
+
+back(steps)
+current = max(0, current - steps)
+
+
+Return history[current]
+
+forward(steps)
+current = min(size-1, current + steps)
+
+
+Return history[current]
+
+🟢 Java Code (Interview Clean Version)
+import java.util.*;
+
+class BrowserHistory {
+
+    List<String> history;
+    int current;
+
+    public BrowserHistory(String homepage) {
+        history = new ArrayList<>();
+        history.add(homepage);
+        current = 0;
+    }
+
+    public void visit(String url) {
+        // Remove forward history
+        while(history.size() > current + 1) {
+            history.remove(history.size() - 1);
+        }
+
+        history.add(url);
+        current++;
+    }
+
+    public String back(int steps) {
+        current = Math.max(0, current - steps);
+        return history.get(current);
+    }
+
+    public String forward(int steps) {
+        current = Math.min(history.size() - 1, current + steps);
+        return history.get(current);
+    }
+}
+
+🟢 Line-by-Line Explanation
+Constructor
+history = new ArrayList<>();
+history.add(homepage);
+current = 0;
+
+
+Initialize with homepage at index 0.
+
+visit(url)
+while(history.size() > current + 1)
+    history.remove(last element);
+
+
+⚠ Important:
+
+If we previously went back and now visit new page → forward history must be deleted.
+
+Then:
+
+history.add(url);
+current++;
+
+
+Move pointer to new page.
+
+back(steps)
+current = Math.max(0, current - steps);
+
+
+We cannot go below index 0.
+
+forward(steps)
+current = Math.min(history.size()-1, current + steps);
+
+
+Cannot exceed last index.
+
+🟢 Dry Run Example
+BrowserHistory("google")
+
+
+history = [google]
+current = 0
+
+visit("facebook")
+
+history = [google, facebook]
+current = 1
+
+visit("youtube")
+
+history = [google, facebook, youtube]
+current = 2
+
+back(1)
+
+current = 1
+return facebook
+
+back(1)
+
+current = 0
+return google
+
+forward(1)
+
+current = 1
+return facebook
+
+visit("linkedin")
+
+Remove forward history (youtube removed)
+
+history = [google, facebook, linkedin]
+current = 2
+
+🟢 Why Interviewers Ask This?
+
+✔ Tests design clarity
+✔ Tests pointer logic
+✔ Tests edge case handling
+✔ Tests real-life system modeling
+
+🟢 Time Complexity
+Operation	Complexity
+visit	O(n) worst case (when removing forward history)
+back	O(1)
+forward	O(1)
+🟢 Can We Make visit O(1)?
+
+Yes 👇
+Using Doubly Linked List
+
+Then:
+
+No need to delete forward history manually
+
+Just cut off next nodes
+
+Want that optimized version too? 😎
