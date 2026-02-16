@@ -1,0 +1,225 @@
+🔥 Question 1: Median of Sliding Window (HARD)
+🟢 Problem Statement
+
+Given:
+
+An integer array nums
+
+A sliding window size k
+
+For every window of size k, return the median.
+
+📌 Example
+Input:
+nums = [1,3,-1,-3,5,3,6,7]
+k = 3
+
+Output:
+[1,-1,-1,3,5,6]
+
+🟢 Step 1: Understanding the Problem
+
+Window size = 3
+
+Windows are:
+
+Window	Elements	Sorted	Median
+1	[1,3,-1]	[-1,1,3]	1
+2	[3,-1,-3]	[-3,-1,3]	-1
+3	[-1,-3,5]	[-3,-1,5]	-1
+4	[-3,5,3]	[-3,3,5]	3
+5	[5,3,6]	[3,5,6]	5
+6	[3,6,7]	[3,6,7]	6
+🟢 Why Brute Force Won’t Work?
+
+Brute force:
+
+For each window → sort → find median
+
+Time Complexity: O(nk log k) ❌
+
+For n = 10^5 → Too Slow
+
+🟢 Optimal Approach: Two Heaps
+
+We maintain:
+
+🔵 Max Heap → Left half (smaller numbers)
+
+🔴 Min Heap → Right half (larger numbers)
+
+Rules:
+
+Size difference ≤ 1
+
+MaxHeap contains smaller half
+
+Median:
+
+If k odd → top of maxHeap
+
+If k even → average of two tops
+
+🟢 Algorithm
+
+Create two heaps:
+
+maxHeap (small numbers)
+
+minHeap (large numbers)
+
+Insert first k elements
+
+Balance heaps
+
+Calculate median
+
+Slide window:
+
+Remove outgoing element
+
+Add new element
+
+Rebalance
+
+Store median
+
+🟢 Code (Java – Interview Standard)
+import java.util.*;
+
+class Solution {
+
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        double[] result = new double[nums.length - k + 1];
+
+        for(int i = 0; i < nums.length; i++) {
+
+            // Add number
+            addNum(nums[i]);
+
+            // Remove element outside window
+            if(i >= k)
+                removeNum(nums[i - k]);
+
+            // Store median
+            if(i >= k - 1)
+                result[i - k + 1] = getMedian(k);
+        }
+        return result;
+    }
+
+    private void addNum(int num) {
+        if(maxHeap.isEmpty() || num <= maxHeap.peek())
+            maxHeap.offer(num);
+        else
+            minHeap.offer(num);
+
+        balanceHeaps();
+    }
+
+    private void removeNum(int num) {
+        if(num <= maxHeap.peek())
+            maxHeap.remove(num);
+        else
+            minHeap.remove(num);
+
+        balanceHeaps();
+    }
+
+    private void balanceHeaps() {
+        if(maxHeap.size() > minHeap.size() + 1)
+            minHeap.offer(maxHeap.poll());
+
+        else if(minHeap.size() > maxHeap.size())
+            maxHeap.offer(minHeap.poll());
+    }
+
+    private double getMedian(int k) {
+        if(k % 2 == 1)
+            return maxHeap.peek();
+        return ((double)maxHeap.peek() + minHeap.peek()) / 2.0;
+    }
+}
+
+🟢 Line by Line Explanation
+1️⃣ Create Two Heaps
+PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+
+
+maxHeap → biggest element at top
+
+minHeap → smallest element at top
+
+2️⃣ Sliding Loop
+for(int i = 0; i < nums.length; i++)
+
+
+We iterate entire array
+
+3️⃣ Add Element
+addNum(nums[i]);
+
+
+Insert new window element
+
+4️⃣ Remove Old Element
+if(i >= k)
+    removeNum(nums[i - k]);
+
+
+Once window crosses k → remove old element
+
+5️⃣ Store Median
+if(i >= k - 1)
+    result[i - k + 1] = getMedian(k);
+
+
+When first full window formed → start storing
+
+6️⃣ Balance Heaps
+
+Ensures:
+
+|size(maxHeap) - size(minHeap)| <= 1
+
+🟢 Dry Run With Example
+
+Input:
+
+nums = [1,3,-1,-3,5,3,6,7]
+k = 3
+
+First 3 elements:
+
+Insert 1 → maxHeap = [1]
+
+Insert 3 → minHeap = [3]
+
+Insert -1 → maxHeap = [1,-1]
+
+Median = 1 ✅
+
+Next:
+
+Remove 1
+Add -3
+
+Heaps balanced → Median = -1 ✅
+
+Continue…
+
+Final Output:
+
+[1,-1,-1,3,5,6]
+
+🟢 Time Complexity
+Operation	Complexity
+Add	O(log k)
+Remove	O(k) (worst case in Java PQ)
+Overall	O(n log k)
+
+In interviews you can improve removal using Lazy Deletion (HashMap)
