@@ -1,0 +1,284 @@
+Design Snake Game
+
+(Design + Queue + HashSet + Simulation)
+
+🟢 Problem Statement
+
+Design a Snake Game that supports:
+
+SnakeGame(int width, int height, int[][] food)
+int move(String direction)
+
+Rules:
+
+Snake starts at position (0,0)
+
+Initially length = 1
+
+Food is given in order
+
+If snake eats food → grows
+
+If snake hits:
+
+wall ❌
+
+itself ❌
+
+Return -1 (Game Over)
+
+Otherwise return current score (length - 1)
+
+🟢 Example
+Input:
+width = 3
+height = 2
+food = [[1,2],[0,1]]
+
+move("R") → 0
+move("D") → 0
+move("R") → 1
+move("U") → 1
+move("L") → 2
+move("U") → -1
+
+🟢 Key Idea
+
+We need:
+
+1️⃣ Queue → Represents snake body
+
+(head at front)
+
+2️⃣ HashSet → Fast self collision checking
+3️⃣ Food Index → Track next food
+🟢 Data Structures Used
+Structure	Purpose
+Deque	Store snake body
+HashSet	O(1) collision check
+int[][]	Food positions
+🟢 Algorithm
+
+For every move:
+
+Get current head
+
+Calculate new head
+
+Check boundary collision
+
+Remove tail temporarily
+
+Check self collision
+
+If food → grow (add tail back)
+
+Add new head
+
+Return score
+
+🟢 Java Code (Interview Level)
+import java.util.*;
+
+class SnakeGame {
+
+    int width, height;
+    int[][] food;
+    int foodIndex;
+
+    Deque<int[]> snake;
+    Set<String> set;
+
+    public SnakeGame(int width, int height, int[][] food) {
+        this.width = width;
+        this.height = height;
+        this.food = food;
+        this.foodIndex = 0;
+
+        snake = new LinkedList<>();
+        snake.add(new int[]{0,0});
+
+        set = new HashSet<>();
+        set.add("0,0");
+    }
+
+    public int move(String direction) {
+
+        int[] head = snake.peekFirst();
+        int x = head[0];
+        int y = head[1];
+
+        // Determine new position
+        if(direction.equals("U")) x--;
+        if(direction.equals("D")) x++;
+        if(direction.equals("L")) y--;
+        if(direction.equals("R")) y++;
+
+        // Check wall collision
+        if(x < 0 || x >= height || y < 0 || y >= width)
+            return -1;
+
+        // Remove tail (temporarily)
+        int[] tail = snake.peekLast();
+        set.remove(tail[0] + "," + tail[1]);
+
+        // Check self collision
+        if(set.contains(x + "," + y))
+            return -1;
+
+        // Check food
+        if(foodIndex < food.length &&
+           x == food[foodIndex][0] &&
+           y == food[foodIndex][1]) {
+
+            snake.addLast(tail); // add tail back
+            set.add(tail[0] + "," + tail[1]);
+            foodIndex++;
+        }
+
+        // Add new head
+        snake.addFirst(new int[]{x,y});
+        set.add(x + "," + y);
+
+        return snake.size() - 1;
+    }
+}
+
+🟢 Line-by-Line Explanation
+Constructor
+snake = new LinkedList<>();
+snake.add(new int[]{0,0});
+
+
+Initial snake = [(0,0)]
+
+set = new HashSet<>();
+set.add("0,0");
+
+
+Used to quickly detect self collision.
+
+🟢 move() Function Detailed
+Step 1: Get Current Head
+int[] head = snake.peekFirst();
+
+
+Head = first element
+
+Step 2: Calculate New Coordinates
+if(direction.equals("U")) x--;
+if(direction.equals("D")) x++;
+...
+
+
+Move accordingly
+
+Step 3: Boundary Check
+if(x < 0 || x >= height || y < 0 || y >= width)
+    return -1;
+
+
+If outside grid → game over
+
+Step 4: Remove Tail (Important Trick)
+int[] tail = snake.peekLast();
+set.remove(...)
+
+
+Why?
+
+Because snake can move into its tail position (since tail moves forward).
+
+Step 5: Self Collision
+if(set.contains(x + "," + y))
+    return -1;
+
+
+If new position already occupied → game over
+
+Step 6: Food Check
+if(x == food[foodIndex][0] && y == food[foodIndex][1])
+
+
+If food found:
+
+Add tail back
+
+Increase foodIndex
+
+Snake grows
+
+Step 7: Add New Head
+snake.addFirst(...)
+set.add(...)
+
+Step 8: Return Score
+return snake.size() - 1;
+
+
+Score = length - 1
+
+🟢 Dry Run Example
+width=3, height=2
+food=[[1,2],[0,1]]
+
+
+Initial:
+
+Snake: [(0,0)]
+Score=0
+
+
+Move R:
+
+[(0,1)]
+Score=0
+
+
+Move D:
+
+[(1,1)]
+Score=0
+
+
+Move R:
+
+[(1,2)]
+Food eaten
+[(1,2),(1,1)]
+Score=1
+
+
+Move L:
+
+[(1,1),(1,2)]
+
+
+Move U:
+
+[(0,1),(1,1)]
+Food eaten
+Score=2
+
+
+Move U:
+
+x = -1 → Game Over → -1
+
+🟢 Why Interviewers Ask This?
+
+✔ Tests design thinking
+✔ Tests edge case handling
+✔ Tests simulation
+✔ Tests hash + deque usage
+✔ Tests collision logic
+
+🟢 Time Complexity
+Operation	Complexity
+move	O(1)
+Collision check	O(1)
+🟢 Common Mistakes
+
+❌ Not removing tail before collision check
+❌ Forgetting boundary check
+❌ Wrong coordinate direction
