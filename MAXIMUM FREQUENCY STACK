@@ -1,0 +1,252 @@
+MAXIMUM FREQUENCY STACK (FREQSTACK)
+🟢 Problem Statement
+
+Design a stack-like data structure that supports:
+
+push(int val)
+
+pop()
+
+Rules:
+
+pop() should remove and return the most frequent element.
+
+If multiple elements have same highest frequency → remove the most recently added.
+
+🔎 Example
+Operations:
+push(5)
+push(7)
+push(5)
+push(7)
+push(4)
+push(5)
+
+pop() → 5
+pop() → 7
+pop() → 5
+pop() → 4
+
+🧠 Why?
+
+Frequency state:
+
+Element	Frequency
+5	3
+7	2
+4	1
+
+First pop:
+
+5 has highest freq (3)
+
+Second pop:
+
+5 → freq becomes 2
+
+Now 5 & 7 both freq = 2
+
+Most recent among them → 7
+
+🟢 Why This Is Tricky?
+
+You need:
+
+Frequency tracking
+
+Maintain order
+
+Fast O(1) operations
+
+Normal stack won't work.
+PriorityQueue alone won't work.
+We need combination of:
+
+💡 HashMap + Stack + MaxFrequency tracker
+🟢 Key Idea
+
+We maintain:
+
+1️⃣ freqMap
+→ element → frequency
+
+2️⃣ groupMap
+→ frequency → stack of elements
+
+3️⃣ maxFreq
+→ current highest frequency
+
+🟢 Structure Idea
+
+If:
+
+5 appears 3 times
+
+
+We push it into:
+
+groupMap[1]
+groupMap[2]
+groupMap[3]
+
+
+So when popping:
+We directly look at stack of maxFreq.
+
+🟢 Algorithm
+push(val)
+
+Increase freq in freqMap.
+
+Update maxFreq.
+
+Add element to groupMap at that frequency.
+
+pop()
+
+Get stack at maxFreq.
+
+Pop element.
+
+Decrease frequency in freqMap.
+
+If stack empty → reduce maxFreq.
+
+Return element.
+
+🟢 Java Code
+import java.util.*;
+
+class FreqStack {
+
+    private Map<Integer, Integer> freqMap;
+    private Map<Integer, Stack<Integer>> groupMap;
+    private int maxFreq;
+
+    public FreqStack() {
+        freqMap = new HashMap<>();
+        groupMap = new HashMap<>();
+        maxFreq = 0;
+    }
+
+    public void push(int val) {
+
+        int freq = freqMap.getOrDefault(val, 0) + 1;
+        freqMap.put(val, freq);
+
+        maxFreq = Math.max(maxFreq, freq);
+
+        groupMap.putIfAbsent(freq, new Stack<>());
+        groupMap.get(freq).push(val);
+    }
+
+    public int pop() {
+
+        Stack<Integer> stack = groupMap.get(maxFreq);
+        int val = stack.pop();
+
+        freqMap.put(val, freqMap.get(val) - 1);
+
+        if (stack.isEmpty()) {
+            maxFreq--;
+        }
+
+        return val;
+    }
+}
+
+🟢 Line-by-Line Explanation
+🔹 freqMap
+Map<Integer, Integer> freqMap;
+
+
+Tracks frequency of each element.
+
+🔹 groupMap
+Map<Integer, Stack<Integer>> groupMap;
+
+
+Groups elements by frequency.
+
+Example:
+
+groupMap = {
+  1 : [5,7,4]
+  2 : [5,7]
+  3 : [5]
+}
+
+🔹 Update maxFreq
+maxFreq = Math.max(maxFreq, freq);
+
+
+Tracks highest frequency currently.
+
+🔹 push(val)
+
+Increase frequency and push element into stack of that freq.
+
+🔹 pop()
+
+Always remove from highest frequency stack.
+
+🟢 Dry Run
+
+Operations:
+
+push(5)
+push(7)
+push(5)
+push(7)
+push(4)
+push(5)
+
+
+State:
+
+freqMap:
+
+5 → 3
+7 → 2
+4 → 1
+
+
+groupMap:
+
+1 → [5,7,4]
+2 → [5,7]
+3 → [5]
+
+
+maxFreq = 3
+
+pop()
+
+Take from groupMap[3]
+
+Return 5
+Now freq(5) = 2
+maxFreq → 2
+
+🟢 Time Complexity
+Operation	Complexity
+push	O(1)
+pop	O(1)
+
+Very powerful design.
+
+🟢 Why Interviewers Ask This?
+
+Tests:
+
+HashMap usage
+
+Stack concept
+
+Design thinking
+
+Understanding frequency grouping
+
+O(1) optimization
+
+This is strong medium/hard level problem.
