@@ -1,0 +1,266 @@
+MINIMUM COST TO HIRE K WORKERS
+🟢 Problem Statement
+
+You are given:
+
+quality[] → quality of each worker
+
+wage[] → minimum wage expectation of each worker
+
+integer k → number of workers to hire
+
+You must hire exactly k workers.
+
+Rules:
+
+All selected workers must be paid proportionally to their quality.
+
+Each worker must be paid at least their minimum expected wage.
+
+Return the minimum total cost to hire exactly k workers.
+
+🔎 Example
+Input:
+quality = [10,20,5]
+wage = [70,50,30]
+k = 2
+
+Output:
+105.0
+
+🟢 Key Insight (Very Important ⚡)
+
+Each worker has a ratio:
+
+ratio = wage[i] / quality[i]
+
+
+If we choose a group of workers,
+we must pay them based on the highest ratio in the group.
+
+Why?
+
+Because if we pick worker with highest ratio R,
+then:
+
+Payment of worker j = quality[j] * R
+
+
+This ensures everyone gets at least their expected wage.
+
+🟢 Strategy
+
+Compute ratio for every worker.
+
+Sort workers based on ratio ascending.
+
+Use a max heap to maintain k smallest quality workers.
+
+Keep track of total quality.
+
+At every step:
+
+Add worker’s quality
+
+If size > k → remove largest quality
+
+If size == k → compute cost:
+
+cost = totalQuality * currentRatio
+
+
+Take minimum.
+
+🟢 Why Heap?
+
+We want:
+
+Lowest total quality
+
+Because totalCost = totalQuality × maxRatio
+
+To minimize cost:
+
+Keep k workers with smallest total quality.
+
+🟢 Algorithm Steps
+
+Create list of workers with:
+
+(ratio, quality)
+
+
+Sort by ratio ascending
+
+Initialize:
+
+maxHeap for quality
+
+totalQuality = 0
+
+minCost = infinity
+
+For each worker:
+
+add quality to heap
+
+add to totalQuality
+
+if heap size > k:
+
+remove largest quality
+
+subtract from totalQuality
+
+if heap size == k:
+
+cost = totalQuality × current ratio
+
+update minCost
+
+Return minCost
+
+🟢 Java Code
+import java.util.*;
+
+class Solution {
+
+    public double mincostToHireWorkers(int[] quality, int[] wage, int k) {
+
+        int n = quality.length;
+
+        double[][] workers = new double[n][2];
+
+        // Step 1: store ratio and quality
+        for (int i = 0; i < n; i++) {
+            workers[i][0] = (double) wage[i] / quality[i];  // ratio
+            workers[i][1] = quality[i];
+        }
+
+        // Step 2: sort by ratio
+        Arrays.sort(workers, (a, b) -> Double.compare(a[0], b[0]));
+
+        PriorityQueue<Integer> maxHeap =
+                new PriorityQueue<>(Collections.reverseOrder());
+
+        double totalQuality = 0;
+        double minCost = Double.MAX_VALUE;
+
+        for (double[] worker : workers) {
+
+            double ratio = worker[0];
+            int q = (int) worker[1];
+
+            maxHeap.add(q);
+            totalQuality += q;
+
+            if (maxHeap.size() > k) {
+                totalQuality -= maxHeap.poll();
+            }
+
+            if (maxHeap.size() == k) {
+                double cost = totalQuality * ratio;
+                minCost = Math.min(minCost, cost);
+            }
+        }
+
+        return minCost;
+    }
+}
+
+🟢 Line-by-Line Explanation
+🔹 Store ratio
+workers[i][0] = (double) wage[i] / quality[i];
+
+
+Because payment must follow proportional rule.
+
+🔹 Sort by ratio
+
+We process from smallest ratio upward.
+
+Why?
+
+If current worker has ratio R,
+then R becomes the highest ratio in that group.
+
+🔹 Max Heap
+PriorityQueue<Integer> maxHeap =
+    new PriorityQueue<>(Collections.reverseOrder());
+
+
+We remove largest quality to keep total minimum.
+
+🔹 Add Worker
+maxHeap.add(q);
+totalQuality += q;
+
+🔹 Maintain only k workers
+if (maxHeap.size() > k)
+    totalQuality -= maxHeap.poll();
+
+
+Remove largest quality.
+
+🔹 Compute Cost
+double cost = totalQuality * ratio;
+
+
+This ensures all workers get valid wage.
+
+🟢 Dry Run
+
+Input:
+
+quality = [10,20,5]
+wage = [70,50,30]
+k = 2
+
+Step 1: Compute ratios
+Worker	Ratio	Quality
+0	7.0	10
+1	2.5	20
+2	6.0	5
+Step 2: Sort by ratio
+Ratio	Quality
+2.5	20
+6.0	5
+7.0	10
+Step 3: Iterate
+Worker 1 (2.5, q=20)
+
+Heap = [20]
+Total = 20
+Not enough size
+
+Worker 2 (6.0, q=5)
+
+Heap = [20,5]
+Total = 25
+Size = 2 → Compute:
+
+25 × 6.0 = 150
+
+
+MinCost = 150
+
+Worker 3 (7.0, q=10)
+
+Heap = [20,5,10]
+Remove 20
+
+Heap = [10,5]
+Total = 15
+
+Cost:
+
+15 × 7 = 105
+
+
+MinCost = 105 ✅
+
+🟢 Final Answer = 105
+🟢 Time & Space Complexity
+Type	Complexity
+Time	O(n log n)
+Space	O(k)
