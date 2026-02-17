@@ -1,0 +1,233 @@
+ALL NODES DISTANCE K IN BINARY TREE
+🟢 Problem Statement
+
+Given:
+
+Root of a Binary Tree
+
+A target node
+
+An integer K
+
+Return all nodes that are exactly distance K away from target node.
+
+Distance = number of edges.
+
+🔎 Example
+Tree:
+
+        3
+       / \
+      5   1
+     / \  / \
+    6  2 0   8
+      / \
+     7   4
+
+Target = 5
+K = 2
+
+Output:
+[7,4,1]
+
+🧠 Explanation
+
+Distance 1 from 5 → {6,2,3}
+Distance 2 from 5 → {7,4,1}
+
+🟢 Why This Question is Tricky?
+
+Binary Tree normally:
+
+Can move downward
+
+Cannot move upward
+
+But distance K might require:
+
+Going up to parent
+
+Then to sibling subtree
+
+So problem becomes a Graph problem.
+
+🟢 Key Idea
+
+Convert Binary Tree into an Undirected Graph
+
+Each node connects:
+
+Left child
+
+Right child
+
+Parent
+
+Then perform BFS from target node until distance K.
+
+🟢 Algorithm Steps
+Step 1: Build Parent Map
+
+Use DFS to store:
+
+child → parent
+
+Step 2: BFS from Target
+
+Use:
+
+Queue
+
+Visited Set
+
+Start from target.
+
+For each BFS level:
+
+Increase distance
+
+Stop when distance == K
+
+Return all nodes at that level
+
+🟢 Java Code
+import java.util.*;
+
+class Solution {
+
+    Map<TreeNode, TreeNode> parentMap = new HashMap<>();
+
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
+
+        buildParentMap(root, null);
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        Set<TreeNode> visited = new HashSet<>();
+
+        queue.offer(target);
+        visited.add(target);
+
+        int distance = 0;
+
+        while (!queue.isEmpty()) {
+
+            int size = queue.size();
+
+            if (distance == k) {
+                List<Integer> result = new ArrayList<>();
+                for (TreeNode node : queue) {
+                    result.add(node.val);
+                }
+                return result;
+            }
+
+            for (int i = 0; i < size; i++) {
+
+                TreeNode current = queue.poll();
+
+                // left child
+                if (current.left != null && !visited.contains(current.left)) {
+                    queue.offer(current.left);
+                    visited.add(current.left);
+                }
+
+                // right child
+                if (current.right != null && !visited.contains(current.right)) {
+                    queue.offer(current.right);
+                    visited.add(current.right);
+                }
+
+                // parent
+                TreeNode parent = parentMap.get(current);
+                if (parent != null && !visited.contains(parent)) {
+                    queue.offer(parent);
+                    visited.add(parent);
+                }
+            }
+
+            distance++;
+        }
+
+        return new ArrayList<>();
+    }
+
+    private void buildParentMap(TreeNode node, TreeNode parent) {
+
+        if (node == null) return;
+
+        parentMap.put(node, parent);
+
+        buildParentMap(node.left, node);
+        buildParentMap(node.right, node);
+    }
+}
+
+🟢 Line-by-Line Explanation
+🔹 Build Parent Map
+parentMap.put(node, parent);
+
+
+Stores backward connection.
+
+🔹 Start BFS
+queue.offer(target);
+visited.add(target);
+
+
+We start BFS from target node.
+
+🔹 If distance == k
+if (distance == k)
+
+
+Return all current level nodes.
+
+🔹 Explore 3 Directions
+
+left
+
+right
+
+parent
+
+🟢 Dry Run Step-by-Step
+
+Target = 5
+K = 2
+
+Level 0
+
+Queue = [5]
+
+Level 1
+
+Queue = [6,2,3]
+
+Level 2
+
+Queue = [7,4,1]
+
+Return result.
+
+🟢 Time Complexity
+
+Building parent map → O(n)
+BFS traversal → O(n)
+
+Total: O(n)
+
+Space: O(n)
+
+🟢 Why Interviewers Love This?
+
+Tests:
+
+Tree
+
+Graph conversion
+
+BFS
+
+Visited handling
+
+Thinking beyond tree structure
