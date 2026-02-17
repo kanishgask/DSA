@@ -1,0 +1,226 @@
+LONGEST INCREASING PATH IN A MATRIX
+🟢 Problem Statement
+
+Given an m x n matrix of integers.
+
+You can move in 4 directions:
+
+Up
+
+Down
+
+Left
+
+Right
+
+Return the length of the longest strictly increasing path.
+
+You cannot move diagonally.
+You cannot go outside matrix.
+
+🔎 Example
+Input:
+matrix =
+[
+ [9,9,4],
+ [6,6,8],
+ [2,1,1]
+]
+
+Output:
+4
+
+🧠 Why 4?
+
+Longest path:
+
+1 → 2 → 6 → 9
+
+
+Length = 4
+
+🟢 Why This Is Difficult?
+
+If we try:
+
+DFS from every cell
+
+Without optimization
+
+Time complexity becomes exponential 😵
+
+So we need:
+
+💡 DFS + Memoization (DP)
+🟢 Key Insight
+
+This is a DAG problem.
+
+Why no cycle?
+Because values must strictly increase.
+
+So if we move to a bigger value,
+we can never come back.
+
+That means:
+
+We can use memoization.
+
+🟢 Algorithm Steps
+
+Create dp[][] array.
+
+dp[i][j] = longest increasing path starting from cell (i,j)
+
+For each cell:
+
+Call DFS
+
+DFS logic:
+
+If already computed → return dp value
+
+Explore 4 directions
+
+If neighbor value > current value:
+
+1 + DFS(neighbor)
+
+Store max result in dp
+
+🟢 Java Code
+class Solution {
+
+    private int[][] directions = {
+        {1,0}, {-1,0}, {0,1}, {0,-1}
+    };
+
+    public int longestIncreasingPath(int[][] matrix) {
+
+        if (matrix.length == 0) return 0;
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+
+        int[][] dp = new int[m][n];
+        int max = 0;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                max = Math.max(max, dfs(matrix, i, j, dp));
+            }
+        }
+
+        return max;
+    }
+
+    private int dfs(int[][] matrix, int i, int j, int[][] dp) {
+
+        if (dp[i][j] != 0) return dp[i][j];
+
+        int max = 1;
+
+        for (int[] dir : directions) {
+
+            int newRow = i + dir[0];
+            int newCol = j + dir[1];
+
+            if (newRow >= 0 && newRow < matrix.length &&
+                newCol >= 0 && newCol < matrix[0].length &&
+                matrix[newRow][newCol] > matrix[i][j]) {
+
+                int length = 1 + dfs(matrix, newRow, newCol, dp);
+                max = Math.max(max, length);
+            }
+        }
+
+        dp[i][j] = max;
+        return max;
+    }
+}
+
+🟢 Line-by-Line Explanation
+🔹 Directions Array
+{1,0}, {-1,0}, {0,1}, {0,-1}
+
+
+Represents:
+
+Down
+
+Up
+
+Right
+
+Left
+
+🔹 DP Array
+int[][] dp = new int[m][n];
+
+
+Stores computed result to avoid recomputation.
+
+🔹 DFS Base Case
+if (dp[i][j] != 0)
+    return dp[i][j];
+
+
+Already computed → return instantly.
+
+This avoids exponential time.
+
+🔹 Explore 4 Directions
+
+Check:
+
+Boundary
+
+Strictly increasing condition
+
+🔹 Store in DP
+dp[i][j] = max;
+
+
+Memoization happens here.
+
+🟢 Dry Run
+
+Matrix:
+
+9 9 4
+6 6 8
+2 1 1
+
+
+Start at cell (2,1) → value 1
+
+Path:
+
+1 → 2 → 6 → 9
+
+
+DP stores intermediate results, so repeated DFS avoided.
+
+🟢 Time & Space Complexity
+Type	Complexity
+Time	O(m × n)
+Space	O(m × n)
+
+Without memoization → exponential
+With memoization → optimal.
+
+🟢 Why Interviewers Ask This?
+
+Tests:
+
+DFS
+
+Matrix traversal
+
+Memoization
+
+DP thinking
+
+Graph as DAG concept
+
+Very strong question.
