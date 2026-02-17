@@ -1,0 +1,209 @@
+TRAPPING RAIN WATER USING TWO POINTERS (Optimized)
+
+⚠️ You already have Rain Water / Trapping Rain Water — but most students only know prefix-max method.
+
+Here we will solve using Optimal O(1) space Two Pointer Approach (very important in interviews).
+
+🟢 Problem Statement
+
+You are given an array height[] of size n.
+
+Each element represents elevation height.
+
+Return the total units of water trapped after raining.
+
+🔎 Example
+Input:
+height = [4,2,0,3,2,5]
+
+Output:
+9
+
+📊 Visualization
+        |
+|       |
+|   |   |
+| | | | |
+|_|_|_|_|_
+4 2 0 3 2 5
+
+
+Water trapped = 9 units
+
+🟢 Approach 1 (Brute Force - O(n²)) ❌
+
+For every element:
+
+Find left max
+
+Find right max
+
+Water = min(leftMax, rightMax) - height[i]
+
+Too slow.
+
+🟢 Optimal Approach: TWO POINTER METHOD (O(n) time, O(1) space)
+💡 Key Logic
+
+Water trapped at any index depends on:
+
+min(maxLeft, maxRight)
+
+
+Instead of computing arrays,
+we use:
+
+left pointer
+
+right pointer
+
+leftMax
+
+rightMax
+
+🟢 Algorithm Steps
+
+Initialize:
+
+left = 0
+right = n - 1
+leftMax = 0
+rightMax = 0
+water = 0
+
+
+While left < right:
+
+If height[left] < height[right]
+
+If height[left] >= leftMax
+→ update leftMax
+
+Else
+→ water += leftMax - height[left]
+
+move left++
+
+Else
+
+If height[right] >= rightMax
+→ update rightMax
+
+Else
+→ water += rightMax - height[right]
+
+move right--
+
+Return water
+
+🟢 WHY THIS WORKS? 🔥 (Interview Explanation)
+
+If height[left] < height[right],
+then we are guaranteed that left side is limited by leftMax only.
+
+Because even if right increases, water depends on the minimum boundary.
+
+So we process the smaller side first.
+
+This guarantees correctness.
+
+🟢 Java Code
+public class TrappingRainWater {
+
+    public static int trap(int[] height) {
+
+        int left = 0;
+        int right = height.length - 1;
+
+        int leftMax = 0;
+        int rightMax = 0;
+
+        int water = 0;
+
+        while (left < right) {
+
+            if (height[left] < height[right]) {
+
+                if (height[left] >= leftMax) {
+                    leftMax = height[left];
+                } else {
+                    water += leftMax - height[left];
+                }
+                left++;
+
+            } else {
+
+                if (height[right] >= rightMax) {
+                    rightMax = height[right];
+                } else {
+                    water += rightMax - height[right];
+                }
+                right--;
+            }
+        }
+
+        return water;
+    }
+
+    public static void main(String[] args) {
+        int[] height = {4, 2, 0, 3, 2, 5};
+        System.out.println(trap(height));  // Output: 9
+    }
+}
+
+🟢 Line by Line Explanation
+int left = 0;
+int right = height.length - 1;
+
+
+Two pointers from both ends.
+
+int leftMax = 0;
+int rightMax = 0;
+
+
+Store maximum seen so far from left & right.
+
+while (left < right)
+
+
+Traverse inward.
+
+if (height[left] < height[right])
+
+
+Process smaller boundary first.
+
+if (height[left] >= leftMax)
+    leftMax = height[left];
+
+
+Update left boundary.
+
+else
+    water += leftMax - height[left];
+
+
+Water trapped.
+
+Same logic for right side.
+
+🟢 Dry Run Step-by-Step
+
+Input:
+
+[4,2,0,3,2,5]
+
+Step	left	right	leftMax	rightMax	water
+1	0	5	4	0	0
+2	1	5	4	0	2
+3	2	5	4	0	6
+4	3	5	4	0	7
+5	4	5	4	0	9
+
+Final water = 9
+
+🟢 Time & Space Complexity
+Type	Complexity
+Time	O(n)
+Space	O(1)
