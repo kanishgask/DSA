@@ -1,0 +1,130 @@
+HOUSE ROBBER III
+
+(LeetCode 337)
+
+🟢 Problem
+
+You are given a binary tree.
+
+Each node has money.
+
+You cannot rob two directly-connected houses.
+
+Return the maximum amount you can rob.
+
+🔎 Example
+        3
+       / \
+      2   3
+       \    \
+        3    1
+
+
+Output:
+
+7
+
+
+Explanation:
+Rob 3 (root) + 3 (left.right) + 1 (right.right) = 7
+
+❌ Why Normal DFS Fails?
+
+Because decision at one node depends on parent.
+
+If you rob current node → you cannot rob children.
+
+So we need to remember state.
+
+🧠 Core Idea (State DP on Tree)
+
+At each node, return two values:
+
+int[2]
+
+res[0] = max money if we DO NOT rob this node
+res[1] = max money if we DO rob this node
+
+🟢 Transition
+
+Let:
+
+left = dfs(node.left)
+right = dfs(node.right)
+
+🔹 Case 1: Rob current node
+
+If we rob this node:
+
+Cannot rob children.
+
+rob = node.val + left[0] + right[0]
+
+🔹 Case 2: Do NOT rob this node
+
+If we don't rob:
+
+We can choose best option from children
+
+notRob = max(left[0], left[1]) +
+         max(right[0], right[1])
+
+Return:
+return new int[]{notRob, rob}
+
+🟢 Final Answer
+int[] res = dfs(root)
+return max(res[0], res[1])
+
+🟢 Java Code
+class Solution {
+
+    public int rob(TreeNode root) {
+
+        int[] result = dfs(root);
+
+        return Math.max(result[0], result[1]);
+    }
+
+    private int[] dfs(TreeNode node) {
+
+        if (node == null) return new int[]{0, 0};
+
+        int[] left = dfs(node.left);
+        int[] right = dfs(node.right);
+
+        int rob = node.val + left[0] + right[0];
+
+        int notRob = Math.max(left[0], left[1]) +
+                     Math.max(right[0], right[1]);
+
+        return new int[]{notRob, rob};
+    }
+}
+
+🟢 Why This Works
+
+We solve overlapping constraints using state.
+
+Each node carries two states:
+
+Robbed
+
+Not robbed
+
+Parent decides based on these states.
+
+No global variable needed.
+
+🟢 Time Complexity
+O(n)
+
+
+Each node visited once.
+
+Space:
+
+O(h)
+
+
+Recursion stack height.
