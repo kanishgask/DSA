@@ -1,0 +1,209 @@
+STONE GAME III
+🟢 Problem Statement
+
+Alice and Bob are playing a game with an array stoneValue[].
+
+Rules:
+
+They take turns.
+
+On each turn, a player can take 1, 2, or 3 stones from the start.
+
+Each stone has a value.
+
+Both players play optimally.
+
+Score = sum of values taken.
+
+Return:
+
+"Alice" if Alice wins
+
+"Bob" if Bob wins
+
+"Tie" if equal.
+
+🔎 Example
+Input:
+stoneValue = [1,2,3,7]
+
+Output:
+"Bob"
+
+
+Why?
+
+Alice picks 1+2+3 = 6
+Bob gets 7
+Bob wins.
+
+🧠 Why This Is Hard?
+
+This is not normal DP.
+
+This is:
+
+Game Theory + Minimax DP
+
+We don't just maximize sum.
+We maximize score difference.
+
+🟢 Key Idea
+
+Define:
+
+dp[i] = maximum score difference current player can achieve from index i
+
+
+Meaning:
+
+current score - opponent score
+
+Transition
+
+At position i:
+
+Player can take:
+
+1 stone → stone[i]
+
+2 stones → stone[i] + stone[i+1]
+
+3 stones → stone[i] + stone[i+1] + stone[i+2]
+
+Then opponent will play optimally from:
+
+dp[i + taken]
+
+
+So:
+
+dp[i] = max(
+   sum1 - dp[i+1],
+   sum2 - dp[i+2],
+   sum3 - dp[i+3]
+)
+
+
+Why subtract?
+
+Because opponent's best move reduces your score difference.
+
+🟢 Final Decision
+
+After computing:
+
+dp[0]
+
+
+If:
+
+dp[0] > 0 → Alice wins
+
+dp[0] < 0 → Bob wins
+
+dp[0] == 0 → Tie
+
+🟢 Java Code
+class Solution {
+
+    public String stoneGameIII(int[] stoneValue) {
+
+        int n = stoneValue.length;
+
+        Integer[] dp = new Integer[n];
+
+        int result = dfs(stoneValue, 0, dp);
+
+        if (result > 0) return "Alice";
+        else if (result < 0) return "Bob";
+        else return "Tie";
+    }
+
+    private int dfs(int[] stones, int i, Integer[] dp) {
+
+        if (i >= stones.length) return 0;
+
+        if (dp[i] != null) return dp[i];
+
+        int sum = 0;
+        int maxDiff = Integer.MIN_VALUE;
+
+        for (int x = 0; x < 3 && i + x < stones.length; x++) {
+
+            sum += stones[i + x];
+
+            int nextDiff = dfs(stones, i + x + 1, dp);
+
+            maxDiff = Math.max(maxDiff, sum - nextDiff);
+        }
+
+        dp[i] = maxDiff;
+
+        return maxDiff;
+    }
+}
+
+🟢 Line-by-Line Explanation
+🔹 dp array
+Integer[] dp = new Integer[n];
+
+
+Stores result from index i.
+
+🔹 Base Case
+if (i >= stones.length)
+    return 0;
+
+
+No stones left → difference = 0.
+
+🔹 Try taking 1, 2, or 3 stones
+for (int x = 0; x < 3 && i + x < stones.length; x++)
+
+
+We simulate all 3 possibilities.
+
+🔹 Core Logic
+maxDiff = Math.max(maxDiff, sum - nextDiff);
+
+
+If you take sum,
+opponent will get nextDiff.
+
+So your net advantage:
+
+sum - opponent_best
+
+🟢 Dry Run
+
+Example:
+
+[1,2,3,7]
+
+
+Work backward:
+
+At index 3:
+
+dp[3] = 7
+
+
+Index 2:
+Take 3 → 3 - 7 = -4
+Take 3+7 → 10
+
+Best = 10
+
+Index 1:
+Try combinations
+Eventually dp[1] = ?
+
+Finally dp[0] < 0 → Bob wins.
+
+🟢 Time Complexity
+
+Each index computed once.
+
+Time: O(n)
+Space: O(n)
