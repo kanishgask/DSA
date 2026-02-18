@@ -1,0 +1,209 @@
+BURST BALLOONS
+
+(LeetCode 312)
+
+🟢 Problem
+
+You are given:
+
+int[] nums
+
+
+When you burst balloon i, you get:
+
+nums[left] * nums[i] * nums[right]
+
+
+After bursting, balloon i disappears.
+
+Return the maximum coins you can collect.
+
+🔎 Example
+Input:
+[3,1,5,8]
+
+Output:
+167
+
+
+Optimal order:
+Burst 1 → 315 = 15
+Burst 5 → 358 = 120
+Burst 3 → 138 = 24
+Burst 8 → 181 = 8
+
+Total = 167
+
+❌ Why Greedy Fails?
+
+You cannot decide locally.
+
+Because bursting affects neighbors.
+
+If you pick wrong early,
+future multiplications shrink.
+
+🧠 Key Trick (CRITICAL IDEA)
+
+Instead of asking:
+
+Which balloon to burst first?
+
+Ask:
+
+Which balloon to burst LAST in a range?
+
+This changes everything.
+
+🟢 Step 1: Add Boundaries
+
+Add virtual balloons:
+
+nums = [1, ...original..., 1]
+
+
+So edges are easier.
+
+Example:
+
+[1,3,1,5,8,1]
+
+🟢 Step 2: Define DP
+dp[left][right] =
+    max coins obtainable in interval (left, right)
+
+
+IMPORTANT:
+This interval is OPEN → (left, right)
+
+Meaning:
+
+left and right are not burst
+
+we burst everything between them
+
+🟢 Transition
+
+We pick a balloon k inside (left, right)
+as the LAST balloon to burst.
+
+When it's last:
+
+coins = nums[left] * nums[k] * nums[right]
+        + dp[left][k]
+        + dp[k][right]
+
+
+So:
+
+dp[left][right] =
+    max over k in (left+1 to right-1)
+
+🟢 Why This Works?
+
+Because if k is last,
+then:
+
+left and right are guaranteed neighbors
+
+no messy dynamic adjacency issues
+
+This converts chaos → clean interval DP.
+
+🟢 Final Answer
+dp[0][n+1]
+
+🟢 Java Code (Bottom-Up)
+class Solution {
+
+    public int maxCoins(int[] nums) {
+
+        int n = nums.length;
+
+        int[] arr = new int[n + 2];
+
+        arr[0] = 1;
+        arr[n + 1] = 1;
+
+        for (int i = 0; i < n; i++) {
+            arr[i + 1] = nums[i];
+        }
+
+        int[][] dp = new int[n + 2][n + 2];
+
+        for (int len = 2; len < n + 2; len++) {
+
+            for (int left = 0; left + len < n + 2; left++) {
+
+                int right = left + len;
+
+                for (int k = left + 1; k < right; k++) {
+
+                    dp[left][right] = Math.max(
+                        dp[left][right],
+                        arr[left] * arr[k] * arr[right]
+                        + dp[left][k]
+                        + dp[k][right]
+                    );
+                }
+            }
+        }
+
+        return dp[0][n + 1];
+    }
+}
+
+🟢 Time Complexity
+O(n^3)
+
+
+3 loops:
+
+interval size
+
+left boundary
+
+k selection
+
+n ≤ 300 → acceptable
+
+🟢 Why Interviewers Love This?
+
+Because it tests:
+
+Deep DP understanding
+
+Ability to reverse thinking
+
+Interval DP mastery
+
+“Think last instead of first” mindset
+
+This separates:
+Mid-level → Senior-level engineers.
+
+🔥 Pattern Recognition
+
+Whenever you see:
+
+Remove elements
+
+Order matters
+
+Neighbors change
+
+Maximize or minimize value
+
+Think:
+
+“What if I choose the last operation?”
+
+This trick appears in:
+
+Matrix Chain Multiplication
+
+Polygon triangulation
+
+Expression minimum cost
+
+Cutting stick problem
