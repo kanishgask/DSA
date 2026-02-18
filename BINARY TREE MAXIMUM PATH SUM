@@ -1,0 +1,215 @@
+BINARY TREE MAXIMUM PATH SUM
+
+LeetCode 124
+
+🟢 Problem
+
+Given a binary tree, return the maximum path sum.
+
+Rules:
+
+A path can start and end at ANY node.
+
+Must follow parent-child connections.
+
+Path does NOT need to go through root.
+
+Can turn at only ONE node (like a “V” shape).
+
+🔎 Example
+        -10
+        /  \
+       9   20
+           / \
+          15  7
+
+
+Output:
+
+42
+
+
+Because best path is:
+
+15 → 20 → 7
+
+
+= 42
+
+❌ Why This Is Tricky?
+
+Two important facts:
+
+The best path might NOT pass through root.
+
+A node can use BOTH children in final answer.
+
+But when returning upward, it can use only ONE child.
+
+That difference is critical.
+
+🧠 Key Idea
+
+At each node:
+
+Two possibilities:
+
+🔹 1. Path passing through node (for global answer)
+left_gain + node.val + right_gain
+
+🔹 2. Path extending upward (return value)
+
+Must choose only ONE side:
+
+node.val + max(left_gain, right_gain)
+
+🟢 Define Function
+dfs(node) → maximum gain from this node upward
+
+
+Also maintain:
+
+globalMax
+
+🟢 Rules
+
+If child gives negative gain → ignore it.
+
+Because negative path reduces total.
+
+So:
+
+left = max(0, dfs(node.left))
+right = max(0, dfs(node.right))
+
+🟢 Core Formula
+
+Update global answer:
+
+globalMax = max(globalMax, left + right + node.val)
+
+
+Return to parent:
+
+return node.val + max(left, right)
+
+🟢 Java Code
+class Solution {
+
+    int globalMax = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        dfs(root);
+        return globalMax;
+    }
+
+    private int dfs(TreeNode node) {
+
+        if (node == null) return 0;
+
+        int left = Math.max(0, dfs(node.left));
+        int right = Math.max(0, dfs(node.right));
+
+        int currentPath = left + right + node.val;
+
+        globalMax = Math.max(globalMax, currentPath);
+
+        return node.val + Math.max(left, right);
+    }
+}
+
+🟢 Why max(0, child)?
+
+If:
+
+child_gain = -5
+
+
+Taking it reduces path.
+
+Better to ignore it.
+
+🟢 Dry Run (Important)
+
+For node 20:
+
+Left = 15
+Right = 7
+
+Update:
+
+15 + 7 + 20 = 42
+
+
+Return:
+
+20 + max(15,7) = 35
+
+
+Then for root -10:
+
+Left = 9
+Right = 35
+
+Check:
+
+9 + 35 - 10 = 34
+
+
+Not greater than 42.
+
+So answer remains 42.
+
+🟢 Time Complexity
+O(n)
+
+
+Every node visited once.
+
+🟢 Why This Question Is Powerful?
+
+It teaches:
+
+Tree DP
+
+Postorder traversal
+
+Local vs Global decision
+
+Ignoring negatives
+
+Maintaining global state
+
+Most candidates fail because they:
+
+❌ Try to return both children upward
+❌ Don’t handle negative values
+❌ Forget to maintain global variable
+
+🔥 Pattern Recognition
+
+Whenever you see:
+
+“Maximum path in tree”
+
+Path doesn’t need root
+
+Combine two children
+
+Think:
+
+Postorder + Global variable + Return one branch only
+
+🧠 You Just Learned Tree DP Core Pattern
+
+Used in:
+
+Diameter of tree
+
+Maximum path sum
+
+Binary tree camera
+
+Tree robber
+
+Tree DP with state merging
