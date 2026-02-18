@@ -1,0 +1,211 @@
+EDIT DISTANCE
+
+LeetCode 72
+
+🟢 Problem
+
+Given two strings:
+
+word1
+word2
+
+
+Return the minimum operations required to convert word1 → word2.
+
+Allowed operations:
+
+Insert
+
+Delete
+
+Replace
+
+🔎 Example
+Input:
+word1 = "horse"
+word2 = "ros"
+
+Output:
+3
+
+
+Explanation:
+horse → rorse (replace h → r)
+rorse → rose (delete r)
+rose → ros (delete e)
+
+🧠 What Makes This Hard?
+
+At each character, you have 3 choices:
+
+Insert
+
+Delete
+
+Replace
+
+Brute force becomes exponential.
+
+We need DP.
+
+🟢 Define DP
+dp[i][j]
+= minimum operations to convert
+  word1[0..i-1] → word2[0..j-1]
+
+🟢 Base Cases
+dp[0][j] = j
+
+
+Why?
+
+Empty string → need j inserts.
+
+dp[i][0] = i
+
+
+Need i deletes.
+
+🟢 Transition
+
+If characters match:
+
+if word1[i-1] == word2[j-1]:
+    dp[i][j] = dp[i-1][j-1]
+
+
+No operation needed.
+
+If NOT match:
+
+We try all 3 operations:
+
+🔹 Insert
+
+Insert character into word1
+
+dp[i][j-1] + 1
+
+🔹 Delete
+
+Delete character from word1
+
+dp[i-1][j] + 1
+
+🔹 Replace
+
+Replace character
+
+dp[i-1][j-1] + 1
+
+Final:
+dp[i][j] =
+    1 + min(
+        dp[i-1][j],     // delete
+        dp[i][j-1],     // insert
+        dp[i-1][j-1]    // replace
+    )
+
+🟢 Java Code
+class Solution {
+
+    public int minDistance(String word1, String word2) {
+
+        int m = word1.length();
+        int n = word2.length();
+
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 0; i <= m; i++)
+            dp[i][0] = i;
+
+        for (int j = 0; j <= n; j++)
+            dp[0][j] = j;
+
+        for (int i = 1; i <= m; i++) {
+
+            for (int j = 1; j <= n; j++) {
+
+                if (word1.charAt(i - 1) ==
+                    word2.charAt(j - 1)) {
+
+                    dp[i][j] = dp[i - 1][j - 1];
+
+                } else {
+
+                    dp[i][j] = 1 + Math.min(
+                        dp[i - 1][j],
+                        Math.min(dp[i][j - 1],
+                                 dp[i - 1][j - 1])
+                    );
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+}
+
+🟢 Time Complexity
+O(m * n)
+
+
+Space:
+
+O(m * n)
+
+
+Can be optimized to O(n).
+
+🟢 Why This Question Is Powerful
+
+It is the foundation of:
+
+Spell checker
+
+Autocorrect
+
+DNA sequence analysis
+
+Diff tools (Git diff)
+
+AI language models
+
+🔥 Important Pattern
+
+Whenever problem asks:
+
+Convert A → B
+Minimum operations
+2 strings
+
+Think:
+
+2D DP on prefixes.
+
+🧠 Mental Model
+
+You are aligning two strings.
+At every step you decide:
+
+Match
+
+Insert
+
+Delete
+
+Replace
+
+Build row by row.
+
+🔥 Bonus Upgrade
+
+Edit Distance is base of:
+
+Longest Common Subsequence
+
+Distinct Subsequences
+
+Palindrome DP
+
+String matching problems
