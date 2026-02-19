@@ -1,0 +1,286 @@
+Skyline Problem
+✅ Problem Statement
+
+You are given an array buildings, where:
+
+buildings[i] = [left, right, height]
+
+
+Each building is a rectangle on X-axis.
+
+Return the skyline formed by these buildings.
+
+Skyline must be returned as:
+
+[x-coordinate, height]
+
+
+Representing change in height.
+
+🧩 Example
+Input:
+[[2,9,10], [3,7,15], [5,12,12]]
+
+
+Visual:
+
+      15
+     |  |
+     |  |
+10  |   |
+|   |   |
+|   |   |     12
+
+
+Output:
+
+[[2,10], [3,15], [7,12], [12,0]]
+
+🧠 Core Idea
+
+This is a Sweep Line Problem.
+
+We:
+
+Convert each building into events:
+
+Start event
+
+End event
+
+Sort events
+
+Use Max Heap to track highest building
+
+Whenever max height changes → add skyline point
+
+🔥 Step 1: Convert Buildings Into Events
+
+For building:
+
+[left, right, height]
+
+
+We create:
+
+(left, -height)   → start event
+(right, height)   → end event
+
+
+Why negative height at start?
+
+Because:
+When sorting,
+Start event should come before end event.
+
+🪜 Algorithm Steps
+
+Create event list
+
+Sort events:
+
+By x coordinate
+
+If same x:
+Smaller height first
+
+Create Max Heap
+
+Track previous max height
+
+For each event:
+
+If start → add to heap
+
+If end → remove from heap
+
+Compare with previous max
+
+If different → add skyline point
+
+⏱ Time Complexity
+
+Sorting:
+
+O(N log N)
+
+
+Heap operations:
+
+O(N log N)
+
+
+Overall:
+
+O(N log N)
+
+☕ Java Implementation
+🔹 Step 1: Main Function
+import java.util.*;
+
+class Solution {
+
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+
+        List<int[]> events = new ArrayList<>();
+
+🔹 Step 2: Create Events
+        for (int[] b : buildings) {
+            events.add(new int[]{b[0], -b[2]}); // start
+            events.add(new int[]{b[1], b[2]});  // end
+        }
+
+
+Explanation:
+
+Start → negative height
+
+End → positive height
+
+🔹 Step 3: Sort Events
+        Collections.sort(events, (a, b) -> {
+            if (a[0] != b[0])
+                return a[0] - b[0];
+            return a[1] - b[1];
+        });
+
+
+Sort by:
+
+X coordinate
+
+If tie:
+smaller height first
+
+🔹 Step 4: Max Heap
+        PriorityQueue<Integer> maxHeap =
+            new PriorityQueue<>(Collections.reverseOrder());
+
+        maxHeap.add(0);
+
+        int prevMax = 0;
+
+        List<List<Integer>> result = new ArrayList<>();
+
+
+Initialize:
+Heap contains 0 (ground level)
+
+🔹 Step 5: Process Events
+        for (int[] event : events) {
+
+            int x = event[0];
+            int h = event[1];
+
+            if (h < 0) {
+                maxHeap.add(-h);
+            } else {
+                maxHeap.remove(h);
+            }
+
+            int currMax = maxHeap.peek();
+
+            if (currMax != prevMax) {
+                result.add(Arrays.asList(x, currMax));
+                prevMax = currMax;
+            }
+        }
+
+        return result;
+    }
+}
+
+🔍 Line-by-Line Deep Explanation
+If h < 0 → Start of building
+maxHeap.add(-h)
+
+
+Add building height.
+
+If h > 0 → End of building
+remove(h)
+
+
+Remove that building's height.
+
+After Each Event
+currMax = heap.peek()
+
+
+Highest building currently active.
+
+If:
+
+currMax != prevMax
+
+
+That means skyline changed.
+
+Add:
+
+[x, currMax]
+
+🔥 Dry Run
+
+Input:
+
+[[2,9,10], [3,7,15], [5,12,12]]
+
+
+Events Sorted:
+
+(2,-10)
+(3,-15)
+(5,-12)
+(7,15)
+(9,10)
+(12,12)
+
+
+Processing:
+
+At x=2 → height=10
+At x=3 → height=15
+At x=7 → drop to 12
+At x=12 → drop to 0
+
+Output:
+
+[[2,10],[3,15],[7,12],[12,0]]
+
+⚠️ Important Edge Cases
+
+Multiple buildings start at same x
+
+Multiple buildings end at same x
+
+Nested buildings
+
+Equal heights
+
+Complete overlap
+
+💡 Why Interviewers Ask This?
+
+Because it tests:
+
+Sorting logic
+
+Heap mastery
+
+Event processing
+
+Geometry reasoning
+
+Edge case handling
+
+Common in:
+Google, Uber, Meta.
+
+🔥 Advanced Follow-up
+
+Can you optimize removal? (Use TreeMap instead)
+
+Can you solve in O(N)?
+
+What about 3D skyline?
