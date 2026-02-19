@@ -1,0 +1,300 @@
+Maximum XOR Subarray
+
+You already have:
+
+✅ Maximum XOR of two numbers
+❌ But NOT Maximum XOR of a subarray
+
+This one is very powerful — frequently asked in product companies.
+
+✅ Problem Statement
+
+Given an integer array arr[], find the maximum XOR value of any subarray.
+
+A subarray must be continuous.
+
+🧩 Example
+Input:
+arr = [8, 1, 2, 12]
+
+Output:
+15
+
+Why?
+
+Subarray:
+
+1 ^ 2 ^ 12 = 15
+
+
+That’s the maximum possible XOR.
+
+⚠️ Brute Force Approach
+
+Compute XOR for every subarray.
+
+Time Complexity:
+
+O(N²)
+
+
+Not optimal.
+
+🧠 Optimized Approach (INTERVIEW LEVEL)
+
+We use:
+
+✅ Prefix XOR
+✅ Bitwise Trie
+
+🔥 Key Mathematical Insight
+
+Let:
+
+prefix[i] = arr[0] ^ arr[1] ^ ... ^ arr[i]
+
+
+Then:
+
+XOR of subarray (i+1 to j)
+= prefix[j] ^ prefix[i]
+
+
+So instead of computing subarray XOR repeatedly:
+
+We convert problem to:
+
+👉 Find two prefix XOR values whose XOR is maximum.
+
+🧠 Why Trie?
+
+If we maximize:
+
+prefix[j] ^ prefix[i]
+
+
+We want opposite bits at each position.
+
+Trie helps us:
+
+Store prefix values in binary
+
+Greedily choose best opposite bit
+
+🪜 Step-by-Step Algorithm
+
+Initialize Trie
+
+Insert 0 into Trie (important)
+
+Maintain prefixXor
+
+For each element:
+
+prefixXor ^= element
+
+Query trie for best XOR
+
+Insert prefixXor into trie
+
+Return maximum
+
+⏱ Time Complexity
+
+Each number → 32 bits
+
+For N numbers:
+
+O(32N) ≈ O(N)
+
+
+Very efficient.
+
+☕ Java Implementation
+🔹 Step 1: Trie Node
+class TrieNode {
+    TrieNode[] children = new TrieNode[2];
+
+    TrieNode() {
+        children[0] = null;
+        children[1] = null;
+    }
+}
+
+Explanation
+
+Each node has:
+
+children[0] → bit 0
+
+children[1] → bit 1
+
+Since numbers are binary.
+
+🔹 Step 2: Main Solution
+class Solution {
+
+    TrieNode root = new TrieNode();
+
+
+Root of Trie.
+
+🔹 Step 3: Insert Method
+    void insert(int num) {
+        TrieNode node = root;
+
+        for (int i = 31; i >= 0; i--) {
+            int bit = (num >> i) & 1;
+
+            if (node.children[bit] == null) {
+                node.children[bit] = new TrieNode();
+            }
+
+            node = node.children[bit];
+        }
+    }
+
+🔍 Line-by-Line
+for (int i = 31; i >= 0; i--)
+
+
+We check 32 bits (integer).
+
+(num >> i) & 1
+
+
+Extract ith bit.
+
+if node.children[bit] == null
+    create node
+
+
+Insert into Trie.
+
+🔹 Step 4: Query Method (Important)
+    int query(int num) {
+        TrieNode node = root;
+        int maxXor = 0;
+
+        for (int i = 31; i >= 0; i--) {
+            int bit = (num >> i) & 1;
+            int opposite = 1 - bit;
+
+            if (node.children[opposite] != null) {
+                maxXor |= (1 << i);
+                node = node.children[opposite];
+            } else {
+                node = node.children[bit];
+            }
+        }
+
+        return maxXor;
+    }
+
+🔍 Line-by-Line Explanation
+opposite = 1 - bit
+
+
+To maximize XOR:
+If current bit is 1 → we want 0
+If current bit is 0 → we want 1
+
+if opposite exists
+    choose that
+
+
+Because:
+
+1 ^ 0 = 1
+0 ^ 1 = 1
+
+
+That gives maximum contribution.
+
+maxXor |= (1 << i)
+
+
+Set ith bit in result.
+
+🔹 Step 5: Main Function
+    public int maxSubarrayXOR(int[] arr) {
+
+        insert(0);  // Important
+        int prefix = 0;
+        int result = 0;
+
+        for (int num : arr) {
+
+            prefix ^= num;
+
+            result = Math.max(result, query(prefix));
+
+            insert(prefix);
+        }
+
+        return result;
+    }
+}
+
+🔥 Why Insert(0) Initially?
+
+Because:
+
+Subarray starting from index 0:
+
+prefix[j] ^ 0 = prefix[j]
+
+
+So we must insert 0.
+
+🧩 Dry Run
+
+Input:
+
+[8,1,2,12]
+
+
+Binary:
+
+8  = 1000
+1  = 0001
+2  = 0010
+12 = 1100
+
+
+Prefix:
+
+8
+9
+11
+7
+
+
+Best XOR found = 15
+
+💡 Why This Is Important for Interviews?
+
+Tests:
+
+Bit manipulation
+
+Trie data structure
+
+Prefix concept
+
+XOR properties
+
+Mathematical thinking
+
+Companies like:
+Amazon, Google, Microsoft.
+
+🔥 Common Followups
+
+What if negative numbers?
+
+Can you do without Trie?
+
+Can you also return subarray indices?
+
+Memory optimization?
