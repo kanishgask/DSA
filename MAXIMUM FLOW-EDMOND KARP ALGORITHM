@@ -1,0 +1,335 @@
+Maximum Flow – Edmonds-Karp Algorithm
+
+This is a classical Network Flow problem.
+
+It is the optimized version of Ford-Fulkerson using BFS.
+
+✅ Problem Statement
+
+You are given a directed graph with:
+
+n nodes
+
+Each edge has a capacity
+
+You are given:
+
+Source node s
+
+Sink node t
+
+Find the maximum possible flow from source to sink.
+
+🧩 Example
+
+Graph:
+
+        (10)
+   S ----------> A
+   |             |
+ (5)|           (15)
+   |             |
+   v             v
+   B ----------> T
+        (10)
+
+
+Edges:
+
+S → A (10)
+S → B (5)
+A → T (15)
+B → T (10)
+
+✅ Output
+
+Maximum Flow = 15
+
+Explanation:
+
+10 units from S → A → T
+
+5 units from S → B → T
+
+Total = 15
+
+🧠 Core Idea
+
+We repeatedly:
+
+Find a path from s → t
+
+Send maximum possible flow through it
+
+Reduce remaining capacity
+
+Repeat until no path exists
+
+❗ Why Edmonds-Karp?
+
+Ford-Fulkerson can be slow.
+
+Edmonds-Karp:
+
+Always uses BFS
+
+Finds shortest path in terms of edges
+
+Time Complexity:
+
+O(V * E²)
+
+🔥 Key Concepts
+1️⃣ Residual Graph
+
+If we send flow:
+
+Decrease forward edge capacity
+
+Increase backward edge capacity
+
+This helps "undo" flow later if needed.
+
+2️⃣ Augmenting Path
+
+A path from source to sink where:
+
+All edges have capacity > 0
+
+🪜 Algorithm Steps
+
+Initialize maxFlow = 0
+
+While BFS finds path:
+
+Find minimum edge capacity (bottleneck)
+
+Update residual graph
+
+Add to maxFlow
+
+Return maxFlow
+
+☕ Java Implementation
+
+We’ll use adjacency matrix for simplicity.
+
+🔹 Step 1: Main Function
+import java.util.*;
+
+class Solution {
+
+    public int edmondsKarp(int[][] capacity, int source, int sink) {
+
+        int n = capacity.length;
+        int[][] residual = new int[n][n];
+
+        // Copy capacity into residual graph
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                residual[i][j] = capacity[i][j];
+            }
+        }
+
+        int maxFlow = 0;
+        int[] parent = new int[n];
+
+Explanation
+
+capacity[][] → original graph
+
+residual[][] → modified during execution
+
+parent[] → store BFS path
+
+🔹 Step 2: BFS Function
+        while (bfs(residual, source, sink, parent)) {
+
+            int pathFlow = Integer.MAX_VALUE;
+
+            // Find bottleneck
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                pathFlow = Math.min(pathFlow, residual[u][v]);
+            }
+
+            // Update residual capacities
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                residual[u][v] -= pathFlow;
+                residual[v][u] += pathFlow;
+            }
+
+            maxFlow += pathFlow;
+        }
+
+        return maxFlow;
+    }
+
+🔍 Line-by-Line Explanation
+While BFS finds path
+bfs(residual, source, sink, parent)
+
+
+If reachable → continue.
+
+Find Bottleneck
+
+Traverse backward from sink:
+
+pathFlow = minimum capacity on path
+
+
+That’s max we can send this round.
+
+Update Residual Graph
+
+Forward edge:
+
+residual[u][v] -= pathFlow
+
+
+Backward edge:
+
+residual[v][u] += pathFlow
+
+
+Very important for correctness.
+
+Add to maxFlow
+maxFlow += pathFlow
+
+
+Repeat.
+
+🔹 Step 3: BFS Implementation
+    private boolean bfs(int[][] residual, int source, int sink, int[] parent) {
+
+        int n = residual.length;
+        boolean[] visited = new boolean[n];
+
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(source);
+        visited[source] = true;
+        parent[source] = -1;
+
+        while (!queue.isEmpty()) {
+
+            int u = queue.poll();
+
+            for (int v = 0; v < n; v++) {
+
+                if (!visited[v] && residual[u][v] > 0) {
+                    queue.add(v);
+                    parent[v] = u;
+                    visited[v] = true;
+
+                    if (v == sink)
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+🔥 Dry Run on Example
+
+Nodes:
+
+0 = S
+1 = A
+2 = B
+3 = T
+
+
+Capacity Matrix:
+
+  0  1  2  3
+0 0 10  5  0
+1 0  0  0 15
+2 0  0  0 10
+3 0  0  0  0
+
+First BFS
+
+Find path:
+
+0 → 1 → 3
+
+
+Bottleneck:
+
+min(10,15) = 10
+
+
+Flow = 10
+
+Second BFS
+
+Find path:
+
+0 → 2 → 3
+
+
+Bottleneck:
+
+min(5,10) = 5
+
+
+Flow = 5
+
+No more paths
+
+Final:
+
+10 + 5 = 15
+
+⏱ Complexity
+
+Time:
+
+O(V * E²)
+
+
+Space:
+
+O(V²)
+
+💡 Why This Is Important?
+
+Tests:
+
+Graph understanding
+
+BFS mastery
+
+Residual reasoning
+
+Optimization logic
+
+Asked in:
+Amazon, Flipkart, Goldman Sachs.
+
+🔥 Common Followups
+
+Difference between Ford-Fulkerson & Edmonds-Karp?
+
+What is Min-Cut?
+
+Can you solve using Dinic’s Algorithm?
+
+Bipartite matching relation?
+
+🎯 Now You Have 5 Advanced New Problems Not in Your List
+
+Serialize N-ary Tree
+
+Maximum XOR Subarray
+
+Count Smaller After Self
+
+Skyline Problem
+
+Maximum Flow (Edmonds-Karp)
