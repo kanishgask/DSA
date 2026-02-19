@@ -1,0 +1,302 @@
+Serialize and Deserialize N-ary Tree
+✅ Problem Statement
+
+Design an algorithm to:
+
+Serialize an N-ary tree → Convert it into a string.
+
+Deserialize the string → Reconstruct the original N-ary tree.
+
+You must preserve:
+
+Node values
+
+Tree structure
+
+Children relationships
+
+🌳 What is an N-ary Tree?
+
+In a binary tree:
+
+Each node → 2 children (left, right)
+
+
+In an N-ary tree:
+
+Each node → Any number of children
+
+🧩 Example
+
+Given Tree:
+
+        1
+      / | \
+     2  3  4
+           |
+           5
+
+🎯 Expected Behavior
+Serialized Output:
+1 3 2 0 3 0 4 1 5 0
+
+
+Meaning:
+
+Node 1 → 3 children
+Node 2 → 0 children
+Node 3 → 0 children
+Node 4 → 1 child
+Node 5 → 0 children
+
+🧠 Core Idea
+
+Since each node has multiple children, we store:
+
+node_value  number_of_children
+
+
+Then recursively store each child.
+
+We use:
+
+✅ Preorder Traversal (Root → Children)
+
+🪜 Step-by-Step Algorithm
+🔹 SERIALIZATION
+Algorithm
+
+If root is null → return ""
+
+Store:
+
+Node value
+
+Number of children
+
+Recursively serialize each child
+
+Why store number of children?
+
+Without it, we won’t know:
+
+When a node’s children end
+
+When to move to sibling
+
+This is CRITICAL for reconstruction.
+
+🔹 DESERIALIZATION
+Algorithm
+
+Split string into tokens
+
+Use queue
+
+Read:
+
+Node value
+
+Number of children
+
+Recursively build children
+
+⏱ Time & Space Complexity
+
+Time: O(N)
+
+Space: O(N) (recursion + string)
+
+☕ Java Implementation
+
+Now let’s code.
+
+🔹 Step 1: Node Class
+class Node {
+    public int val;
+    public List<Node> children;
+
+    public Node(int val) {
+        this.val = val;
+        this.children = new ArrayList<>();
+    }
+}
+
+Explanation
+
+val → Stores node value
+
+children → List of child nodes
+
+🔹 Step 2: Codec Class
+import java.util.*;
+
+class Codec {
+
+    // SERIALIZE
+    public String serialize(Node root) {
+        if (root == null) return "";
+
+        StringBuilder sb = new StringBuilder();
+        serializeHelper(root, sb);
+        return sb.toString();
+    }
+
+Line-by-Line Explanation
+
+if (root == null) → empty tree case
+
+StringBuilder → efficient string building
+
+serializeHelper() → recursive traversal
+
+🔹 Step 3: Serialize Helper
+    private void serializeHelper(Node node, StringBuilder sb) {
+        sb.append(node.val).append(" ");
+        sb.append(node.children.size()).append(" ");
+
+        for (Node child : node.children) {
+            serializeHelper(child, sb);
+        }
+    }
+
+Line-by-Line Explanation
+sb.append(node.val)
+
+
+→ Store node value.
+
+sb.append(node.children.size())
+
+
+→ Store number of children.
+
+for each child:
+    recursively serialize
+
+
+→ Preorder traversal.
+
+🔹 Step 4: Deserialize
+    public Node deserialize(String data) {
+        if (data.isEmpty()) return null;
+
+        Queue<String> queue =
+            new LinkedList<>(Arrays.asList(data.split(" ")));
+
+        return deserializeHelper(queue);
+    }
+
+Explanation
+
+Split string into tokens
+
+Convert into queue for FIFO reading
+
+🔹 Step 5: Deserialize Helper
+    private Node deserializeHelper(Queue<String> queue) {
+
+        int value = Integer.parseInt(queue.poll());
+        Node root = new Node(value);
+
+        int childrenCount = Integer.parseInt(queue.poll());
+
+        for (int i = 0; i < childrenCount; i++) {
+            root.children.add(deserializeHelper(queue));
+        }
+
+        return root;
+    }
+}
+
+🔍 Line-by-Line Explanation
+queue.poll()
+
+
+→ Remove first element.
+
+int value
+
+
+→ Extract node value
+
+int childrenCount
+
+
+→ Extract number of children
+
+for (i < childrenCount)
+
+
+→ Recursively create children
+
+🔥 Dry Run on Example
+
+Tree:
+
+1
+├── 2
+├── 3
+└── 4
+     └── 5
+
+
+Serialized:
+
+1 3 2 0 3 0 4 1 5 0
+
+
+Queue:
+
+[1,3,2,0,3,0,4,1,5,0]
+
+
+Execution:
+
+Create 1
+
+3 children
+
+Create 2 → 0 children
+
+Create 3 → 0 children
+
+Create 4 → 1 child
+
+Create 5 → 0 children
+
+Tree reconstructed perfectly ✅
+
+💡 Why This Is Interview Important
+
+Companies test:
+
+Tree understanding
+
+Serialization logic
+
+Recursive thinking
+
+Data encoding/decoding
+
+Google & Amazon ask variations of this.
+
+🧠 Optimization Insight
+
+Instead of storing size,
+we could also use a special marker like:
+
+1 [ 2 3 4 [ 5 ] ]
+
+
+But storing size is simpler and cleaner.
+
+🔥 Common Interview Followups
+
+Can you do it iteratively?
+
+What if values contain commas?
+
+What about extremely deep trees?
+
+Can you compress serialization?
