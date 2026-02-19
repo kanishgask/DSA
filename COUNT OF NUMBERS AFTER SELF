@@ -1,0 +1,277 @@
+Count of Smaller Numbers After Self
+✅ Problem Statement
+
+Given an integer array nums, return an array counts such that:
+
+counts[i] = number of smaller elements to the right of nums[i]
+
+🧩 Example
+Input:
+nums = [5, 2, 6, 1]
+
+Output:
+[2, 1, 1, 0]
+
+Why?
+
+For each element:
+
+Element	Smaller on Right	Count
+5	2,1	2
+2	1	1
+6	1	1
+1	—	0
+❌ Brute Force
+
+For every element:
+
+Check all right elements
+
+Time:
+
+O(N²)
+
+
+Too slow for large N.
+
+🧠 Optimized Solution (INTERVIEW LEVEL)
+
+We use:
+
+✅ Modified Merge Sort
+
+Why?
+
+Because:
+During merging,
+When right element < left element →
+That means it is a smaller number coming after.
+
+We count it.
+
+Time Complexity:
+
+O(N log N)
+
+🔥 Core Idea
+
+Instead of sorting plain numbers, we sort:
+
+[value, originalIndex]
+
+
+Because:
+After sorting, we must update answer at correct index.
+
+🪜 Algorithm Steps
+
+Create array of pairs: (value, index)
+
+Create count[] array
+
+Use merge sort
+
+During merge:
+
+Maintain rightCounter
+
+If rightValue < leftValue → increment counter
+
+Add counter to left’s count
+
+☕ Java Implementation
+🔹 Step 1: Pair Class
+class Pair {
+    int value;
+    int index;
+
+    Pair(int v, int i) {
+        value = v;
+        index = i;
+    }
+}
+
+🔹 Step 2: Main Function
+import java.util.*;
+
+class Solution {
+
+    public List<Integer> countSmaller(int[] nums) {
+
+        int n = nums.length;
+
+        Pair[] arr = new Pair[n];
+        int[] count = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            arr[i] = new Pair(nums[i], i);
+        }
+
+        mergeSort(arr, 0, n - 1, count);
+
+        List<Integer> result = new ArrayList<>();
+        for (int c : count) {
+            result.add(c);
+        }
+
+        return result;
+    }
+
+Line-by-Line Explanation
+Pair[] arr
+
+
+Store value + original index.
+
+int[] count
+
+
+Stores final answer.
+
+mergeSort(...)
+
+
+Apply divide & conquer.
+
+🔹 Step 3: Merge Sort
+    private void mergeSort(Pair[] arr, int left, int right, int[] count) {
+
+        if (left >= right) return;
+
+        int mid = left + (right - left) / 2;
+
+        mergeSort(arr, left, mid, count);
+        mergeSort(arr, mid + 1, right, count);
+
+        merge(arr, left, mid, right, count);
+    }
+
+
+Explanation:
+
+Standard merge sort recursion.
+
+🔹 Step 4: Merge Function (Important)
+    private void merge(Pair[] arr, int left, int mid, int right, int[] count) {
+
+        List<Pair> merged = new ArrayList<>();
+
+        int i = left;
+        int j = mid + 1;
+        int rightCounter = 0;
+
+        while (i <= mid && j <= right) {
+
+            if (arr[j].value < arr[i].value) {
+                rightCounter++;
+                merged.add(arr[j]);
+                j++;
+            } else {
+                count[arr[i].index] += rightCounter;
+                merged.add(arr[i]);
+                i++;
+            }
+        }
+
+        while (i <= mid) {
+            count[arr[i].index] += rightCounter;
+            merged.add(arr[i]);
+            i++;
+        }
+
+        while (j <= right) {
+            merged.add(arr[j]);
+            j++;
+        }
+
+        for (int k = left; k <= right; k++) {
+            arr[k] = merged.get(k - left);
+        }
+    }
+}
+
+🔍 Deep Explanation (VERY IMPORTANT)
+
+Let’s focus here:
+
+🔹 rightCounter
+
+Tracks how many right-side elements
+are smaller than current left element.
+
+Case 1:
+if arr[j] < arr[i]
+
+
+Means:
+Right element is smaller.
+So increment rightCounter.
+
+Case 2:
+
+Else:
+Left element is smaller or equal.
+
+Then:
+
+count[left.index] += rightCounter
+
+
+Because we already passed those smaller right elements.
+
+🧩 Dry Run
+
+Input:
+
+[5,2,6,1]
+
+
+Process:
+
+After sorting:
+
+During merge,
+5 encounters 2 and 1 → count = 2
+2 encounters 1 → count = 1
+6 encounters 1 → count = 1
+1 → 0
+
+Final:
+
+[2,1,1,0]
+
+⏱ Complexity
+
+Time:
+
+O(N log N)
+
+
+Space:
+
+O(N)
+
+💡 Why Interviewers Love This?
+
+Tests:
+
+Merge sort depth
+
+Index management
+
+Counting during merge
+
+Stability understanding
+
+Common in:
+Google, Meta, Amazon.
+
+🔥 Follow-Up Questions
+
+Can you solve using BIT (Fenwick Tree)?
+
+Can you solve using Segment Tree?
+
+What if values are very large?
+
+Can you do it in-place?
