@@ -1,0 +1,197 @@
+MERGE K SORTED LISTS (Heap – Hard)
+
+⚠️ You have Merge Two Sorted LinkedList, but not Merge K Sorted Lists.
+
+This is a classic FAANG-level problem.
+
+🔹 Problem Statement
+
+You are given an array of k sorted linked lists.
+
+Merge all the linked lists into one sorted linked list and return it.
+
+🔹 Example
+Input:
+lists = [
+  1->4->5,
+  1->3->4,
+  2->6
+]
+Output:
+1->1->2->3->4->4->5->6
+🔹 Why This Is Hard?
+
+If you merge one by one:
+
+Merge L1 & L2 → temp
+Merge temp & L3 → temp
+...
+
+Worst case:
+
+O(kN)
+
+Too slow for large k.
+
+🔥 Optimal Approach – Min Heap
+
+We use a PriorityQueue (Min Heap).
+
+🔹 Idea
+
+Insert the first node of each list into heap.
+
+Extract minimum node.
+
+Add its next node into heap.
+
+Repeat until heap is empty.
+
+🔹 Algorithm
+1. Create minHeap
+2. Insert head of all k lists
+3. Create dummy node
+4. While heap not empty:
+      node = heap.poll()
+      attach node to result
+      if node.next exists:
+            insert node.next into heap
+5. Return dummy.next
+🔹 Java Code
+import java.util.*;
+
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int val) { this.val = val; }
+}
+
+class MergeKSortedLists {
+
+    public ListNode mergeKLists(ListNode[] lists) {
+
+        if (lists == null || lists.length == 0)
+            return null;
+
+        PriorityQueue<ListNode> minHeap =
+                new PriorityQueue<>((a, b) -> a.val - b.val);
+
+        // Step 1: Add first node of each list
+        for (ListNode node : lists) {
+            if (node != null)
+                minHeap.offer(node);
+        }
+
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+
+        // Step 2: Process heap
+        while (!minHeap.isEmpty()) {
+
+            ListNode smallest = minHeap.poll();
+            tail.next = smallest;
+            tail = smallest;
+
+            if (smallest.next != null) {
+                minHeap.offer(smallest.next);
+            }
+        }
+
+        return dummy.next;
+    }
+}
+🔹 Line-by-Line Explanation
+PriorityQueue
+PriorityQueue<ListNode> minHeap =
+    new PriorityQueue<>((a, b) -> a.val - b.val);
+
+Maintains smallest value at top.
+
+Insert First Nodes
+for (ListNode node : lists)
+
+Push first element of each list.
+
+While Loop
+
+Each time:
+
+Extract smallest node
+Attach to result
+If it has next → insert into heap
+
+We maintain sorted order automatically.
+
+🔹 Dry Run
+
+Heap initially contains:
+
+1, 1, 2
+
+Pop → 1
+Insert its next (4)
+
+Heap:
+
+1, 2, 4
+
+Pop → 1
+Insert 3
+
+Heap:
+
+2, 3, 4
+
+Continue...
+
+Final result:
+
+1,1,2,3,4,4,5,6
+🔹 Time Complexity
+
+Let:
+
+N = total number of nodes
+k = number of lists
+
+Each insertion + deletion:
+
+O(log k)
+
+Total:
+
+O(N log k)
+🔹 Space Complexity
+O(k)
+
+Heap stores at most k nodes.
+
+🔥 Interview Optimization
+
+Alternative approach:
+
+🟢 Divide and Conquer (Merge Sort Style)
+
+Merge lists in pairs
+
+Reduces complexity to O(N log k)
+
+No heap required
+
+Interviewers love when you mention both.
+
+🔥 What This Tests
+
+✔ Heap
+✔ Linked List manipulation
+✔ Greedy thinking
+✔ Optimizing brute force
+✔ Understanding time complexity
+
+🔥 Real Interview Tip
+
+After giving heap solution, say:
+
+"We can also solve this using divide-and-conquer similar to merge sort to achieve O(N log k) without using extra heap."
+
+This gives bonus points.
