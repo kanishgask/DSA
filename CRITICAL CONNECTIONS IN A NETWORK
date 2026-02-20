@@ -1,0 +1,226 @@
+CRITICAL CONNECTIONS IN A NETWORK
+
+(Articulation Edge / Bridges – Tarjan’s Algorithm)
+
+⚠️ You have articulation points, but not Critical Connections / Bridges problem directly.
+
+🔹 Problem Statement
+
+There are n servers numbered from 0 to n-1.
+
+You are given connections where:
+
+connections[i] = [u, v]
+
+means there is a bidirectional connection between u and v.
+
+A critical connection (bridge) is an edge that, if removed, increases the number of connected components.
+
+Return all such critical connections.
+
+🔹 Example
+Input
+n = 4
+connections = [[0,1],[1,2],[2,0],[1,3]]
+
+Graph:
+
+0 — 1 — 3
+ \  |
+   2
+Output
+[[1,3]]
+
+If we remove edge (1,3), node 3 becomes disconnected.
+
+❌ Brute Force (Wrong Approach)
+
+For each edge:
+
+Remove edge
+
+Run DFS
+
+Check if graph disconnected
+
+Time Complexity:
+
+O(E × (V+E)) ❌
+
+Too slow.
+
+🔥 Optimal Approach — Tarjan’s Algorithm (Single DFS)
+
+Key idea:
+
+During DFS, maintain:
+
+disc[u]  → discovery time of node u
+low[u]   → lowest discovery reachable from u
+🔹 Important Concept
+
+Edge (u,v) is a bridge if:
+
+low[v] > disc[u]
+
+That means:
+v cannot reach any ancestor of u.
+
+So removing (u,v) disconnects graph.
+
+🔹 Algorithm
+1. Build adjacency list
+2. Initialize:
+      disc[]
+      low[]
+      visited[]
+      time = 0
+
+3. Run DFS from node 0
+4. For each neighbor v:
+      if not visited:
+          dfs(v)
+          low[u] = min(low[u], low[v])
+          if low[v] > disc[u]:
+               edge is bridge
+      else if v != parent:
+          low[u] = min(low[u], disc[v])
+🔹 Java Code
+import java.util.*;
+
+class CriticalConnections {
+
+    private List<List<Integer>> result = new ArrayList<>();
+    private List<Integer>[] graph;
+    private int[] disc, low;
+    private boolean[] visited;
+    private int time = 0;
+
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+
+        graph = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            graph[i] = new ArrayList<>();
+
+        for (List<Integer> edge : connections) {
+            int u = edge.get(0);
+            int v = edge.get(1);
+            graph[u].add(v);
+            graph[v].add(u);
+        }
+
+        disc = new int[n];
+        low = new int[n];
+        visited = new boolean[n];
+
+        dfs(0, -1);
+
+        return result;
+    }
+
+    private void dfs(int node, int parent) {
+
+        visited[node] = true;
+        disc[node] = low[node] = time++;
+
+        for (int neighbor : graph[node]) {
+
+            if (neighbor == parent) continue;
+
+            if (!visited[neighbor]) {
+
+                dfs(neighbor, node);
+
+                low[node] = Math.min(low[node], low[neighbor]);
+
+                if (low[neighbor] > disc[node]) {
+                    result.add(Arrays.asList(node, neighbor));
+                }
+
+            } else {
+                low[node] = Math.min(low[node], disc[neighbor]);
+            }
+        }
+    }
+}
+🔹 Line-by-Line Explanation
+disc[node] = low[node] = time++
+
+Discovery time assigned.
+
+If neighbor not visited
+
+We DFS deeper.
+
+After returning:
+
+low[node] = min(low[node], low[neighbor])
+
+We propagate minimum ancestor reachable.
+
+Bridge Condition
+if low[neighbor] > disc[node]
+
+Meaning:
+
+Neighbor cannot reach ancestor of node.
+
+So (node, neighbor) is critical.
+
+🔹 Dry Run (Important)
+
+Graph:
+
+0 - 1 - 3
+ \ |
+  2
+
+Discovery time:
+
+0(0)
+1(1)
+2(2)
+3(3)
+
+low[] after DFS:
+
+low[2] = 0 (cycle back to 0)
+low[1] = 0
+low[3] = 3
+
+Since:
+
+low[3] > disc[1]
+3 > 1 → true
+
+Edge (1,3) is bridge.
+
+🔹 Time Complexity
+O(V + E)
+
+Single DFS.
+
+🔹 Space Complexity
+O(V + E)
+
+For graph + arrays.
+
+🔥 Interview Insight
+
+This problem tests:
+
+✔ DFS
+✔ Low-link concept
+✔ Graph theory
+✔ Deep algorithm understanding
+✔ Ability to track time correctly
+
+Google and Meta love this question.
+
+🔥 Bonus Interview Tip
+
+Mention:
+
+"This is Tarjan’s algorithm for finding bridges."
+
+Using correct algorithm name gives +points.
