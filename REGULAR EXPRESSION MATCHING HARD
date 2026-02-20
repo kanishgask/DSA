@@ -1,0 +1,201 @@
+REGULAR EXPRESSION MATCHING
+
+(DP + Pattern Logic – Very Hard)
+
+🔹 Problem Statement
+
+Given:
+
+String s
+
+Pattern p
+
+Implement regex matching with support for:
+
+. → matches any single character
+
+* → matches zero or more of the previous element
+
+Return whether s matches p.
+
+🔹 Example 1
+s = "aa"
+p = "a*"
+
+Output:
+
+true
+🔹 Example 2
+s = "ab"
+p = ".*"
+
+Output:
+
+true
+🔹 Example 3
+s = "mississippi"
+p = "mis*is*p*."
+
+Output:
+
+false
+❗ Why This Is Hard
+
+You must handle:
+
+Character matching
+
+Dot behavior
+
+Star meaning:
+
+zero occurrence
+
+one occurrence
+
+multiple occurrence
+
+Greedy fails.
+Simple recursion fails (exponential).
+
+We need 2D DP.
+
+🔥 Key Idea
+
+Let:
+
+dp[i][j] = 
+Does first i characters of s 
+match first j characters of p?
+🔹 Base Case
+dp[0][0] = true
+
+Empty string matches empty pattern.
+
+🔹 Character Match Rule
+
+If:
+
+s[i-1] == p[j-1]
+OR
+p[j-1] == '.'
+
+Then:
+
+dp[i][j] = dp[i-1][j-1]
+🔥 STAR CASE (Important)
+
+If:
+
+p[j-1] == '*'
+
+Then we have 2 choices:
+
+1️⃣ Treat star as ZERO occurrence
+
+Ignore previous char + '*'
+
+dp[i][j] = dp[i][j-2]
+2️⃣ Treat star as ONE or MORE
+
+If previous char matches current character:
+
+p[j-2] == s[i-1]
+OR
+p[j-2] == '.'
+
+Then:
+
+dp[i][j] |= dp[i-1][j]
+
+Why?
+
+Because we consume one character from string,
+but keep pattern same (since * can repeat).
+
+🔥 Complete Transition
+if p[j-1] != '*':
+    if char matches:
+        dp[i][j] = dp[i-1][j-1]
+
+else:
+    dp[i][j] = dp[i][j-2]
+
+    if previous char matches:
+        dp[i][j] |= dp[i-1][j]
+🔹 Java Code
+class RegexMatching {
+
+    public boolean isMatch(String s, String p) {
+
+        int m = s.length();
+        int n = p.length();
+
+        boolean[][] dp = new boolean[m + 1][n + 1];
+
+        dp[0][0] = true;
+
+        // Handle patterns like a*, a*b*, a*b*c*
+        for (int j = 2; j <= n; j++) {
+            if (p.charAt(j - 1) == '*') {
+                dp[0][j] = dp[0][j - 2];
+            }
+        }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+
+                if (p.charAt(j - 1) != '*') {
+
+                    if (p.charAt(j - 1) == s.charAt(i - 1) 
+                        || p.charAt(j - 1) == '.') {
+
+                        dp[i][j] = dp[i - 1][j - 1];
+                    }
+
+                } else {
+
+                    // zero occurrence
+                    dp[i][j] = dp[i][j - 2];
+
+                    // one or more occurrence
+                    if (p.charAt(j - 2) == s.charAt(i - 1) 
+                        || p.charAt(j - 2) == '.') {
+
+                        dp[i][j] |= dp[i - 1][j];
+                    }
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+}
+🔹 Time Complexity
+O(m × n)
+🔹 Space Complexity
+O(m × n)
+🔥 Why Interviewers Love This
+
+Because it tests:
+
+✔ DP modeling
+✔ Handling tricky edge cases
+✔ Understanding of pattern state
+✔ Clean transition logic
+
+Most candidates fail on:
+
+Misunderstanding *
+
+Not handling zero occurrence
+
+Incorrect indexing
+
+🧠 Deep Insight
+
+This problem is about:
+
+State compression and interpreting pattern behavior as transitions.
+
+It's NOT about regex — it's about modeling behavior.
