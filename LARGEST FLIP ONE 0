@@ -1,0 +1,261 @@
+LARGEST ISLAND (Flip One 0)
+🔹 Problem Statement
+
+You are given an n x n binary matrix grid containing only 0s and 1s.
+
+You are allowed to change at most one 0 to 1.
+
+Return the size of the largest possible island after the flip.
+
+An island is formed by connecting adjacent 1s (4-directionally).
+
+🔹 Example 1
+Input:
+[
+ [1, 0],
+ [0, 1]
+]
+
+Output:
+
+3
+
+Explanation:
+Flip one 0 → Connect three 1s.
+
+🔹 Example 2
+Input:
+[
+ [1, 1],
+ [1, 0]
+]
+
+Output:
+
+4
+
+Flip bottom-right 0 to 1 → entire grid becomes one island.
+
+🔹 Brute Force (Bad Approach)
+
+For every 0:
+
+Flip it
+
+Run DFS to calculate island size
+
+Revert
+
+Time Complexity:
+
+O(n² * n²) = O(n^4) ❌
+
+Too slow.
+
+🔹 Optimal Approach (Label Islands First 🔥)
+
+We solve in 2 phases.
+
+🟢 Phase 1: Label Each Island
+
+Instead of keeping 1’s as 1,
+we mark each island with a unique id (starting from 2).
+
+Why start at 2?
+Because 0 and 1 already exist.
+
+Example:
+
+Before:
+1 1 0
+0 1 0
+1 0 1
+
+After:
+2 2 0
+0 2 0
+3 0 4
+
+We also store island sizes:
+
+Map:
+2 → 3
+3 → 1
+4 → 1
+🟢 Phase 2: Try Flipping Each 0
+
+For each cell = 0:
+
+Check 4 neighbors.
+
+Collect unique island ids.
+
+Sum their sizes + 1 (for flipped cell).
+
+Take maximum.
+
+🔹 Complete Algorithm
+1. Traverse grid
+2. If cell == 1:
+      Do DFS
+      Mark island with new id
+      Store island size in map
+
+3. result = max island size
+
+4. For each cell == 0:
+      Check 4 neighbors
+      Add unique island areas
+      result = max(result, sum + 1)
+
+5. Return result
+🔹 Java Code (Optimized)
+import java.util.*;
+
+class LargestIsland {
+
+    int[][] grid;
+    int n;
+    int id = 2;
+    Map<Integer, Integer> areaMap = new HashMap<>();
+
+    public int largestIsland(int[][] grid) {
+        this.grid = grid;
+        n = grid.length;
+
+        // Phase 1: Label islands
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+
+                if (grid[i][j] == 1) {
+                    int area = dfs(i, j, id);
+                    areaMap.put(id, area);
+                    id++;
+                }
+            }
+        }
+
+        int max = 0;
+        for (int value : areaMap.values()) {
+            max = Math.max(max, value);
+        }
+
+        // Phase 2: Flip each 0
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+
+                if (grid[i][j] == 0) {
+                    max = Math.max(max, connect(i, j));
+                }
+            }
+        }
+
+        return max == 0 ? n * n : max;
+    }
+
+    // DFS to mark island
+    private int dfs(int r, int c, int id) {
+
+        if (r < 0 || c < 0 || r >= n || c >= n || grid[r][c] != 1)
+            return 0;
+
+        grid[r][c] = id;
+
+        return 1
+            + dfs(r + 1, c, id)
+            + dfs(r - 1, c, id)
+            + dfs(r, c + 1, id)
+            + dfs(r, c - 1, id);
+    }
+
+    // Calculate connected area after flip
+    private int connect(int r, int c) {
+
+        Set<Integer> visited = new HashSet<>();
+        int sum = 1;
+
+        int[][] directions = {{1,0},{-1,0},{0,1},{0,-1}};
+
+        for (int[] dir : directions) {
+
+            int nr = r + dir[0];
+            int nc = c + dir[1];
+
+            if (nr >= 0 && nc >= 0 && nr < n && nc < n) {
+
+                int neighborId = grid[nr][nc];
+
+                if (neighborId > 1 && visited.add(neighborId)) {
+                    sum += areaMap.get(neighborId);
+                }
+            }
+        }
+        return sum;
+    }
+}
+🔹 Line-by-Line Explanation
+id = 2
+
+We start marking islands from 2.
+
+dfs()
+
+If current cell is 1:
+Mark as id.
+Count it.
+Recur 4 directions.
+
+areaMap
+
+Stores:
+
+islandId → size
+connect()
+
+For each 0:
+
+Check:
+
+Up
+Down
+Left
+Right
+
+Store unique island ids using a Set.
+
+Prevent double counting.
+
+Add sizes.
+
+Return total.
+
+🔹 Time Complexity
+O(n²)
+
+Each cell visited once during DFS and once during flip check.
+
+🔹 Space Complexity
+O(n²)
+
+For recursion stack + hashmap.
+
+🔥 Edge Case Important
+
+If entire grid already 1:
+
+Return n²
+
+Handled by:
+
+return max == 0 ? n * n : max;
+🔥 Interview Insight
+
+This tests:
+
+✔ Graph traversal (DFS)
+✔ HashMap usage
+✔ Avoiding duplicate counting
+✔ Optimization from brute force
+✔ Thinking in phases
+
+Very common in Google & Amazon interviews.
