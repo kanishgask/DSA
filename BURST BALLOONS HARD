@@ -1,0 +1,202 @@
+5) BURST BALLOONS
+
+(Interval DP – Very Hard)
+
+⚠️ You already have “Burst Balloons” in your repo but this is the FULL interview-level explanation (most people don't deeply understand it).
+
+🔹 Problem Statement
+
+You are given an array:
+
+nums[i]
+
+You may burst balloons one at a time.
+
+If you burst balloon i, you gain:
+
+nums[left] * nums[i] * nums[right]
+
+Where left and right are adjacent balloons.
+
+Return the maximum coins you can collect.
+
+🔹 Example
+
+Input:
+
+nums = [3,1,5,8]
+
+Output:
+
+167
+🔹 Why This Is Hard
+
+Greedy does NOT work.
+
+If you burst in wrong order, you lose maximum coins.
+
+This is an Interval DP problem.
+
+🔥 Trick: Think in Reverse
+
+Instead of thinking:
+
+Which balloon to burst first?
+
+Think:
+
+Which balloon to burst LAST in an interval?
+
+This changes everything.
+
+🔹 Preprocessing
+
+Add virtual balloons:
+
+nums = [1,3,1,5,8,1]
+
+Why?
+Because edge balloons need left/right.
+
+🔹 Define DP
+
+Let:
+
+dp[i][j] = maximum coins for interval (i, j)
+
+Meaning:
+We do NOT include i and j.
+We burst balloons between them.
+
+🔹 Core Formula
+
+For every possible last balloon k:
+
+dp[i][j] =
+    max over k:
+       dp[i][k] + dp[k][j]
+       + nums[i]*nums[k]*nums[j]
+
+k is the last balloon burst in (i,j).
+
+🔹 Algorithm
+1. Add 1 at start and end
+2. Let n = length
+3. dp = new int[n][n]
+
+4. For length = 2 to n:
+      for i:
+          j = i + length
+          for k in (i+1 to j-1):
+              dp[i][j] = max(
+                   dp[i][k] +
+                   dp[k][j] +
+                   nums[i]*nums[k]*nums[j]
+              )
+
+5. Return dp[0][n-1]
+🔹 Java Code
+class BurstBalloons {
+
+    public int maxCoins(int[] nums) {
+
+        int n = nums.length;
+
+        int[] arr = new int[n + 2];
+        arr[0] = arr[n + 1] = 1;
+
+        for (int i = 0; i < n; i++)
+            arr[i + 1] = nums[i];
+
+        int[][] dp = new int[n + 2][n + 2];
+
+        for (int len = 2; len < n + 2; len++) {
+
+            for (int i = 0; i + len < n + 2; i++) {
+
+                int j = i + len;
+
+                for (int k = i + 1; k < j; k++) {
+
+                    dp[i][j] = Math.max(
+                        dp[i][j],
+                        dp[i][k] +
+                        dp[k][j] +
+                        arr[i] * arr[k] * arr[j]
+                    );
+                }
+            }
+        }
+
+        return dp[0][n + 1];
+    }
+}
+🔹 Step-by-Step Dry Run
+
+nums = [3,1,5,8]
+
+After padding:
+
+1 3 1 5 8 1
+
+We compute from small intervals first.
+
+Eventually:
+
+dp[0][5] = 167
+🔹 Why This Works
+
+Because:
+
+When we assume k is last balloon in interval (i,j),
+then:
+
+Left side and right side already solved independently.
+
+So:
+
+Optimal Substructure ✔
+Overlapping subproblems ✔
+
+That’s why DP works.
+
+🔹 Time Complexity
+O(n³)
+
+Triple nested loop.
+
+🔹 Space Complexity
+O(n²)
+
+DP matrix.
+
+🔥 Interview Insight
+
+Most people try greedy → wrong.
+
+Top candidates say:
+
+"Let’s reverse thinking and decide which balloon to burst last."
+
+That impresses interviewers.
+
+🔥 What This Tests
+
+✔ Deep DP thinking
+✔ Interval partition DP
+✔ Optimization structure
+✔ Recognizing reverse thinking
+
+🚀 Summary of 5 Advanced Problems I Gave You
+
+Sudoku Solver (Backtracking)
+
+Largest Island (Graph + DFS + Hash)
+
+Merge K Sorted Lists (Heap)
+
+Critical Connections (Tarjan - Bridges)
+
+Burst Balloons (Interval DP)
+
+These 5 are beyond basic DSA.
