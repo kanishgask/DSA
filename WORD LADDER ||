@@ -1,0 +1,235 @@
+Word Ladder II (All Shortest Transformation Sequences)
+🔹 Problem Statement
+
+Given:
+
+beginWord
+
+endWord
+
+wordList
+
+Return all shortest transformation sequences from beginWord to endWord.
+
+Rules:
+
+You can change only one letter at a time
+
+Each intermediate word must exist in wordList
+
+Return all shortest paths
+
+🔹 Example
+beginWord = "hit"
+endWord   = "cog"
+
+wordList = ["hot","dot","dog","lot","log","cog"]
+✅ Output:
+[
+ ["hit","hot","dot","dog","cog"],
+ ["hit","hot","lot","log","cog"]
+]
+🧠 Why This Problem Is Important?
+
+Tests:
+
+BFS (shortest path logic)
+
+Graph modeling
+
+Backtracking
+
+Optimized pruning
+
+Multi-path tracking
+
+⚠️ Many candidates fail because they try simple DFS.
+
+🚀 Core Idea
+
+This is NOT normal DFS.
+
+We use:
+
+1️⃣ BFS → To find shortest path levels
+2️⃣ Backtracking → To reconstruct all shortest paths
+
+Why?
+
+Because BFS guarantees shortest path in unweighted graph.
+
+🔥 Step 1: Graph Construction Implicitly
+
+We treat words as graph nodes.
+
+Two words are connected if:
+
+They differ by exactly one character
+
+Example:
+
+hit → hot
+hot → dot
+dot → dog
+dog → cog
+🔥 Step 2: BFS from beginWord
+
+We maintain:
+
+distance[word] → level number
+
+graph[word] → list of next words in shortest paths
+
+🔥 Step 3: Backtrack from endWord
+
+We build all paths from end → begin.
+
+💻 Code (Optimized Version)
+from collections import defaultdict, deque
+
+def findLadders(beginWord, endWord, wordList):
+    
+    wordSet = set(wordList)
+    if endWord not in wordSet:
+        return []
+    
+    graph = defaultdict(list)
+    distance = {}
+    
+    # BFS
+    queue = deque([beginWord])
+    distance[beginWord] = 0
+    
+    while queue:
+        word = queue.popleft()
+        for i in range(len(word)):
+            for c in 'abcdefghijklmnopqrstuvwxyz':
+                newWord = word[:i] + c + word[i+1:]
+                
+                if newWord in wordSet:
+                    
+                    if newWord not in distance:
+                        distance[newWord] = distance[word] + 1
+                        queue.append(newWord)
+                    
+                    if distance[newWord] == distance[word] + 1:
+                        graph[word].append(newWord)
+    
+    results = []
+    path = [beginWord]
+    
+    def backtrack(curr):
+        if curr == endWord:
+            results.append(list(path))
+            return
+        
+        for nextWord in graph[curr]:
+            path.append(nextWord)
+            backtrack(nextWord)
+            path.pop()
+    
+    if endWord in distance:
+        backtrack(beginWord)
+    
+    return results
+🔍 Line-by-Line Explanation
+wordSet = set(wordList)
+
+For O(1) lookup.
+
+BFS Phase
+queue = deque([beginWord])
+distance[beginWord] = 0
+
+We track shortest distance from beginWord.
+
+Generating Neighbors
+for i in range(len(word)):
+    for c in 'abcdefghijklmnopqrstuvwxyz':
+
+Try all possible single-letter transformations.
+
+Distance Logic
+if newWord not in distance:
+    distance[newWord] = distance[word] + 1
+
+Ensures shortest path only.
+
+Graph Building
+if distance[newWord] == distance[word] + 1:
+    graph[word].append(newWord)
+
+Only connect nodes forming shortest paths.
+
+🔥 Backtracking Phase
+
+After BFS builds shortest tree:
+
+We recursively build all paths.
+
+🔢 Dry Run (Example)
+
+Level 0:
+
+hit
+
+Level 1:
+
+hot
+
+Level 2:
+
+dot, lot
+
+Level 3:
+
+dog, log
+
+Level 4:
+
+cog
+
+Then backtracking constructs:
+
+hit → hot → dot → dog → cog
+hit → hot → lot → log → cog
+⏱ Time Complexity
+
+Let:
+
+N = number of words
+
+L = length of word
+
+Generating neighbors:
+
+O(N * L * 26)
+
+Overall:
+
+≈ O(N * L * 26)
+
+Backtracking cost depends on number of paths.
+
+📦 Space Complexity
+O(N)
+⚡ Why Simple DFS Fails?
+
+Because:
+
+DFS explores deeper before shortest guarantee
+
+Might return longer paths
+
+Only BFS guarantees minimum depth first.
+
+🎯 Interview Summary Answer
+
+Use BFS to compute shortest path levels and build a directed graph of shortest transitions. Then use DFS/backtracking to reconstruct all shortest sequences.
+
+🏆 Pattern Learned Here
+
+✔ BFS for shortest path
+✔ Track parent/next pointers
+✔ Backtracking to generate combinations
+
