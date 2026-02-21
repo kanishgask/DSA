@@ -1,0 +1,246 @@
+1️⃣ Minimum Number of Refueling Stops
+🔹 Problem Statement
+
+You are traveling to a destination target miles away.
+
+You start with startFuel liters of fuel.
+
+There are fuel stations along the way.
+
+Each station is represented as:
+
+stations[i] = [position, fuel]
+
+Where:
+
+position = distance from start
+
+fuel = fuel available at that station
+
+🚘 Rule:
+
+1 unit of fuel = 1 mile distance.
+
+🎯 Goal:
+
+Return the minimum number of refueling stops needed to reach the target.
+
+If you cannot reach the destination → return -1.
+
+🧠 Why This Problem Is Important?
+
+This problem tests:
+
+Greedy Thinking
+
+Heap / Priority Queue
+
+Optimization Strategy
+
+Real-world logic
+
+It’s asked in:
+
+Amazon
+
+Google
+
+Microsoft
+
+Meta
+
+🔹 Example
+target = 100
+startFuel = 10
+stations = [
+ [10,60],
+ [20,30],
+ [30,30],
+ [60,40]
+]
+🔎 Step-by-Step Understanding
+
+You start at position 0 with fuel = 10.
+
+Can you reach 100 directly?
+
+No.
+
+Can you reach first station?
+
+Yes (10 miles).
+
+Now decision:
+Do we refuel immediately?
+Maybe not.
+We should refuel at the station giving maximum fuel among reachable ones.
+
+🚀 Key Greedy Insight
+
+👉 At every point, if we cannot move forward,
+we refuel from the station with maximum fuel among the ones we already passed.
+
+Why?
+Because taking bigger fuel earlier gives more reach.
+
+📦 Data Structure Used
+
+We use a Max Heap (Priority Queue).
+
+But Python has a Min Heap.
+So we push negative values to simulate max heap.
+
+🔥 Complete Algorithm
+
+Initialize:
+
+maxHeap = []
+fuel = startFuel
+stops = 0
+i = 0
+n = len(stations)
+
+While fuel < target:
+
+Push all stations we can reach into heap
+
+If heap empty → return -1
+
+Pop maximum fuel station
+
+Add fuel
+
+Increment stops
+
+Return stops
+
+💻 Code (Python)
+import heapq
+
+def minRefuelStops(target, startFuel, stations):
+    maxHeap = []
+    fuel = startFuel
+    stops = 0
+    i = 0
+    n = len(stations)
+
+    while fuel < target:
+        
+        # Add all reachable stations to heap
+        while i < n and stations[i][0] <= fuel:
+            heapq.heappush(maxHeap, -stations[i][1])
+            i += 1
+        
+        # If no station available to refuel
+        if not maxHeap:
+            return -1
+        
+        # Refuel with maximum available fuel
+        fuel += -heapq.heappop(maxHeap)
+        stops += 1
+
+    return stops
+🔍 Line-by-Line Explanation
+maxHeap = []
+
+Stores fuel values of reachable stations.
+
+fuel = startFuel
+
+Current fuel available.
+
+while fuel < target:
+
+Until we reach target.
+
+Adding reachable stations
+while i < n and stations[i][0] <= fuel:
+    heapq.heappush(maxHeap, -stations[i][1])
+    i += 1
+
+If station position is within reachable distance,
+add its fuel to maxHeap.
+
+If heap empty
+if not maxHeap:
+    return -1
+
+No fuel available and not reached target → impossible.
+
+Refuel with maximum station
+fuel += -heapq.heappop(maxHeap)
+stops += 1
+
+We take the station that gives maximum fuel.
+Increase stops count.
+
+🔢 Dry Run (Very Important)
+
+Initial:
+
+fuel = 10
+Iteration 1
+
+Reach station at 10 → push 60
+
+Heap = [60]
+
+Pop 60 → fuel = 70
+Stops = 1
+
+Iteration 2
+
+Now fuel = 70
+
+Push stations:
+20 → 30
+30 → 30
+60 → 40
+
+Heap = [40, 30, 30]
+
+Pop 40 → fuel = 110
+Stops = 2
+
+Now 110 >= 100
+
+Answer = 2
+
+⏱ Time Complexity
+
+Each station pushed once
+
+Each station popped at most once
+
+Time Complexity =
+O(n log n)
+
+📦 Space Complexity
+
+Heap stores at most n stations
+
+O(n)
+
+🧠 Why Greedy Works?
+
+We delay refueling until necessary.
+
+Instead of stopping at every station,
+we collect options and pick the best one when needed.
+
+This ensures:
+✔ minimum stops
+✔ maximum reach
+✔ optimal decision
+
+🎯 Edge Cases
+
+If startFuel >= target → return 0
+
+If first station unreachable → return -1
+
+If no stations → return -1 unless startFuel >= target
+
+💬 Interview Answer Summary (Short Version)
+
+Use a greedy strategy with max-heap. Add all reachable stations into heap. If stuck, refuel from station with maximum fuel. This ensures minimum stops. Time complexity O(n log n).
