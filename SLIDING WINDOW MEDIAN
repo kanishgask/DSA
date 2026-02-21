@@ -1,0 +1,190 @@
+Sliding Window Median
+🔹 Problem Statement
+
+You are given:
+
+An integer array nums
+
+A window size k
+
+You need to return the median of every sliding window of size k.
+
+🔹 Example
+nums = [1,3,-1,-3,5,3,6,7]
+k = 3
+Output:
+[1, -1, -1, 3, 5, 6]
+🔎 What Is Median?
+
+If k is odd → middle element
+If k is even → average of two middle elements
+
+Example:
+
+Window = [1,3,-1]
+
+Sorted → [-1,1,3]
+Median = 1
+
+🧠 Why This Problem Is Important?
+
+Tests:
+
+Heap mastery
+
+Balanced data structures
+
+Lazy deletion technique
+
+Real-time median maintenance
+
+FAANG favorite
+
+🚀 Core Idea
+
+Use Two Heaps
+
+Max Heap → stores smaller half
+
+Min Heap → stores larger half
+
+This allows us to:
+
+Keep track of median efficiently
+
+Insert in O(log k)
+
+Remove in O(log k)
+
+🔥 High-Level Approach
+
+For each window:
+
+Add new element
+
+Balance heaps
+
+Remove element going out of window
+
+Rebalance
+
+Extract median
+
+📦 Why Two Heaps?
+
+To maintain:
+
+maxHeap (smaller half)
+minHeap (larger half)
+
+Rule:
+
+len(maxHeap) == len(minHeap) or
+
+len(maxHeap) == len(minHeap) + 1
+
+💻 Code (Python)
+import heapq
+
+def medianSlidingWindow(nums, k):
+    small = []  # max heap (store negative)
+    large = []  # min heap
+    result = []
+    
+    for i in range(len(nums)):
+        
+        # Step 1: Add new number
+        heapq.heappush(small, -nums[i])
+        heapq.heappush(large, -heapq.heappop(small))
+        
+        # Step 2: Balance heaps
+        if len(large) > len(small):
+            heapq.heappush(small, -heapq.heappop(large))
+        
+        # Step 3: Remove element leaving window
+        if i >= k:
+            out_num = nums[i-k]
+            
+            if out_num <= -small[0]:
+                small.remove(-out_num)
+                heapq.heapify(small)
+            else:
+                large.remove(out_num)
+                heapq.heapify(large)
+            
+            # Rebalance again
+            if len(large) > len(small):
+                heapq.heappush(small, -heapq.heappop(large))
+            if len(small) > len(large) + 1:
+                heapq.heappush(large, -heapq.heappop(small))
+        
+        # Step 4: Add median to result
+        if i >= k - 1:
+            if k % 2 == 0:
+                median = (-small[0] + large[0]) / 2
+            else:
+                median = -small[0]
+            result.append(median)
+    
+    return result
+🔍 Line-by-Line Explanation
+small = []
+
+Max heap (store negative values)
+
+large = []
+
+Min heap
+
+Adding new element
+heapq.heappush(small, -nums[i])
+heapq.heappush(large, -heapq.heappop(small))
+
+Ensures:
+
+Smaller elements in small
+
+Larger elements in large
+
+Balancing condition
+if len(large) > len(small):
+
+Maintain structure property.
+
+Removing outgoing element
+
+We remove element that leaves sliding window.
+
+Since heap doesn't support direct deletion efficiently,
+we remove manually and heapify.
+
+Calculating median
+
+If odd:
+
+median = -small[0]
+
+If even:
+
+median = average of top of both heaps
+🔢 Dry Run (First Few Windows)
+Window 1 → [1,3,-1]
+
+Median = 1
+
+Window 2 → [3,-1,-3]
+
+Sorted → [-3,-1,3]
+Median = -1
+
+Window 3 → [-1,-3,5]
+
+Median = -1
+
+And so on...
+
+⏱ Complexity
+
+Insertion → O(log k)
+Deletion → O(k) worst (due to heapify)
+Overall → O(n log k)
