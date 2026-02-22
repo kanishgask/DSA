@@ -1,0 +1,147 @@
+5️⃣ Stone Game IV (Hard – DP + Game Theory)
+🔹 Problem Statement
+
+Alice and Bob are playing a game with a pile of n stones.
+
+Alice starts first.
+
+On each turn, a player can remove any perfect square number of stones
+(1, 4, 9, 16, 25, …)
+
+The player who cannot make a move loses.
+
+Return true if Alice can win assuming both play optimally, else false.
+
+🔹 Example 1
+Input: n = 1
+Output: true
+
+Alice removes 1 → wins.
+
+🔹 Example 2
+Input: n = 2
+Output: false
+
+Alice removes 1 → leaves 1
+Bob removes 1 → wins
+So Alice loses.
+
+🔹 Example 3
+Input: n = 4
+Output: true
+
+Alice removes 4 → wins instantly.
+
+🔎 Intuition
+
+This is a Game DP / Win-Loss State problem.
+
+Key idea:
+
+If there exists any move that makes opponent lose →
+current player wins.
+
+So we define:
+
+dp[i] = true  → winning position
+dp[i] = false → losing position
+💡 Transition Formula
+
+For each i from 1 to n:
+
+Check all perfect squares:
+
+If there exists square s such that:
+dp[i - s] == false
+→ dp[i] = true
+
+Because we force opponent into losing position.
+
+If none works:
+
+dp[i] = false
+⚙️ Algorithm
+
+1️⃣ Create boolean array dp[n+1]
+2️⃣ For each i:
+
+Check all perfect squares ≤ i
+
+If dp[i - square] == false → mark dp[i] = true
+
+Return dp[n]
+
+💻 Java Code
+class Solution {
+    public boolean winnerSquareGame(int n) {
+        
+        boolean[] dp = new boolean[n + 1];
+        
+        for (int i = 1; i <= n; i++) {
+            
+            for (int k = 1; k * k <= i; k++) {
+                
+                if (!dp[i - k * k]) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return dp[n];
+    }
+}
+🧠 Code Explanation
+Step 1: Base Case
+dp[0] = false
+
+If 0 stones → lose.
+
+Step 2: Build from Bottom-Up
+
+Example n = 7:
+
+i	Possibilities	dp[i]
+1	1 → dp[0]=F → Win	T
+2	1 → dp[1]=T	F
+3	1 → dp[2]=F	T
+4	4 → dp[0]=F	T
+5	1 → dp[4]=T
+4 → dp[1]=T	F
+6	1 → dp[5]=F	T
+7	1 → dp[6]=T
+4 → dp[3]=T	F
+🔥 Pattern Observed:
+
+Losing positions:
+
+0, 2, 5, 7, ...
+
+Winning positions:
+All others.
+
+🎯 Why Important?
+
+This problem tests:
+
+Game theory
+
+DP state transition
+
+Optimal play reasoning
+
+Recognizing win/lose pattern
+
+Very common in advanced DP rounds.
+
+⏱ Complexity
+
+Time:
+
+O(n√n)
+
+Space:
+
+O(n)
+
+🔥 Now you’re entering Game Theory territory.
