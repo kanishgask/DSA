@@ -1,0 +1,177 @@
+Maximum Subarray Min-Product (Hard)
+🔹 Problem Statement
+
+Given an integer array nums, return the maximum min-product of any non-empty subarray of nums.
+
+The min-product of a subarray is defined as:
+
+(Minimum element in the subarray) × (Sum of all elements in that subarray)
+
+Since the answer may be large, return it modulo 10⁹ + 7.
+
+🔹 Example 1
+Input: nums = [1,2,3,2]
+Output: 14
+Explanation:
+
+Subarrays:
+
+Subarray	Min	Sum	Min × Sum
+[1]	1	1	1
+[2]	2	2	4
+[3]	3	3	9
+[2]	2	2	4
+[1,2,3]	1	6	6
+[2,3,2]	2	7	14 ✅
+[1,2,3,2]	1	8	8
+
+Maximum = 14
+
+🔎 Intuition
+
+If we fix an element nums[i] as the minimum, then:
+
+We must find how far it can expand left and right
+
+Such that it remains the smallest element
+
+Then compute subarray sum using prefix sum
+
+This is similar to:
+
+Largest Rectangle in Histogram
+
+Monotonic Stack pattern
+
+⚙️ Algorithm (Step-by-Step)
+Step 1: Compute Prefix Sum
+
+To calculate subarray sum in O(1).
+
+Step 2: Use Monotonic Stack
+
+Maintain increasing stack.
+
+For each element:
+
+Pop when current is smaller
+
+That popped element becomes the minimum
+
+Compute min-product
+
+Step 3:
+
+For popped index:
+
+left = previous smaller index
+right = current index - 1
+
+Use prefix sum:
+
+subarraySum = prefix[right+1] - prefix[left+1]
+
+Compute:
+
+minProduct = nums[poppedIndex] * subarraySum
+
+Track maximum.
+
+💻 Code (Java)
+import java.util.*;
+
+class Solution {
+    public int maxSumMinProduct(int[] nums) {
+        int n = nums.length;
+        long[] prefix = new long[n + 1];
+        
+        // Step 1: Prefix sum
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        
+        Stack<Integer> stack = new Stack<>();
+        long max = 0;
+        
+        for (int i = 0; i <= n; i++) {
+            
+            long curr = (i == n) ? 0 : nums[i];
+            
+            while (!stack.isEmpty() && nums[stack.peek()] > curr) {
+                int minIndex = stack.pop();
+                
+                int left = stack.isEmpty() ? -1 : stack.peek();
+                int right = i - 1;
+                
+                long sum = prefix[right + 1] - prefix[left + 1];
+                long product = sum * nums[minIndex];
+                
+                max = Math.max(max, product);
+            }
+            
+            stack.push(i);
+        }
+        
+        return (int)(max % 1000000007);
+    }
+}
+🧠 Code Explanation (Line by Line Logic)
+✅ Prefix Sum
+prefix[i + 1] = prefix[i] + nums[i];
+
+Allows constant-time subarray sum.
+
+✅ Stack Logic
+
+We maintain increasing order stack.
+
+When:
+
+nums[stack.peek()] > current
+
+We pop because:
+
+Current element limits expansion of popped element.
+
+So popped element's maximum right boundary found.
+
+✅ Calculating Range
+
+If popped index = minIndex
+
+Left boundary:
+
+stack.peek() after pop
+
+Right boundary:
+
+i - 1
+
+Subarray sum:
+
+prefix[right+1] - prefix[left+1]
+
+Multiply by:
+
+nums[minIndex]
+⏱ Time Complexity
+
+Prefix sum: O(n)
+
+Each element pushed & popped once: O(n)
+
+✅ Overall: O(n)
+
+📌 Why This Problem is Important?
+
+It combines:
+
+Monotonic Stack
+
+Prefix Sum
+
+Range Expansion Technique
+
+Optimization thinking
+
+Very common in top product interviews.
