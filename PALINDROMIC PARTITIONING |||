@@ -1,0 +1,187 @@
+4️⃣ Palindrome Partitioning III (Hard)
+🔹 Problem Statement
+
+Given a string s and an integer k, partition the string into k non-empty substrings such that:
+
+The sum of the number of character changes required to make each substring a palindrome is minimized.
+
+Return the minimum number of changes required.
+
+🔹 Example 1
+Input:
+s = "abc"
+k = 2
+
+Output: 1
+Explanation:
+
+Possible partitions:
+
+a | bc → (0 + 1 change) = 1
+ab | c → (1 + 0 change) = 1
+
+Minimum = 1
+
+🔹 Example 2
+Input:
+s = "aabbc"
+k = 3
+
+Output: 0
+
+Partition:
+
+aa | bb | c
+
+Already palindromes → 0 changes
+
+🔎 Intuition
+
+This is a DP Partitioning Problem
+
+Two key ideas:
+
+1️⃣ Precompute cost to make any substring palindrome
+2️⃣ Use DP to partition into k groups
+
+💡 Step 1: Precompute Palindrome Cost
+
+For substring s[i…j]
+
+Cost = number of mismatched pairs.
+
+Example:
+
+"abc"
+a != c → 1 change
+
+So cost = 1.
+
+We build a 2D matrix:
+
+cost[i][j]
+💡 Step 2: DP Definition
+
+Let:
+
+dp[i][k] = minimum changes needed for substring starting at i with k partitions left
+
+Transition:
+
+dp[i][k] = min over j from i to n-1 of:
+
+cost[i][j] + dp[j+1][k-1]
+
+Base cases:
+
+If k == 1 → cost[i][n-1]
+If remaining characters < k → infinity
+⚙️ Algorithm
+
+1️⃣ Precompute cost[][]
+2️⃣ Use DP with memoization
+3️⃣ Try all partition endings
+
+💻 Java Code
+class Solution {
+    
+    private int[][] cost;
+    private Integer[][] memo;
+    private String s;
+    private int n;
+    
+    public int palindromePartition(String s, int k) {
+        this.s = s;
+        this.n = s.length();
+        
+        // Step 1: Precompute palindrome cost
+        cost = new int[n][n];
+        
+        for (int length = 2; length <= n; length++) {
+            for (int i = 0; i + length - 1 < n; i++) {
+                int j = i + length - 1;
+                
+                cost[i][j] = cost[i+1][j-1];
+                if (s.charAt(i) != s.charAt(j)) {
+                    cost[i][j]++;
+                }
+            }
+        }
+        
+        // Step 2: Memoization
+        memo = new Integer[n][k+1];
+        
+        return dp(0, k);
+    }
+    
+    private int dp(int start, int k) {
+        if (k == 1) {
+            return cost[start][n-1];
+        }
+        
+        if (memo[start][k] != null) {
+            return memo[start][k];
+        }
+        
+        int min = Integer.MAX_VALUE;
+        
+        for (int end = start; end <= n - k; end++) {
+            min = Math.min(min,
+                    cost[start][end] + dp(end + 1, k - 1));
+        }
+        
+        memo[start][k] = min;
+        return min;
+    }
+}
+🧠 Code Explanation (Step-by-Step)
+✅ Precompute Palindrome Cost
+
+For each substring:
+
+cost[i][j] =
+    cost[i+1][j-1] + (s[i] != s[j] ? 1 : 0)
+
+This avoids recalculating palindrome checks repeatedly.
+
+✅ DP Recursion
+
+We try every possible split:
+
+Example:
+
+s = "abc"
+k = 2
+
+Try:
+
+a | bc
+ab | c
+
+Pick minimum.
+
+🎯 Why This Problem is Important?
+
+It tests:
+
+Advanced DP
+
+Partition DP
+
+Precomputation optimization
+
+Overlapping subproblems
+
+Very popular in Google / Amazon DP rounds
+
+⏱ Complexity
+
+Precompute cost:
+
+O(n²)
+
+DP:
+
+O(n² * k)
+
+🔥 Now you’re solving deep partition DP problems.
