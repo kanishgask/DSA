@@ -1,0 +1,138 @@
+Minimum Number of Swaps to Make the String Balanced
+🔹 Problem Statement
+
+You are given a string s consisting only of '[' and ']'.
+
+A string is balanced if:
+
+Every opening bracket [ has a corresponding closing bracket ]
+
+At no point should closing brackets exceed opening brackets when scanning from left to right
+
+Return the minimum number of swaps required to make the string balanced.
+
+You can swap any two characters.
+
+🔹 Example 1
+Input: s = "]]][[["
+Output: 2
+Explanation:
+
+After 2 swaps, we can make:
+
+"[ ][ ][ ]"
+
+Balanced string.
+
+🔹 Example 2
+Input: s = "[]"
+Output: 0
+
+Already balanced.
+
+🔎 Intuition
+
+Instead of actually swapping, we observe:
+
+Count imbalance
+
+Every time closing bracket exceeds open bracket → imbalance increases
+
+Every swap fixes 2 imbalance units
+
+👉 So final formula becomes:
+
+(swaps = (imbalance + 1) / 2)
+
+Where:
+
+imbalance = number of unmatched closing brackets
+⚙️ Algorithm
+
+Initialize:
+
+open = 0
+imbalance = 0
+
+Traverse string:
+
+If [, increment open
+
+If ]:
+
+If open > 0 → match it
+
+Else → imbalance++
+
+Minimum swaps required:
+
+(imbalance + 1) / 2
+💻 Java Code
+class Solution {
+    public int minSwaps(String s) {
+        int open = 0;
+        int imbalance = 0;
+        
+        for (char c : s.toCharArray()) {
+            
+            if (c == '[') {
+                open++;
+            } else { // ']'
+                if (open > 0) {
+                    open--;
+                } else {
+                    imbalance++;
+                }
+            }
+        }
+        
+        return (imbalance + 1) / 2;
+    }
+}
+🧠 Code Explanation (Step by Step)
+Example:
+s = "]]][[["
+Step-by-step:
+Character	open	imbalance
+]	0	1
+]	0	2
+]	0	3
+[	1	3
+[	2	3
+[	3	3
+
+Final:
+
+imbalance = 3
+swaps = (3 + 1) / 2 = 2
+💡 Why Formula Works?
+
+Each swap fixes two incorrect positions.
+
+Example:
+
+]][[
+
+Swap first ] with last [
+→ []][
+
+One swap removes two imbalance issues.
+
+Thus:
+
+needed swaps = ceil(imbalance / 2)
+⏱ Time Complexity
+O(n)
+
+Space:
+
+O(1)
+🔥 Interview Importance
+
+Tests:
+
+Greedy thinking
+
+Balance counting
+
+Insight instead of simulation
