@@ -1,0 +1,180 @@
+Minimum Number of Taps to Open to Water a Garden (Hard)
+🔹 Problem Statement
+
+There is a one-dimensional garden of length n.
+
+The garden is located on the x-axis from point 0 to n.
+
+There are n + 1 taps located at positions 0 to n.
+
+You are given an integer array ranges where:
+
+ranges[i] means the tap at position i can water the interval:
+
+[i - ranges[i], i + ranges[i]]
+
+Return the minimum number of taps that must be opened to cover the entire garden [0, n].
+
+If it is impossible → return -1.
+
+🔹 Example 1
+Input:
+n = 5
+ranges = [3,4,1,1,0,0]
+
+Output: 1
+Explanation:
+
+Tap at position 1 covers:
+
+[1 - 4, 1 + 4] → [-3, 5]
+
+Which effectively covers [0,5].
+
+So only 1 tap is needed.
+
+🔹 Example 2
+Input:
+n = 3
+ranges = [0,0,0,0]
+
+Output: -1
+
+No tap covers anything → Impossible.
+
+🔎 Intuition
+
+This is actually a Greedy Interval Covering Problem
+
+Similar to:
+
+Jump Game II
+
+Minimum number of intervals to cover a range
+
+💡 Idea
+
+Convert each tap into an interval.
+
+For each starting point, store the maximum reach.
+
+Then apply greedy approach like Jump Game:
+
+Track farthest reachable
+
+Increase taps only when needed
+
+⚙️ Algorithm
+Step 1️⃣ Create maxReach array
+
+For every tap:
+
+left = max(0, i - ranges[i])
+right = min(n, i + ranges[i])
+
+Store:
+
+maxReach[left] = max(maxReach[left], right)
+Step 2️⃣ Greedy Traversal
+
+Use 3 variables:
+
+taps = 0
+currEnd = 0
+farthest = 0
+
+Traverse from 0 → n:
+
+Update farthest = max(farthest, maxReach[i])
+
+If i == currEnd:
+
+We must open a new tap
+
+taps++
+
+currEnd = farthest
+
+If farthest <= i → return -1
+
+💻 Java Code
+class Solution {
+    public int minTaps(int n, int[] ranges) {
+        
+        int[] maxReach = new int[n + 1];
+        
+        // Step 1: Convert into interval coverage
+        for (int i = 0; i <= n; i++) {
+            int left = Math.max(0, i - ranges[i]);
+            int right = Math.min(n, i + ranges[i]);
+            maxReach[left] = Math.max(maxReach[left], right);
+        }
+        
+        int taps = 0;
+        int currEnd = 0;
+        int farthest = 0;
+        
+        // Step 2: Greedy Interval Cover
+        for (int i = 0; i <= n; i++) {
+            
+            if (i > farthest) {
+                return -1;
+            }
+            
+            farthest = Math.max(farthest, maxReach[i]);
+            
+            if (i == currEnd) {
+                if (i != n) {
+                    taps++;
+                    currEnd = farthest;
+                }
+            }
+        }
+        
+        return taps;
+    }
+}
+🧠 Code Explanation (Step-by-Step)
+Example:
+n = 5
+ranges = [3,4,1,1,0,0]
+
+Converted intervals:
+
+Tap	Covers
+0	[0,3]
+1	[0,5]
+2	[1,3]
+3	[2,4]
+
+After preprocessing:
+
+maxReach[0] = 5
+
+Now greedy:
+
+i=0 → farthest=5 → open tap
+
+i moves until 5
+
+Answer = 1
+
+🎯 Why This Problem is Important?
+
+Tests:
+
+Greedy thinking
+
+Interval covering
+
+Jump Game pattern recognition
+
+⏱ Complexity
+
+Time:
+
+O(n)
+
+Space:
+
+O(n)
